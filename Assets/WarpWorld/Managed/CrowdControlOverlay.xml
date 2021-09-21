@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CrowdControlOverlay</name>
+    </assembly>
+    <members>
+        <member name="T:WarpWorld.CrowdControl.Overlay.DisplayFlags">
+            <summary>Determines which parts of overlay elements to display.</summary>
+        </member>
+        <member name="F:WarpWorld.CrowdControl.Overlay.DisplayFlags.EffectName">
+            <summary>Display the effect's name.</summary>
+        </member>
+        <member name="F:WarpWorld.CrowdControl.Overlay.DisplayFlags.EffectIcon">
+            <summary>Display the effect's icon.</summary>
+        </member>
+        <member name="F:WarpWorld.CrowdControl.Overlay.DisplayFlags.UserName">
+            <summary>Display the user's name.</summary>
+        </member>
+        <member name="F:WarpWorld.CrowdControl.Overlay.DisplayFlags.UserIcon">
+            <summary>Display the user's icon.</summary>
+        </member>
+        <member name="F:WarpWorld.CrowdControl.Overlay.DisplayFlags.Queue">
+            <summary>Display the queue.</summary>
+        </member>
+        <member name="F:WarpWorld.CrowdControl.Overlay.DisplayFlags.Buff">
+            <summary>Display the buff.</summary>
+        </member>
+        <member name="F:WarpWorld.CrowdControl.Overlay.DisplayFlags.Log">
+            <summary>Display the log.</summary>
+        </member>
+        <member name="F:WarpWorld.CrowdControl.Overlay.DisplayFlags.Messages">
+            <summary>Display important messages.</summary>
+        </member>
+        <member name="T:WarpWorld.CrowdControl.Overlay.CrowdControlOverlay">
+             <summary>
+             Manages the Crowd Control overlay elements. Listens to events on <see cref="T:WarpWorld.CrowdControl.CrowdControl"/> and
+             updates its UI accordingly.
+            
+             <para>There are three UI sections: a log panel to display messages, a buff panel to display timed effects
+             and a queue panel to display pending effects. If both scene references for a section are unassigned, the
+             corresponding panel is disabled.</para>
+             </summary>
+        </member>
+    </members>
+</doc>
