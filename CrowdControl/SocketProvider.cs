@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Security;
+using System.Security;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 
 namespace WarpWorld.CrowdControl
 {
@@ -50,7 +51,11 @@ namespace WarpWorld.CrowdControl
 
         private async Task ReadLoop()
         {
+#if NET5_0
+            ArraySegment<byte> buf = new ArraySegment<byte>(new byte[4096]);
+#else
             byte[] buf = new byte[4096];
+#endif
 
             List<byte> msg = new List<byte>();
             while (!_quitting.IsCancellationRequested)
@@ -58,9 +63,13 @@ namespace WarpWorld.CrowdControl
                 try
                 {
                     _ready.Wait();
-
+#if NET5_0
+                    int bytesRead = await _stream.ReadAsync(buf, _quitting.Token);
+#elif (NET35 || NET40)
                     int bytesRead = await Task.Factory.StartNew(() => _stream.Read(buf, 0, buf.Length), _quitting.Token);
-
+#else
+                    int bytesRead = await _stream.ReadAsync(buf, 0, buf.Length, _quitting.Token);
+#endif
                     PlayloadPrint(buf, bytesRead, "Received");
 
                     msg.AddRange(buf.Take(bytesRead));
@@ -111,7 +120,11 @@ namespace WarpWorld.CrowdControl
 
                 try
                 {
+#if (NET35 || NET40)
                     await Task.Factory.StartNew(() => _socket.Connect(host, port), _quitting.Token);
+#else
+                    await _socket.ConnectAsync(host, port);
+#endif
 
                     if (secure)
                     {
@@ -124,7 +137,7 @@ namespace WarpWorld.CrowdControl
                         _stream = _socket.GetStream();
                     }
 
-                   CrowdControl.Log("Connected to server socket.");
+                    CrowdControl.Log("Connected to server socket.");
                     if (!Connected) { return false; }
                     _ready.Set();
                     try { OnConnected?.Invoke(); }
@@ -175,7 +188,11 @@ namespace WarpWorld.CrowdControl
                 if (!Connected) { return false; }
                 try
                 {
+#if (NET35 || NET40)
                     await Task.Factory.StartNew(() => _stream.Write(message, 0, message.Length), _quitting.Token);
+#else
+                    await _stream.WriteAsync(message, 0, message.Length, _quitting.Token);
+#endif
                     PlayloadPrint(message, message.Length, "Sent");
                 }
                 catch {

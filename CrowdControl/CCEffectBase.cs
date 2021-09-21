@@ -12,39 +12,39 @@ namespace WarpWorld.CrowdControl
 #pragma warning disable 1587
         [Tooltip("Image to display in the CrowdControl Twitch extension and in the onscreen overlay.")]
         /// <summary>Image to display in the CrowdControl Twitch extension and in the onscreen overlay. </summary>
-        [HideInInspector] public Sprite icon;
+        public Sprite icon;
 
         [Tooltip("Color used to tint the effect's icon.")]
         /// <summary>Color used to tint the effect's icon. </summary>
-        [HideInInspector] public Color iconColor = Color.white;
+        public Color iconColor = Color.white;
 
         [Tooltip("Unique identifier of the effect.")]
         /// <summary>Unique identifier of the effect. </summary>
-        [HideInInspector] public uint identifier;
+        public uint identifier;
 
         [Tooltip("Name of the effect displayed to the users.")]
         /// <summary>Name of the effect displayed to the users. </summary>
-        [HideInInspector] public string displayName;
+        public string displayName;
 
         [TextArea]
         [Tooltip("Information about the effect, displayed in the extension.")]
         /// <summary>Information about the effect, displayed in the extension. </summary>
-        [HideInInspector] public string description;
+        public string description;
 
         [Range(0, 60)]
         [Tooltip("Number of retries before the effect instance fails.")]
         /// <summary>Number of retries before the effect instance fails. </summary>
-        [HideInInspector] public int maxRetries = 3;
+        public int maxRetries = 3;
 
         [Range(0, 10)]
         [Tooltip("Delay in seconds before retrying to trigger an effect instance.")]
         /// <summary>Delay in seconds before retrying to trigger an effect instance. </summary>
-        [HideInInspector] public float retryDelay = 5;
+        public float retryDelay = 5;
 
         [Range(0, 10)]
         [Tooltip("Delay in seconds to wait before triggering the next effect instance.")]
         /// <summary>Delay in seconds to wait before triggering the next effect instance. </summary>
-        [HideInInspector] public float pendingDelay = .5f;
+        public float pendingDelay = .5f;
 #pragma warning restore 1587
 #pragma warning restore 1591
 

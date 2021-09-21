@@ -129,6 +129,9 @@ namespace WarpWorld.CrowdControl {
         /// <summary>Invoked when an important message needs to be displayed.</summary>
         public event Action<string, float, Sprite> OnDisplayMessage;
         public event Action<bool> OnToggleTokenView;
+        public event Action OnNoToken;
+        public event Action OnSubmitTempToken;
+        public event Action OnTempTokenFailure;
 
         /// <summary>Invoked when an <see cref="CCEffectBase"/> is successfully triggered.</summary>
         public event Action<CCEffectInstance> OnEffectTrigger;
@@ -170,12 +173,12 @@ namespace WarpWorld.CrowdControl {
         }
 
         void OnEnable() {
-#if DEBUG
+//#if DEBUG
             if (_connectOnEnable)
             {
                 Connect();
             }
-#endif
+//#endif
         }
 
         void OnDisable() {
@@ -187,7 +190,11 @@ namespace WarpWorld.CrowdControl {
         void OnDestroy()
         {
             Disconnect();
-            _socketProvider.Dispose();
+
+            if (_socketProvider != null)
+            {
+                _socketProvider.Dispose();
+            }
 
             Assert.IsNotNull(instance);
             instance = null;
@@ -398,7 +405,7 @@ namespace WarpWorld.CrowdControl {
         private void Disconnect(bool fromError) {
             Log("Disconnect");
 
-            if (_socketProvider._stream != null) {
+            if (_socketProvider != null && _socketProvider._stream != null) {
                 if (!fromError)
                 {
                     CCMessageDisconnect cCMessageDisconnect = new CCMessageDisconnect(_blockID++);
@@ -409,7 +416,8 @@ namespace WarpWorld.CrowdControl {
 
                 timeToNextPing = float.MaxValue;
                 timeToTimeout = float.MaxValue;
-
+                _socketProvider = null;
+                isConnecting = false;
                 OnDisconnected?.Invoke();
             }
             if (fromError) {
@@ -514,6 +522,7 @@ namespace WarpWorld.CrowdControl {
                 if (string.IsNullOrEmpty(_token))
                 {
                     OnToggleTokenView(true); // We don't have a token.
+                    OnNoToken?.Invoke();
                     return;
                 }
 
@@ -536,6 +545,7 @@ namespace WarpWorld.CrowdControl {
             {
                 LogError(getTokenMessage.greeting.ToString());
                 OnToggleTokenView(true);
+                OnNoToken?.Invoke();
                 return;
             }
 
@@ -549,6 +559,7 @@ namespace WarpWorld.CrowdControl {
         public void SubmitTempToken(string token)
         {
             OnToggleTokenView(false);
+            OnSubmitTempToken?.Invoke();
             CCMessageTokenAquisition getTokenMessage = new CCMessageTokenAquisition(_blockID++, token);
             Send(getTokenMessage);
         }
@@ -561,6 +572,7 @@ namespace WarpWorld.CrowdControl {
             {
                 LogError(tokenHandShake.greeting.ToString());
                 OnToggleTokenView(true);
+                OnTempTokenFailure?.Invoke();
                 return;
             }
 
@@ -571,7 +583,10 @@ namespace WarpWorld.CrowdControl {
                 profileIconUrl = tokenHandShake.streamerIconURL
             };
 
-            twitchUsers.Add(streamerUser.name, streamerUser);
+            if (!twitchUsers.ContainsKey(streamerUser.name))
+            {
+                twitchUsers.Add(streamerUser.name, streamerUser);
+            }
 
             _broadcasterType = tokenHandShake.broadcasterType;
 

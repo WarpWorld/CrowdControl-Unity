@@ -4,25 +4,9 @@ using System.Collections.Generic;
 
 #pragma warning disable 1591
 namespace WarpWorld.CrowdControl.Overlay {
-    [RequireComponent(typeof(RectTransform), typeof(CanvasGroup))]
-    public abstract class EffectUINode : MonoBehaviour
-    {
-        internal protected CanvasGroup group;
-
-        internal protected CCEffectInstance effectInstance;
-
-        internal protected virtual void SetVisibility(DisplayFlags displayFlags) {}
-        internal protected abstract void Setup(CCEffectInstance effectInstance);
-
-        internal protected virtual void Add(CCEffectInstance effectInstance) {}
-        internal protected virtual bool Remove() => true;
-
-        protected void Awake() => group = GetComponent<CanvasGroup>();
-    }
-
-    [RequireComponent(typeof(RectTransform))]
+    [RequireComponent(typeof(RectTransform), typeof(GridLayoutGroup))]
     [AddComponentMenu("Crowd Control/Effect UI Panel")]
-    public class EffectPanelUI : GridLayoutGroup
+    public class EffectPanelUI : MonoBehaviour
     {
         private Dictionary<uint, EffectUINode> activeEffects = new Dictionary<uint, EffectUINode>();
         private Dictionary<uint, Queue<EffectUINode>> nodePool = new Dictionary<uint, Queue<EffectUINode>>();
@@ -99,15 +83,6 @@ namespace WarpWorld.CrowdControl.Overlay {
             node.transform.SetAsLastSibling();
             activeEffects.Remove(effectID);
         }
-        #endregion
-
-        #region Layout
-
-        public override void SetLayoutVertical()
-        {
-            base.SetLayoutVertical();
-        }
-
         #endregion
     }
 }

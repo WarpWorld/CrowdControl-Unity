@@ -10,6 +10,31 @@
         <member name="M:WarpWorld.CrowdControl.CCBidWarLibrary.PlaceBid(System.String,System.UInt32)">
             <summary>Place a bid for an option. Returns true if the item sent in ends up being the highest and a different ID. </summary>
         </member>
+        <member name="T:WarpWorld.CrowdControl.CCEffect">
+            <summary> A single-trigger effect with no extra properties. </summary>
+        </member>
+        <member name="T:WarpWorld.CrowdControl.CCEffectBase">
+            <summary> Basic Crowd Control effect properties. </summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectBase.OnTriggerEffect(WarpWorld.CrowdControl.CCEffectInstance)">
+            <summary>
+            Called when an effect instance is scheduled for execution. The returned value is communicated back to the server.
+            <para>If <see cref="F:WarpWorld.CrowdControl.EffectResult.Retry"/> is returned, will be called again in <see cref="F:WarpWorld.CrowdControl.CCEffectBase.retryDelay"/> seconds,
+            unless <see cref="F:WarpWorld.CrowdControl.CCEffectBase.maxRetries"/> is reached.</para>
+            </summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectBase.PayloadSize(System.String)">
+            <summary>Byte size of the playload for this effect. Can be overridden by a derived class.</summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectBase.Params">
+            <summary>Additional Info for the effect. Can be overridden by a derived class.</summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectBase.ToggleSellable(System.Boolean)">
+            <summary>Toggles whether this effect can currently be sold during this session.</summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectBase.ToggleVisible(System.Boolean)">
+            <summary>Toggles whether this effect is visible in the menu during this session.</summary>
+        </member>
         <member name="T:WarpWorld.CrowdControl.CCEffectBidWar">
             <summary> Base effect for bid war effects. </summary>
         </member>
@@ -40,6 +65,48 @@
         <member name="F:WarpWorld.CrowdControl.CCEffectBidWarTint.tint">
             <summary>Color to tint the into when <see cref="F:WarpWorld.CrowdControl.CCEffectBidWarTint.bidName"/> is the winning bid.</summary>
         </member>
+        <member name="T:WarpWorld.CrowdControl.CCEffectInstance">
+            <summary>
+            State of a Crowd Control effect.
+            <para>The instance is only valid from the time the effect is requested up to
+            the time the effect is successfully triggered or failed.</para>
+            </summary>
+        </member>
+        <member name="P:WarpWorld.CrowdControl.CCEffectInstance.effect">
+            <summary>Target effect behaviour containing the logic.</summary>
+        </member>
+        <member name="P:WarpWorld.CrowdControl.CCEffectInstance.user">
+            <summary>
+            The Twitch user who triggered the effect.
+            <para>This is set to the special <see cref="P:WarpWorld.CrowdControl.CrowdControl.crowdUser"/> value for pooled effects.</para>
+            <para>For local test effect instances, this is set to the special <see cref="P:WarpWorld.CrowdControl.CrowdControl.testUser"/> value.</para>
+            </summary>
+        </member>
+        <member name="P:WarpWorld.CrowdControl.CCEffectInstance.id">
+            <summary>
+            Unique identifier of this instance, shared with the server. ID value are never reused.
+            <para>If the effect is tested locally, this ID will be negative.</para>
+            </summary>
+        </member>
+        <member name="P:WarpWorld.CrowdControl.CCEffectInstance.retryCount">
+            <summary>
+            How many times has the effect returned <see cref="F:WarpWorld.CrowdControl.EffectResult.Retry"/> when trying to start the instance.
+            <para>If the associated <see cref="F:WarpWorld.CrowdControl.CCEffectBase.maxRetries"/> is reached, the instance is automatically
+            terminated as if starting it returned <see cref="F:WarpWorld.CrowdControl.EffectResult.Failure"/>.</para>
+            </summary>
+        </member>
+        <member name="P:WarpWorld.CrowdControl.CCEffectInstance.unscaledStartTime">
+            <summary>Unscaled game time when the effect was triggered.</summary>
+        </member>
+        <member name="F:WarpWorld.CrowdControl.CCEffectInstance.isTest">
+            <summary>When <see langword="true"/>, the effect executes locally without talking to the server.</summary>
+        </member>
+        <member name="P:WarpWorld.CrowdControl.CCEffectInstance.parameters">
+            <summary>The parameters sent into the effect. Eg: Item Type, Quantity</summary>
+        </member>
+        <member name="P:WarpWorld.CrowdControl.CCEffectInstance.effectID">
+            <summary>The id for the effect that's being used</summary>
+        </member>
         <member name="T:WarpWorld.CrowdControl.CCEffectInstanceTimed">
             <summary>State of a Time-Based Crowd Control effect. The instance is valid from the time the effect is requested and lives until the effect is successfully stopped or failed.</summary>
         </member>
@@ -60,6 +127,79 @@
         </member>
         <member name="P:WarpWorld.CrowdControl.CCEffectInstanceTimed.isPaused">
             <summary>Whether the effect instance is paused or not. </summary>
+        </member>
+        <member name="T:WarpWorld.CrowdControl.CCEffectParameters">
+            <summary>A Crowd Control effect that handles parameters. </summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectParameters.AddParameters(System.Object[])">
+            <summary>Function for dynamically adding object(s) to the parameter list. </summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectParameters.ClearParameters">
+            <summary>Clearing the established parameter list. </summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectParameters.PayloadSize(System.String)">
+            <summary>Size of the playload for this effect.</summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectParameters.Params">
+            <summary>All Parameters for this effect as a string.</summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectParameters.AssignParameters(System.String[])">
+            <summary>Used for processing the newly received parameter array. Can be overridden by a derived class.</summary>
+        </member>
+        <member name="T:WarpWorld.CrowdControl.CCEffectTimed">
+            <summary> A Crowd Control effect active for a given duration of time. </summary>
+        </member>
+        <member name="T:WarpWorld.CrowdControl.CCEffectTimed.DisplayType">
+            <summary>Options of how this timer displays time left. </summary>
+        </member>
+        <member name="P:WarpWorld.CrowdControl.CCEffectTimed.paused">
+            <summary>Is the timer paused?</summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnEnable">
+            <summary>Ran when the effect is enabled. Can be overridden by a derived class.</summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnDisable">
+            <summary>Ran when the effect is disabled. Can be overridden by a derived class.</summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnTriggerEffect(WarpWorld.CrowdControl.CCEffectInstance)">
+            <summary> Handles starting the timed effect. Override <see cref="!:OnStartEffect(EffectInstance)"/> instead. </summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnStartEffect(WarpWorld.CrowdControl.CCEffectInstanceTimed)">
+            <summary> Invoked when an effect instance is scheduled to start. The effect should only be applied when <see cref="F:WarpWorld.CrowdControl.EffectResult.Success"/> is returned. </summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnStopEffect(WarpWorld.CrowdControl.CCEffectInstanceTimed,System.Boolean)">
+            <summary>
+            Invoked when an effect instance is scheduled to stop after its time is expired. Return false
+            if the effect cannot be stopped at the current time to retry in <see cref="F:WarpWorld.CrowdControl.CCEffectBase.retryDelay"/>
+            seconds.
+            </summary>
+            <param name="effectInstance">The target instance.</param>
+            <param name="force">Set to true when called from <see cref="M:WarpWorld.CrowdControl.CrowdControl.StopAllEffects"/>,
+            in which case failure to stop the effect is ignored.</param>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnPauseEffect">
+            <summary> Invoked when an effect instance is paused. </summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnResumeEffect">
+            <summary> Invoked when an effect instance is resumed. </summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnResetEffect">
+            <summary> Invoked when an effect instance is reset. </summary>
+        </member>
+        <member name="F:WarpWorld.CrowdControl.CCEffectTimed.displayType">
+            <summary> Whether the timer displays text or a fill graphic. </summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.Pause(WarpWorld.CrowdControl.CCEffectInstance)">
+            <summary> Invoked when the behaviour is paused. </summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.Resume(WarpWorld.CrowdControl.CCEffectInstance)">
+            <summary> Invoked when the behaviour is resumed. </summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.Reset(WarpWorld.CrowdControl.CCEffectInstance)">
+            <summary> Invoked when the behaviour is Reset. </summary>
+        </member>
+        <member name="T:WarpWorld.CrowdControl.SocketStream">
+            <summary>Handles sending and receiving byte streams from the server.</summary>
         </member>
         <member name="T:WarpWorld.CrowdControl.CrowdControl">
             <summary>
@@ -190,91 +330,6 @@
         <member name="M:WarpWorld.CrowdControl.CrowdControl.IsPaused(WarpWorld.CrowdControl.CCEffectTimed)">
             <summary>Returns true if timed effect is paused.</summary>
         </member>
-        <member name="T:WarpWorld.CrowdControl.CCEffect">
-            <summary> A single-trigger effect with no extra properties. </summary>
-        </member>
-        <member name="T:WarpWorld.CrowdControl.CCEffectBase">
-            <summary> Basic Crowd Control effect properties. </summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectBase.OnTriggerEffect(WarpWorld.CrowdControl.CCEffectInstance)">
-            <summary>
-            Called when an effect instance is scheduled for execution. The returned value is communicated back to the server.
-            <para>If <see cref="F:WarpWorld.CrowdControl.EffectResult.Retry"/> is returned, will be called again in <see cref="F:WarpWorld.CrowdControl.CCEffectBase.retryDelay"/> seconds,
-            unless <see cref="F:WarpWorld.CrowdControl.CCEffectBase.maxRetries"/> is reached.</para>
-            </summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectBase.PayloadSize(System.String)">
-            <summary>Byte size of the playload for this effect. Can be overridden by a derived class.</summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectBase.Params">
-            <summary>Additional Info for the effect. Can be overridden by a derived class.</summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectBase.ToggleSellable(System.Boolean)">
-            <summary>Toggles whether this effect can currently be sold during this session.</summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectBase.ToggleVisible(System.Boolean)">
-            <summary>Toggles whether this effect is visible in the menu during this session.</summary>
-        </member>
-        <member name="T:WarpWorld.CrowdControl.CCEffectParameters">
-            <summary>A Crowd Control effect that handles parameters. </summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectParameters.AddParameters(System.Object[])">
-            <summary>Function for dynamically adding object(s) to the parameter list. </summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectParameters.ClearParameters">
-            <summary>Clearing the established parameter list. </summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectParameters.PayloadSize(System.String)">
-            <summary>Size of the playload for this effect.</summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectParameters.Params">
-            <summary>All Parameters for this effect as a string.</summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectParameters.AssignParameters(System.String[])">
-            <summary>Used for processing the newly received parameter array. Can be overridden by a derived class.</summary>
-        </member>
-        <member name="T:WarpWorld.CrowdControl.CCEffectInstance">
-            <summary>
-            State of a Crowd Control effect.
-            <para>The instance is only valid from the time the effect is requested up to
-            the time the effect is successfully triggered or failed.</para>
-            </summary>
-        </member>
-        <member name="P:WarpWorld.CrowdControl.CCEffectInstance.effect">
-            <summary>Target effect behaviour containing the logic.</summary>
-        </member>
-        <member name="P:WarpWorld.CrowdControl.CCEffectInstance.user">
-            <summary>
-            The Twitch user who triggered the effect.
-            <para>This is set to the special <see cref="P:WarpWorld.CrowdControl.CrowdControl.crowdUser"/> value for pooled effects.</para>
-            <para>For local test effect instances, this is set to the special <see cref="P:WarpWorld.CrowdControl.CrowdControl.testUser"/> value.</para>
-            </summary>
-        </member>
-        <member name="P:WarpWorld.CrowdControl.CCEffectInstance.id">
-            <summary>
-            Unique identifier of this instance, shared with the server. ID value are never reused.
-            <para>If the effect is tested locally, this ID will be negative.</para>
-            </summary>
-        </member>
-        <member name="P:WarpWorld.CrowdControl.CCEffectInstance.retryCount">
-            <summary>
-            How many times has the effect returned <see cref="F:WarpWorld.CrowdControl.EffectResult.Retry"/> when trying to start the instance.
-            <para>If the associated <see cref="F:WarpWorld.CrowdControl.CCEffectBase.maxRetries"/> is reached, the instance is automatically
-            terminated as if starting it returned <see cref="F:WarpWorld.CrowdControl.EffectResult.Failure"/>.</para>
-            </summary>
-        </member>
-        <member name="P:WarpWorld.CrowdControl.CCEffectInstance.unscaledStartTime">
-            <summary>Unscaled game time when the effect was triggered.</summary>
-        </member>
-        <member name="F:WarpWorld.CrowdControl.CCEffectInstance.isTest">
-            <summary>When <see langword="true"/>, the effect executes locally without talking to the server.</summary>
-        </member>
-        <member name="P:WarpWorld.CrowdControl.CCEffectInstance.parameters">
-            <summary>The parameters sent into the effect. Eg: Item Type, Quantity</summary>
-        </member>
-        <member name="P:WarpWorld.CrowdControl.CCEffectInstance.effectID">
-            <summary>The id for the effect that's being used</summary>
-        </member>
         <member name="T:WarpWorld.CrowdControl.EffectResult">
             <summary>Result of trying to trigger an effect. Determines the reply sent back to the server.</summary>
         </member>
@@ -306,61 +361,6 @@
             Calls ConfigureAwait(false) on a task and logs any errors.
             </summary>
             <param name="task">The task to forget.</param>
-        </member>
-        <member name="T:WarpWorld.CrowdControl.SocketStream">
-            <summary>Handles sending and receiving byte streams from the server.</summary>
-        </member>
-        <member name="T:WarpWorld.CrowdControl.CCEffectTimed">
-            <summary> A Crowd Control effect active for a given duration of time. </summary>
-        </member>
-        <member name="T:WarpWorld.CrowdControl.CCEffectTimed.DisplayType">
-            <summary>Options of how this timer displays time left. </summary>
-        </member>
-        <member name="P:WarpWorld.CrowdControl.CCEffectTimed.paused">
-            <summary>Is the timer paused?</summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnEnable">
-            <summary>Ran when the effect is enabled. Can be overridden by a derived class.</summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnDisable">
-            <summary>Ran when the effect is disabled. Can be overridden by a derived class.</summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnTriggerEffect(WarpWorld.CrowdControl.CCEffectInstance)">
-            <summary> Handles starting the timed effect. Override <see cref="!:OnStartEffect(EffectInstance)"/> instead. </summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnStartEffect(WarpWorld.CrowdControl.CCEffectInstanceTimed)">
-            <summary> Invoked when an effect instance is scheduled to start. The effect should only be applied when <see cref="F:WarpWorld.CrowdControl.EffectResult.Success"/> is returned. </summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnStopEffect(WarpWorld.CrowdControl.CCEffectInstanceTimed,System.Boolean)">
-            <summary>
-            Invoked when an effect instance is scheduled to stop after its time is expired. Return false
-            if the effect cannot be stopped at the current time to retry in <see cref="F:WarpWorld.CrowdControl.CCEffectBase.retryDelay"/>
-            seconds.
-            </summary>
-            <param name="effectInstance">The target instance.</param>
-            <param name="force">Set to true when called from <see cref="M:WarpWorld.CrowdControl.CrowdControl.StopAllEffects"/>,
-            in which case failure to stop the effect is ignored.</param>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnPauseEffect">
-            <summary> Invoked when an effect instance is paused. </summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnResumeEffect">
-            <summary> Invoked when an effect instance is resumed. </summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.OnResetEffect">
-            <summary> Invoked when an effect instance is reset. </summary>
-        </member>
-        <member name="F:WarpWorld.CrowdControl.CCEffectTimed.displayType">
-            <summary> Whether the timer displays text or a fill graphic. </summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.Pause(WarpWorld.CrowdControl.CCEffectInstance)">
-            <summary> Invoked when the behaviour is paused. </summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.Resume(WarpWorld.CrowdControl.CCEffectInstance)">
-            <summary> Invoked when the behaviour is resumed. </summary>
-        </member>
-        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.Reset(WarpWorld.CrowdControl.CCEffectInstance)">
-            <summary> Invoked when the behaviour is Reset. </summary>
         </member>
         <member name="T:WarpWorld.CrowdControl.TwitchUser">
             <summary>

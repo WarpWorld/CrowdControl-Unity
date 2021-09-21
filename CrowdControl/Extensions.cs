@@ -4,6 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
+#if !(NET35 || NET40)
+using System.Runtime.CompilerServices;
+#endif
+
 namespace System
 {
     internal static class ArrayEx
@@ -40,18 +44,44 @@ namespace WarpWorld.CrowdControl
             return result;
         }
 
+#if (NET35 || NET40)
         public static async Task<IDisposable> UseWaitAsync(this SemaphoreSlim semaphore)
         {
             await semaphore.AvailableWaitHandle.WaitAsync();
             return new ReleaseWrapper(semaphore);
         }
 
+#else
+        public static async Task<IDisposable> UseWaitAsync(this SemaphoreSlim semaphore, CancellationToken cancelToken)
+        {
+            await semaphore.WaitAsync(cancelToken).ConfigureAwait(false);
+            return new ReleaseWrapper(semaphore);
+        }
+#endif
+
+
+#if NET35
+        public static bool HasFlag(this Enum variable, Enum value)
+        {
+            // check if from the same type.
+            if (variable.GetType() != value.GetType())
+            {
+                throw new ArgumentException("The checked flag is not from the same type as the checked variable.");
+            }
+
+            ulong num = Convert.ToUInt64(value);
+            ulong num2 = Convert.ToUInt64(variable);
+
+            return (num2 & num) == num;
+        }
+#endif
+
         /// <summary>
         /// Calls ConfigureAwait(false) on a task and logs any errors.
         /// </summary>
         /// <param name="task">The task to forget.</param>
         [DebuggerStepThrough]
-        public static async void Forget([NotNull] this Task task)
+        public static async void Forget(this Task task)
         {
             try { await task.ConfigureAwait(false); }
             catch (Exception ex) { CrowdControl.LogException(ex); }
