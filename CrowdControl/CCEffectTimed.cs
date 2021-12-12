@@ -14,7 +14,7 @@ namespace WarpWorld.CrowdControl {
         [Range(1, 600)]
         [Tooltip("Duration in seconds before the effect is automatically ended.")]
         /// <summary>Duration in seconds before the effect is automatically ended. </summary>
-        [HideInInspector] public float duration = 60;
+        public float duration = 60;
 
         /// <summary>Is the timer paused?</summary>
         public bool paused { get; internal set; }

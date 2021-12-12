@@ -7,24 +7,26 @@ namespace WarpWorld.CrowdControl.Overlay
 {
     /// <summary>Determines which parts of overlay elements to display.</summary>
     [Flags]
-    public enum DisplayFlags : byte
+    public enum DisplayFlags
     {
+        None = 0x00,
         /// <summary>Display the effect's name.</summary>
-        EffectName = 0x01,
+        EffectName = 1 << 0,
         /// <summary>Display the effect's icon.</summary>
-        EffectIcon = 0x02,
+        EffectIcon = 1 << 1,
         /// <summary>Display the user's name.</summary>
-        UserName = 0x04,
+        UserName = 1 << 2,
         /// <summary>Display the user's icon.</summary>
-        UserIcon = 0x08,
+        UserIcon = 1 << 3,
         /// <summary>Display the queue.</summary>
-        Queue = 0x10,
+        Queue = 1 << 4,
         /// <summary>Display the buff.</summary>
-        Buff = 0x20,
+        Buff = 1 << 5,
         /// <summary>Display the log.</summary>
-        Log = 0x40,
+        Log = 1 << 6,
         /// <summary>Display important messages.</summary>
-        Messages = 0x80
+        Messages = 1 << 7,
+        All = ~0
     }
 
     /// <summary>
@@ -57,9 +59,9 @@ namespace WarpWorld.CrowdControl.Overlay
 
         [Header("Configuration")]
         [Tooltip("Which parts to display on UI elements.")]
-        [SerializeField]
+        
         [Attributes.EnumFlag]
-        DisplayFlags _displayFlags =
+        public DisplayFlags _displayFlags =
             DisplayFlags.EffectName |
             DisplayFlags.EffectIcon |
             DisplayFlags.UserName |
@@ -145,10 +147,6 @@ namespace WarpWorld.CrowdControl.Overlay
             cc.OnEffectQueue += OnEffectQueue;
             cc.OnEffectDequeue += OnEffectDequeue;
             cc.OnDisplayMessage += OnDisplayMessage;
-
-            cc.OnToggleTokenView += OnToggleTokenView;
-
-            token.onSubmit = OnTokenButtonClick;
         }
 
         void LateUpdate()
@@ -186,16 +184,6 @@ namespace WarpWorld.CrowdControl.Overlay
 
             logEntries.Enqueue(logEntry);
             logPanel.Setup(log, effectInstance, _displayFlags);
-        }
-
-        void OnToggleTokenView(bool state)
-        {
-            token.gameObject.SetActive(state);
-        }
-
-        void OnTokenButtonClick(string token)
-        {
-            CrowdControl.instance.SubmitTempToken(token);
         }
 
         void OnDisplayMessage(string message, float time, Sprite sprite = null)

@@ -18,6 +18,8 @@ namespace WarpWorld.CrowdControl {
 
         [Tooltip("Unique game identifier provided by Warp World.")]
         [SerializeField] uint _gameKey;
+        [Tooltip("Whether to use the Staging Server or production server.")]
+        [SerializeField] bool _staging = false;
         [Tooltip("Don't destroy this game object when changing scenes.")]
         [SerializeField] private bool _dontDestroyOnLoad = true;
         [SerializeField] private CCEffectEntries ccEffectEntries;
@@ -63,7 +65,8 @@ namespace WarpWorld.CrowdControl {
 
         private SocketProvider _socketProvider;
         private ushort _port = 27442;
-        private string _sslAddress = "staging-gamesocket.crowdcontrol.live";
+        private string _sslAddress = "gamesocket.crowdcontrol.live";
+        private string _sslStagingAddress = "staging-gamesocket.crowdcontrol.live";
         private uint _currentEffectID = 0;
         private ulong _deviceFingerprint;
         private uint _blockID = 1;
@@ -82,6 +85,8 @@ namespace WarpWorld.CrowdControl {
         public static TwitchUser testUser { get; private set; }
         /// <summary>Reference to the crowd user object. Used to dispatch pooled effects.</summary>
         public static TwitchUser crowdUser { get; private set; }
+        /// <summary>Reference to the crowd user object. Used to dispatch effects with an unknown contributor.</summary>
+        public static TwitchUser anonymousUser { get; private set; }
         /// <summary>Reference to the streamer user object.</summary>
         public static TwitchUser streamerUser { get; private set; }
 
@@ -161,7 +166,17 @@ namespace WarpWorld.CrowdControl {
                 profileIconColor = _crowdUserColor
             };
 
+            anonymousUser = new TwitchUser
+            {
+                id = 2,
+                name = "anonymous",
+                displayName = "User",
+                profileIcon = _tempUserIcon,
+                profileIconColor = _tempUserColor
+            };
+
             twitchUsers.Add(crowdUser.name, crowdUser);
+            twitchUsers.Add(anonymousUser.name, anonymousUser);
 
             Assert.IsNull(instance);
             instance = this;
@@ -189,10 +204,12 @@ namespace WarpWorld.CrowdControl {
 
         void OnDestroy()
         {
-            Disconnect();
+            //Disconnect();
 
             if (_socketProvider != null)
             {
+                CCMessageDisconnect cCMessageDisconnect = new CCMessageDisconnect(_blockID++);
+                _socketProvider.QuickSend(cCMessageDisconnect.ByteStream);
                 _socketProvider.Dispose();
             }
 
@@ -232,7 +249,7 @@ namespace WarpWorld.CrowdControl {
                 }
                 catch (SocketException e) {
                     LogException(e);
-                    Disconnect(true);
+                    Disconnect    (true);
                 }
             }
 
@@ -367,6 +384,13 @@ namespace WarpWorld.CrowdControl {
             _socketProvider.Send(message.ByteStream);
         }
 
+        private async void DisconnectAndDisposeSocket(CCRequest message)
+        {
+            await _socketProvider.Send(message.ByteStream);
+            _socketProvider.Dispose();
+            _socketProvider = null;
+        }
+
         /// <summary>
         /// Connects to the Crowd Control server.
         /// </summary>
@@ -375,7 +399,7 @@ namespace WarpWorld.CrowdControl {
              
             _currentRetryCount = 0;
             timeToNextPing = float.MaxValue;
-            _token = PlayerPrefs.GetString($"CCToken{_gameKey}", string.Empty);
+            _token = PlayerPrefs.GetString($"CCToken{_gameKey}{_staging}", string.Empty);
 
             ConnectSocket();
         }
@@ -387,13 +411,13 @@ namespace WarpWorld.CrowdControl {
 
             _socketProvider = new SocketProvider();
             _socketProvider.OnMessageReceived += ReceivedBytes;
-            await _socketProvider.Connect(_sslAddress, _port);
+            await _socketProvider.Connect(_staging ? _sslStagingAddress : _sslAddress, _port);
 
             timeToNextPing = Time.unscaledTime + Protocol.PING_INTERVAL;
             timeToTimeout = timeToNextPing + Protocol.PING_INTERVAL;
 
             _deviceFingerprint = Utils.Randomulong();
-            CCMessageVersion cCMessageVersion = new CCMessageVersion(_blockID++, 1, _gameKey, _deviceFingerprint);
+            CCMessageVersion cCMessageVersion = new CCMessageVersion(_blockID++, Protocol.VERSION, _gameKey, _deviceFingerprint);
             Send(cCMessageVersion);
         }
 
@@ -409,14 +433,16 @@ namespace WarpWorld.CrowdControl {
                 if (!fromError)
                 {
                     CCMessageDisconnect cCMessageDisconnect = new CCMessageDisconnect(_blockID++);
-                    Send(cCMessageDisconnect);
+                    DisconnectAndDisposeSocket(cCMessageDisconnect);
                 }
-
-                _socketProvider.Close();
+                else
+                {
+                    _socketProvider.Dispose();
+                    _socketProvider = null;
+                }
 
                 timeToNextPing = float.MaxValue;
                 timeToTimeout = float.MaxValue;
-                _socketProvider = null;
                 isConnecting = false;
                 OnDisconnected?.Invoke();
             }
@@ -521,7 +547,7 @@ namespace WarpWorld.CrowdControl {
             {
                 if (string.IsNullOrEmpty(_token))
                 {
-                    OnToggleTokenView(true); // We don't have a token.
+                    OnToggleTokenView?.Invoke(true); // We don't have a token.
                     OnNoToken?.Invoke();
                     return;
                 }
@@ -544,7 +570,7 @@ namespace WarpWorld.CrowdControl {
             if (getTokenMessage.greeting != Greeting.Success)
             {
                 LogError(getTokenMessage.greeting.ToString());
-                OnToggleTokenView(true);
+                OnToggleTokenView?.Invoke(true);
                 OnNoToken?.Invoke();
                 return;
             }
@@ -552,13 +578,13 @@ namespace WarpWorld.CrowdControl {
             CCMessageTokenHandshake tokenHandshake = new CCMessageTokenHandshake(_blockID++, getTokenMessage.uniqueToken);
             Send(tokenHandshake);
 
-            PlayerPrefs.SetString($"CCToken{_gameKey}", getTokenMessage.uniqueToken.ToString());
+            PlayerPrefs.SetString($"CCToken{_gameKey}{_staging}", getTokenMessage.uniqueToken.ToString());
         }
 
         /// <summary> Submits Temporary Token to the server. </summary>
         public void SubmitTempToken(string token)
         {
-            OnToggleTokenView(false);
+            OnToggleTokenView?.Invoke(false);
             OnSubmitTempToken?.Invoke();
             CCMessageTokenAquisition getTokenMessage = new CCMessageTokenAquisition(_blockID++, token);
             Send(getTokenMessage);
@@ -571,7 +597,7 @@ namespace WarpWorld.CrowdControl {
             if (tokenHandShake.greeting != Greeting.Success)
             {
                 LogError(tokenHandShake.greeting.ToString());
-                OnToggleTokenView(true);
+                OnToggleTokenView.Invoke(true);
                 OnTempTokenFailure?.Invoke();
                 return;
             }
@@ -642,7 +668,7 @@ namespace WarpWorld.CrowdControl {
                 return;
             }
 
-            QueueEffect(effectsByID[effect.effectID], effect.sender, effect.parameters);
+            QueueEffect(effectsByID[effect.effectID], effect.viewers, effect.parameters);
         }
 
         private void ProcessMsg(PendingMessage message) {
@@ -717,34 +743,55 @@ namespace WarpWorld.CrowdControl {
 
         private void SendCCEffectLocally(CCEffectBase effect, TwitchUser twitchUser)
         {
-            QueueEffect(effect, twitchUser.displayName, effect.Params(), true);
+            QueueEffect(effect, new CCMessageEffectRequest.Viewer [] { new CCMessageEffectRequest.Viewer(twitchUser.name) }, effect.Params(), true);
         }
 
         // Allocates an effect instance and add it to the pending list.
-        private void QueueEffect(CCEffectBase effect, string twitchUsername, string parameters = null, bool test = false) {
+        private void QueueEffect(CCEffectBase effect, CCMessageEffectRequest.Viewer [] viewers, string parameters = null, bool test = false) {
             Assert.IsTrue(isActiveAndEnabled);
-            StartCoroutine(DownloadUserInfo(effect, twitchUsername, parameters, test));
+            StartCoroutine(DownloadUserInfo(effect, viewers, parameters, test));
         }
 
-        private IEnumerator DownloadUserInfo(CCEffectBase effect, string twitchUsername, string parameters = null, bool test = false)
+        private IEnumerator DownloadUserInfo(CCEffectBase effect, CCMessageEffectRequest.Viewer [] viewers, string parameters = null, bool test = false)
         {
-            if (!twitchUsers.TryGetValue(twitchUsername, out TwitchUser user))
+            TwitchUser displayUser;
+
+            if (viewers != null && viewers.Length > 0)
             {
-                // TODO user data, from server or fetched directly from twitch?
-                user = new TwitchUser();
-                user.displayName = twitchUsername;
-                user.name = twitchUsername;
-                user.profileIconUrl = "https://static-cdn.jtvnw.net/jtv_user_pictures/6cb80f90-6ac3-415f-b093-adaf7ffa1da7-profile_image-300x300.png"; // Temp
+                foreach (CCMessageEffectRequest.Viewer viewer in viewers)
+                {
+                    if (twitchUsers.ContainsKey(viewer.displayName))
+                    {
+                        continue;
+                    }
 
-                yield return StartCoroutine(DownloadPlayerSprite(user));
+                    TwitchUser user = new TwitchUser();
+                    twitchUsers.Add(viewer.displayName, user);
+                    user.displayName = viewer.displayName;
+                    user.name = viewer.displayName;
+                    user.profileIconUrl = viewer.iconURL;
+                    yield return StartCoroutine(DownloadPlayerSprite(user));
+                    twitchUsers[user.name] = user;
+                }
 
-                twitchUsers.Add(twitchUsername, user);
+                if (viewers.Length >= 2)
+                {
+                    displayUser = crowdUser;
+                }
+                else
+                {
+                    displayUser = twitchUsers[viewers[0].displayName];
+                }
+            }
+            else
+            {
+                displayUser = anonymousUser;
             }
 
             if (effect is CCEffectTimed)
-                CreateEffectInstance<CCEffectInstanceTimed>(user, effect as CCEffectTimed, parameters, test);
+                CreateEffectInstance<CCEffectInstanceTimed>(displayUser, effect as CCEffectTimed, parameters, test);
             else
-                CreateEffectInstance<CCEffectInstance>(user, effect, parameters, test);
+                CreateEffectInstance<CCEffectInstance>(displayUser, effect, parameters, test);
         }
 
         private void CreateEffectInstance<T>(TwitchUser user, CCEffectBase effect, string parameters, bool test) where T : CCEffectInstance, new()
@@ -1071,7 +1118,7 @@ namespace WarpWorld.CrowdControl {
 
         public static void Log(string content)
         {
-            if (instance._debugLog)
+            if (instance != null && instance._debugLog)
             {
                 Debug.Log(_ccPrefix + content);
             }
@@ -1079,7 +1126,7 @@ namespace WarpWorld.CrowdControl {
 
         public static void LogWarning(string content)
         {
-            if (instance._debugWarning)
+            if (instance != null && instance._debugWarning)
             {
                 Debug.LogWarning(_ccPrefix + content);
             }
@@ -1087,7 +1134,7 @@ namespace WarpWorld.CrowdControl {
 
         public static void LogError(string content)
         {
-            if (instance._debugError)
+            if (instance != null && instance._debugError)
             {
                 Debug.LogError(_ccPrefix + content);
             }
@@ -1095,7 +1142,7 @@ namespace WarpWorld.CrowdControl {
 
         public static void LogException(Exception e)
         {
-            if (instance._debugExceptions)
+            if (instance != null && instance._debugExceptions)
             {
                 Debug.LogException(e);
             }

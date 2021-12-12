@@ -215,6 +215,9 @@
         <member name="P:WarpWorld.CrowdControl.CrowdControl.crowdUser">
             <summary>Reference to the crowd user object. Used to dispatch pooled effects.</summary>
         </member>
+        <member name="P:WarpWorld.CrowdControl.CrowdControl.anonymousUser">
+            <summary>Reference to the crowd user object. Used to dispatch effects with an unknown contributor.</summary>
+        </member>
         <member name="P:WarpWorld.CrowdControl.CrowdControl.streamerUser">
             <summary>Reference to the streamer user object.</summary>
         </member>

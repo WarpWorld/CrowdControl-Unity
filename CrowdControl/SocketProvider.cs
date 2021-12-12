@@ -26,7 +26,7 @@ namespace WarpWorld.CrowdControl
         public event Action OnDisconnected;
         public event Action OnConnected;
 
-        public bool Connected => _socket?.Connected ?? false;
+        public bool Connected => _socket != null && _socket.Connected;
 
         ~SocketProvider() => Dispose(true);
 
@@ -99,7 +99,8 @@ namespace WarpWorld.CrowdControl
                 }
                 catch (Exception e)
                 {
-                    OnError?.Invoke(e, e.Message);
+                    try { OnError?.Invoke(e, e.Message); }
+                    catch (Exception ex) { CrowdControl.LogException(ex); }
                     CloseImpl();
                 }
             }
@@ -114,7 +115,7 @@ namespace WarpWorld.CrowdControl
         {
             using (await _ws_lock.UseWaitAsync())
             {
-                if (Connected) { await Close(); }
+                if (Connected) { CloseImpl(); }
                 _socket = new TcpClient();
                 _is_secure = secure;
 
@@ -125,7 +126,6 @@ namespace WarpWorld.CrowdControl
 #else
                     await _socket.ConnectAsync(host, port);
 #endif
-
                     if (secure)
                     {
                         SslStream s;
@@ -175,6 +175,33 @@ namespace WarpWorld.CrowdControl
             }
         }
 
+        public bool QuickSend(byte[] message)
+        {
+            if (message[0] == 0 && message[1] == 0)
+            {
+                CrowdControl.LogError("CANNOT SEND STREAM OF SIZE 0!");
+                return false;
+            }
+
+            if (!Connected) { return false; }
+            try
+            {
+
+#if (NET35 || NET40)
+                Task.Factory.StartNew(() => _stream.Write(message, 0, message.Length), _quitting.Token);
+#else
+                _stream.WriteAsync(message, 0, message.Length, _quitting.Token);
+#endif
+                PlayloadPrint(message, message.Length, "Sent");
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public async Task<bool> Send(byte[] message)
         {
             if (message[0] == 0 && message[1] == 0)
@@ -188,6 +215,7 @@ namespace WarpWorld.CrowdControl
                 if (!Connected) { return false; }
                 try
                 {
+
 #if (NET35 || NET40)
                     await Task.Factory.StartNew(() => _stream.Write(message, 0, message.Length), _quitting.Token);
 #else
@@ -195,9 +223,11 @@ namespace WarpWorld.CrowdControl
 #endif
                     PlayloadPrint(message, message.Length, "Sent");
                 }
-                catch {
+                catch
+                {
                     return false;
                 }
+
                 return true;
             }
         }

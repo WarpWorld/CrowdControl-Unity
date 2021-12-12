@@ -8,7 +8,7 @@ namespace WarpWorld.CrowdControl {
         // ushort size
         public const int FRAME_SIZE = 3;
 
-        public const byte VERSION = 1;
+        public const byte VERSION = 2;
 
         public const int PING_INTERVAL = 10;
 
@@ -87,6 +87,15 @@ namespace WarpWorld.CrowdControl {
         }
         public static void Read(byte[] buffer, ref int offset, out uint value) {
             value = unchecked((uint)(
+                buffer[offset + 0] << 24 |
+                buffer[offset + 1] << 16 |
+                buffer[offset + 2] << 8 |
+                buffer[offset + 3]));
+            offset += 4;
+        }
+        public static void Read(byte[] buffer, ref int offset, out int value)
+        {
+            value = unchecked((int)(
                 buffer[offset + 0] << 24 |
                 buffer[offset + 1] << 16 |
                 buffer[offset + 2] << 8 |

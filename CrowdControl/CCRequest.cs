@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace WarpWorld.CrowdControl
 {
@@ -282,19 +283,43 @@ namespace WarpWorld.CrowdControl
 
     public class CCMessageEffectRequest : CCRequest // 0x00
     {
+        public class Viewer
+        {
+            public readonly string displayName;
+            public readonly string iconURL;
+
+            public Viewer(string displayName, string avatarURL = "")
+            {
+                this.displayName = displayName;
+                this.iconURL = avatarURL;
+            }
+
+            public static implicit operator Viewer(string displayName) => new Viewer(displayName, string.Empty);
+        }
+
         public uint effectID;
-        public string sender;
+        public Viewer[] viewers;
         public string parameters;
-        public string imageURL;
+
+        public int viewerCount = 0;
 
         public CCMessageEffectRequest(byte[] buffer)
         {
             int offset = 3;
             Protocol.Read(buffer, ref offset, out blockID);
-            Protocol.Read(buffer, ref offset, out effectID);
-            Protocol.Read(buffer, ref offset, out sender);
+            Protocol.Read(buffer, ref offset, out effectID);  
+            Protocol.Read(buffer, ref offset, out viewerCount);
+
+            viewers = new Viewer[viewerCount];
+
+            for (int i = 0; i < viewerCount; i++)
+            {
+                Protocol.Read(buffer, ref offset, out string displayName);
+                Protocol.Read(buffer, ref offset, out string iconURL);
+                viewers[i] = new Viewer(displayName, iconURL);
+            }
+
             Protocol.Read(buffer, ref offset, out parameters);
-            //Protocol.Read(buffer, ref offset, out imageURL);
             Protocol.Read(buffer, ref offset, out checksum);
         }
 
