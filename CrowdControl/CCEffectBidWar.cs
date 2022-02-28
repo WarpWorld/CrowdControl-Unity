@@ -15,7 +15,7 @@ namespace WarpWorld.CrowdControl
         protected uint cost = 0;
         /// <summary>A list of tints to be applied to the icon based on if there's a new bid winner.</summary>
         [SerializeField]
-        protected List<CCEffectBidWarTint> iconTints;
+        protected List<CCEffectBidWarTint> iconTints = new List<CCEffectBidWarTint>();
 
         private Dictionary<string, Color> tintDictionary = new Dictionary<string, Color>();
 

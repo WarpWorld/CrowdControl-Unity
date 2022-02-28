@@ -82,5 +82,18 @@ namespace WarpWorld.CrowdControl {
             effectInstanceTimed.unscaledTimeLeft = duration;
             paused = false;
         }
+
+        /// <summary> Conditions to be ran. </summary>
+        protected virtual bool RunningCondition()
+        {
+            return paused;
+        }
+
+        /// <summary> Checks if the effect should be running or not, then applies the paused state based on it. </summary>
+        public bool ShouldBeRunning()
+        {
+            paused = RunningCondition();
+            return paused;
+        }
     }
 }

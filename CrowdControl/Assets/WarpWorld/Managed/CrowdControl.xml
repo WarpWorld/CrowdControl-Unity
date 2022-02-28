@@ -128,6 +128,9 @@
         <member name="P:WarpWorld.CrowdControl.CCEffectInstanceTimed.isPaused">
             <summary>Whether the effect instance is paused or not. </summary>
         </member>
+        <member name="P:WarpWorld.CrowdControl.CCEffectInstanceTimed.shouldBeRunning">
+            <summary> Checks if the effect should be running or not, then applies the paused state based on it. </summary>
+        </member>
         <member name="T:WarpWorld.CrowdControl.CCEffectParameters">
             <summary>A Crowd Control effect that handles parameters. </summary>
         </member>
@@ -197,6 +200,12 @@
         </member>
         <member name="M:WarpWorld.CrowdControl.CCEffectTimed.Reset(WarpWorld.CrowdControl.CCEffectInstance)">
             <summary> Invoked when the behaviour is Reset. </summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.RunningCondition">
+            <summary> Conditions to be ran. </summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectTimed.ShouldBeRunning">
+            <summary> Checks if the effect should be running or not, then applies the paused state based on it. </summary>
         </member>
         <member name="T:WarpWorld.CrowdControl.SocketStream">
             <summary>Handles sending and receiving byte streams from the server.</summary>

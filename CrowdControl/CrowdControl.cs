@@ -28,8 +28,6 @@ namespace WarpWorld.CrowdControl {
 
         [Space]
         
-        [Tooltip("Automatically connect to the Crowd Control server when this behaviour is enabled.")]
-        [SerializeField] private bool _connectOnEnable = true;
         [Tooltip("How many times to attempt reconnecting? (-1 for unlimited)")]
         [SerializeField] private short _reconnectRetryCount = -1;
         [Tooltip("How many seconds to wait until trying to automatically reconnect again")]
@@ -72,6 +70,7 @@ namespace WarpWorld.CrowdControl {
         private uint _blockID = 1;
         private string _token = "";
         private Assembly _gameAssembly;
+        private bool _disconnectedFromDisable = false;
 
 #pragma warning restore 0649, 1591
 
@@ -188,18 +187,20 @@ namespace WarpWorld.CrowdControl {
         }
 
         void OnEnable() {
-//#if DEBUG
-            if (_connectOnEnable)
+            if (!_disconnectedFromDisable || isConnecting)
             {
-                Connect();
+                return;
             }
-//#endif
+
+            Connect();
+            _disconnectedFromDisable = false;
         }
 
         void OnDisable() {
             StopAllCoroutines();
             StopAllEffects();
             Disconnect();
+            _disconnectedFromDisable = true;
         }
 
         void OnDestroy()
@@ -597,7 +598,7 @@ namespace WarpWorld.CrowdControl {
             if (tokenHandShake.greeting != Greeting.Success)
             {
                 LogError(tokenHandShake.greeting.ToString());
-                OnToggleTokenView.Invoke(true);
+                OnToggleTokenView?.Invoke(true);
                 OnTempTokenFailure?.Invoke();
                 return;
             }
@@ -641,7 +642,7 @@ namespace WarpWorld.CrowdControl {
         {
             yield return StartCoroutine(DownloadPlayerSprite(streamerUser));
 
-            OnDisplayMessage.Invoke(message, displayTime, streamerUser.profileIcon);
+            OnDisplayMessage?.Invoke(message, displayTime, streamerUser.profileIcon);
         }
 
         private void BlockError(byte [] bytes)
@@ -654,7 +655,7 @@ namespace WarpWorld.CrowdControl {
         {
             CCMessageUserMessage message = new CCMessageUserMessage(bytes);
 
-            OnDisplayMessage.Invoke(message.receivedMessage, 5.0f, null);
+            OnDisplayMessage?.Invoke(message.receivedMessage, 5.0f, null);
         }
 
         private void TriggerEffect(byte[] bytes)

@@ -19,5 +19,8 @@
 
         /// <summary>Whether the effect instance is paused or not. </summary>
         public bool isPaused => effect.paused;
+
+        /// <summary> Checks if the effect should be running or not, then applies the paused state based on it. </summary>
+        public bool shouldBeRunning => effect.ShouldBeRunning();
     }
 }
