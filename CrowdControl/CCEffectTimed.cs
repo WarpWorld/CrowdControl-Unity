@@ -92,8 +92,7 @@ namespace WarpWorld.CrowdControl {
         /// <summary> Checks if the effect should be running or not, then applies the paused state based on it. </summary>
         public bool ShouldBeRunning()
         {
-            paused = RunningCondition();
-            return paused;
+            return RunningCondition();
         }
     }
 }

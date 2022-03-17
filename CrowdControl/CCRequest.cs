@@ -323,40 +323,39 @@ namespace WarpWorld.CrowdControl
             Protocol.Read(buffer, ref offset, out checksum);
         }
 
-        public CCMessageEffectRequest(uint blockID, uint effectID, Protocol.EffectState status, ushort delay, string message = "")
+        public CCMessageEffectRequest(uint blockID, uint effectID, Protocol.EffectState status, ushort time, string message = "")
         {
             this.blockID = blockID;
 
-            bool hasDelay = delay > 0;
+            bool usesTime = status == Protocol.EffectState.TimedEffectBegin || status == Protocol.EffectState.ExactDelay || status == Protocol.EffectState.DelayedSuccess || status == Protocol.EffectState.EstimatedDelay;
 
-            ushort messageSize = 0x0E;
+            ushort messageSize = 0x0F;
             
-            if (delay > 0)
+            if (usesTime)
             {
-                messageSize += Convert.ToUInt16(message.Length * 2 + 4);
+                messageSize += 2;
             }
 
             InitBuffer(messageSize);
-            WriteMessageType(MessageType.EffectUpdate, ref offset);
+            WriteMessageType(MessageType.EffectRequest, ref offset);
 
             Protocol.Write(byteStream, ref offset, blockID);
             Protocol.Write(byteStream, ref offset, effectID);
             Protocol.Write(byteStream, ref offset, Convert.ToByte(status));
-            Protocol.Write(byteStream, ref offset, Convert.ToByte(hasDelay ? 1 : 0));
 
-            if (hasDelay)
+            if (usesTime)
             {
-                Protocol.Write(byteStream, ref offset, blockID);
-                Protocol.Write(byteStream, ref offset, message);
+                Protocol.Write(byteStream, ref offset, time);
             }
 
+            Protocol.Write(byteStream, ref offset, message);
             WriteChecksumByte();
         }
     }
 
     public class CCMessageEffectUpdate : CCRequest // 0x01
     {
-        public CCMessageEffectUpdate(uint blockID, uint effectID, Protocol.EffectState status, byte payload)
+        public CCMessageEffectUpdate(uint blockID, uint effectID, Protocol.EffectState status, ushort payload)
         {
             this.blockID = blockID;
             InitBuffer(Convert.ToUInt16(0x0D + (payload > 0 ? 1 : 0)));
@@ -367,7 +366,7 @@ namespace WarpWorld.CrowdControl
             Protocol.Write(byteStream, ref offset, Convert.ToByte(status));
 
             if (payload > 0)
-                Protocol.Write(byteStream, ref offset, payload);
+                Protocol.Write(byteStream, ref offset, Convert.ToByte(payload % 0x100));
 
             WriteChecksumByte();
         }

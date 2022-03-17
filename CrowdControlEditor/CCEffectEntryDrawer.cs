@@ -12,7 +12,6 @@ public class CCEffectEntryDrawer : PropertyDrawer {
 		return 20f;
 	}
 
-    
 	public override void OnGUI (Rect position, SerializedProperty property, GUIContent label) {
         
         int oldIndentLevel = EditorGUI.indentLevel;

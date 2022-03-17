@@ -34,41 +34,33 @@ namespace WarpWorld.CrowdControl {
                 };
             }
 
-            showInst = EditorGUILayout.Foldout(showInst, "Instance", boldFoldoutStyle);
+            /*showInst = EditorGUILayout.Foldout(showInst, "Instance", boldFoldoutStyle);
             if (showInst) {
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("maxRetries"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("retryDelay"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("pendingDelay"));
                 OnInstanceGUI();
-            }
+            }*/
 
-            showInfo = EditorGUILayout.Foldout(showInfo, "Information", boldFoldoutStyle);
-            if (showInfo) {
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("icon"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("iconColor"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("identifier"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("displayName"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("description"));
-                OnInformationGUI();
+            var sprite = effect.icon;
+            if (sprite != null)
+            {
+                EditorGUILayout.Space();
+                var sz = sprite.rect;
+                var rc = EditorGUILayout.GetControlRect(false, Mathf.Min(128, sz.height));
+                if (Event.current.type == EventType.Repaint)
+                {
+                    rc.width = rc.height * sz.width / sz.height;
+                    EditorStyles.textField.Draw(rc, false, false, false, false);
 
-                var sprite = effect.icon;
-                if (sprite != null) {
-                    EditorGUILayout.Space();
-                    var sz = sprite.rect;
-                    var rc = EditorGUILayout.GetControlRect(false, Mathf.Min(128, sz.height));
-                    if (Event.current.type == EventType.Repaint) {
-                        rc.width = rc.height * sz.width / sz.height;
-                        EditorStyles.textField.Draw(rc, false, false, false, false);
-
-                        var tex = renderStaticPreview.Invoke(null, new object[] {
+                    var tex = renderStaticPreview.Invoke(null, new object[] {
                             sprite, effect.iconColor, (int)sz.width, (int)sz.height
                         });
-                        EditorGUI.DrawTextureTransparent(rc, tex as Texture2D, ScaleMode.StretchToFill);
-                    }
+                    EditorGUI.DrawTextureTransparent(rc, tex as Texture2D, ScaleMode.StretchToFill);
                 }
             }
 
-            if (showInst || showInfo) serializedObject.ApplyModifiedProperties();
+            //if (showInst) serializedObject.ApplyModifiedProperties();
 
             if (!IsInformationComplete())
                 EditorGUILayout.HelpBox("Effect is incomplete.", UnityEditor.MessageType.Warning);
@@ -83,8 +75,7 @@ namespace WarpWorld.CrowdControl {
         /// <summary>Returns <see langword="true"/> when the incomplete warning box should be displayed.</summary>
         protected virtual bool IsInformationComplete() => effect.icon != null &&
                 effect.identifier > 0 &&
-                !string.IsNullOrEmpty(effect.displayName) &&
-                !string.IsNullOrEmpty(effect.description);
+                !string.IsNullOrEmpty(effect.displayName);
 
         protected virtual void OnInstanceGUI() {}
         protected virtual void OnInformationGUI() {}

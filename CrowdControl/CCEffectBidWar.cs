@@ -24,6 +24,11 @@ namespace WarpWorld.CrowdControl
 
         private void Awake()
         {
+            if (CrowdControl.instance != null && CrowdControl.instance.EffectIsRegistered(this))
+            {
+                return;
+            }
+
             StartCoroutine(RegisterEffect());
 
             foreach (CCEffectBidWarTint tint in iconTints)

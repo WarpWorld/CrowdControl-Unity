@@ -38,7 +38,7 @@ namespace WarpWorld.CrowdControl.Overlay
 
         public Action<string> onSubmit;
 
-        void Start()
+        public void Init()
         {
             _viewDictionary = new Dictionary<View, TokenUIView>
             {

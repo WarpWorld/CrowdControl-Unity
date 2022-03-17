@@ -35,6 +35,9 @@
         <member name="M:WarpWorld.CrowdControl.CCEffectBase.ToggleVisible(System.Boolean)">
             <summary>Toggles whether this effect is visible in the menu during this session.</summary>
         </member>
+        <member name="M:WarpWorld.CrowdControl.CCEffectBase.CanBeRan">
+            <summary>Determines whether this effect can be ran right now or not.</summary>
+        </member>
         <member name="T:WarpWorld.CrowdControl.CCEffectBidWar">
             <summary> Base effect for bid war effects. </summary>
         </member>
@@ -291,6 +294,9 @@
             Disconnects from the Crowd Control server.
             </summary>
         </member>
+        <member name="M:WarpWorld.CrowdControl.CrowdControl.EffectIsRegistered(WarpWorld.CrowdControl.CCEffectBase)">
+            <summary> Check if the effect is registered already or not. </summary>
+        </member>
         <member name="M:WarpWorld.CrowdControl.CrowdControl.RegisterEffect(WarpWorld.CrowdControl.CCEffectBase)">
             <summary> Registers this effect during runtime. </summary>
         </member>
@@ -329,6 +335,9 @@
         </member>
         <member name="M:WarpWorld.CrowdControl.CrowdControl.Reset(WarpWorld.CrowdControl.CCEffectInstanceTimed)">
             <summary>Resets a timer command</summary>
+        </member>
+        <member name="M:WarpWorld.CrowdControl.CrowdControl.UpdateTimerEffectStatuses">
+            <summary>Checks all running timer effects to see if they should be running or not. </summary>
         </member>
         <member name="M:WarpWorld.CrowdControl.CrowdControl.HasRunningEffects">
             <summary>Returns true if at least one timed effect is currently running.</summary>

@@ -104,6 +104,7 @@ namespace WarpWorld.CrowdControl {
         private byte _recvSize;
         private byte _sendSize;
         private short _currentRetryCount;
+        private bool _duplicatedInstance = false;
 
         /// <summary>Did we start a session?</summary>
         public bool isAuthenticated { get; private set; }
@@ -155,6 +156,13 @@ namespace WarpWorld.CrowdControl {
         #region Unity Component Life Cycle
 
         void Awake() {
+            if (instance != null)
+            {
+                _duplicatedInstance = true;
+                Destroy(gameObject);
+                return;
+            }
+
             if (_dontDestroyOnLoad) DontDestroyOnLoad(gameObject);
 
             crowdUser = new TwitchUser {
@@ -197,6 +205,11 @@ namespace WarpWorld.CrowdControl {
         }
 
         void OnDisable() {
+            if (_duplicatedInstance)
+            {
+                return;
+            }
+
             StopAllCoroutines();
             StopAllEffects();
             Disconnect();
@@ -205,6 +218,11 @@ namespace WarpWorld.CrowdControl {
 
         void OnDestroy()
         {
+            if (_duplicatedInstance)
+            {
+                return;
+            }
+
             //Disconnect();
 
             if (_socketProvider != null)
@@ -454,7 +472,7 @@ namespace WarpWorld.CrowdControl {
             isAuthenticated = false;
         }
 
-        private void UpdateEffect(uint effectID, Protocol.EffectState effectState, uint callbackID = 0, byte payload = 0)
+        public void UpdateEffect(uint effectID, Protocol.EffectState effectState, uint callbackID = 0, ushort payload = 0)
         {
             if (effectState == Protocol.EffectState.AvailableForOrder || effectState == Protocol.EffectState.UnavailableForOrder ||
                 effectState == Protocol.EffectState.VisibleOnMenu || effectState == Protocol.EffectState.HiddenOnMenu)
@@ -468,7 +486,7 @@ namespace WarpWorld.CrowdControl {
             Send(messageEffectRequest);
         }
 
-        private void UpdateEffect(CCEffectInstance instance, Protocol.EffectState effectState, byte payload = 0)
+        private void UpdateEffect(CCEffectInstance instance, Protocol.EffectState effectState, ushort payload = 0)
         {
             if (instance.isTest)
                 return;
@@ -504,13 +522,19 @@ namespace WarpWorld.CrowdControl {
 
         private void SetTimedEffectState(CCEffectInstanceTimed instance, bool begin)
         {
-            UpdateEffect(instance, begin ? Protocol.EffectState.TimedEffectBegin : Protocol.EffectState.TimedEffectEnd);
+            UpdateEffect(instance, begin ? Protocol.EffectState.TimedEffectBegin : Protocol.EffectState.TimedEffectEnd, Convert.ToUInt16(instance.effect.duration));
+        }
+
+        /// <summary> Check if the effect is registered already or not. </summary>
+        public bool EffectIsRegistered(CCEffectBase effectBase)
+        {
+            return effectsByID.ContainsKey(effectBase.identifier);
         }
 
         /// <summary> Registers this effect during runtime. </summary>
         public void RegisterEffect(CCEffectBase effectBase)
         {
-            if (effectsByID.ContainsKey(effectBase.identifier))
+            if (EffectIsRegistered(effectBase))
             {
                 LogError("Effect ID " + effectBase.identifier + " is already registered!");
                 return;
@@ -669,7 +693,7 @@ namespace WarpWorld.CrowdControl {
                 return;
             }
 
-            QueueEffect(effectsByID[effect.effectID], effect.viewers, effect.parameters);
+            QueueEffect(effectsByID[effect.effectID], effect.viewers, effect.blockID, effect.parameters);
         }
 
         private void ProcessMsg(PendingMessage message) {
@@ -728,14 +752,6 @@ namespace WarpWorld.CrowdControl {
             if (effectsByID.ContainsKey(effect.identifier))
             {
                 SendCCEffectLocally(effect, testUser);
-
-                /*TriggerEffect(new byte[] { 0, 0, 0,
-                0, 0, 0, 3,
-                0, 0, 0, 5,
-                0x00, 0x41, 0x00, 0x42, 0x00, 0x43, 0x00, 0x44, 0x00, 0x00,
-                0x00, 0x51, 0x00, 0x51, 0x00, 0x51, 0x00, 0x2C,
-                0x00, 0x32, 0x00, 0x30, 0x00, 0x30, 0x00, 0x00, 0xB8
-});*/
                 yield break;
             }
 
@@ -744,16 +760,16 @@ namespace WarpWorld.CrowdControl {
 
         private void SendCCEffectLocally(CCEffectBase effect, TwitchUser twitchUser)
         {
-            QueueEffect(effect, new CCMessageEffectRequest.Viewer [] { new CCMessageEffectRequest.Viewer(twitchUser.name) }, effect.Params(), true);
+            QueueEffect(effect, new CCMessageEffectRequest.Viewer [] { new CCMessageEffectRequest.Viewer(twitchUser.name) }, _blockID, effect.Params(), true);
         }
 
         // Allocates an effect instance and add it to the pending list.
-        private void QueueEffect(CCEffectBase effect, CCMessageEffectRequest.Viewer [] viewers, string parameters = null, bool test = false) {
+        private void QueueEffect(CCEffectBase effect, CCMessageEffectRequest.Viewer [] viewers, uint blockID, string parameters = null, bool test = false) {
             Assert.IsTrue(isActiveAndEnabled);
-            StartCoroutine(DownloadUserInfo(effect, viewers, parameters, test));
+            StartCoroutine(DownloadUserInfo(effect, viewers, blockID, parameters, test));
         }
 
-        private IEnumerator DownloadUserInfo(CCEffectBase effect, CCMessageEffectRequest.Viewer [] viewers, string parameters = null, bool test = false)
+        private IEnumerator DownloadUserInfo(CCEffectBase effect, CCMessageEffectRequest.Viewer [] viewers, uint blockID, string parameters = null, bool test = false)
         {
             TwitchUser displayUser;
 
@@ -790,16 +806,18 @@ namespace WarpWorld.CrowdControl {
             }
 
             if (effect is CCEffectTimed)
-                CreateEffectInstance<CCEffectInstanceTimed>(displayUser, effect as CCEffectTimed, parameters, test);
+                CreateEffectInstance<CCEffectInstanceTimed>(displayUser, effect as CCEffectTimed, blockID, parameters, test);
             else
-                CreateEffectInstance<CCEffectInstance>(displayUser, effect, parameters, test);
+                CreateEffectInstance<CCEffectInstance>(displayUser, effect, blockID, parameters, test);
         }
 
-        private void CreateEffectInstance<T>(TwitchUser user, CCEffectBase effect, string parameters, bool test) where T : CCEffectInstance, new()
+        private void CreateEffectInstance<T>(TwitchUser user, CCEffectBase effect, uint blockID, string parameters, bool test) where T : CCEffectInstance, new()
         {
             T effectInstance = new T();
 
-            effectInstance.id = _currentEffectID++;
+            _blockID = blockID++;
+
+            effectInstance.id = blockID;
             effectInstance.user = user; 
             effectInstance.effect = effect;
             effectInstance.retryCount = 0;
@@ -876,6 +894,13 @@ namespace WarpWorld.CrowdControl {
             OnEffectQueue?.Invoke(effectInstance);
         }
 
+        private IEnumerator StartTimedEffect(CCEffectInstance effectInstance)
+        {
+            EffectSuccess(effectInstance);
+            yield return new WaitForSeconds(0.1f);
+            SetTimedEffectState(effectInstance as CCEffectInstanceTimed, true);
+        }
+
         // Process an effect instance in the pending list.
         private bool StartEffect(CCEffectInstance effectInstance) {
             EffectResult result;
@@ -897,7 +922,15 @@ namespace WarpWorld.CrowdControl {
                 }
             }
 
-            result = effect.OnTriggerEffect(effectInstance);
+            if (effect.CanBeRan())
+            {
+                result = effect.OnTriggerEffect(effectInstance);
+            }
+            else
+            {
+                result = EffectResult.Retry;
+            }
+
             Assert.AreEqual(effectInstance.effect, effect);
 
             switch (result) {
@@ -926,8 +959,7 @@ namespace WarpWorld.CrowdControl {
                     runningEffects.Add(effectInstance.effectID, timedEffectInstance);
                     OnEffectDequeue?.Invoke(effectInstance, EffectResult.Success);
                     OnEffectStart?.Invoke(timedEffectInstance);
-                    EffectSuccess(effectInstance);
-                    SetTimedEffectState(effectInstance as CCEffectInstanceTimed, true);
+                    StartCoroutine(StartTimedEffect(effectInstance));
                     break;
 
                 // Moved from the pending list to the behaviour's internal queue.
@@ -945,6 +977,7 @@ namespace WarpWorld.CrowdControl {
             effectInstance.retryCount++;
             if (effectInstance.retryCount > effect.maxRetries) {
                 result = EffectResult.Failure;
+                CancelEffect(effectInstance);
             }
             else {
                 effectInstance.unscaledStartTime = effect.retryDelay + Time.unscaledTime;
@@ -960,6 +993,18 @@ namespace WarpWorld.CrowdControl {
             return dequeue;
         }
 
+        private IEnumerator ResetTimedEffect(CCEffectInstanceTimed effectInstance, uint newID)
+        {
+            ResetEffect(effectInstance.effect);
+
+            SetTimedEffectState(effectInstance, false);
+            yield return new WaitForSeconds(0.1f);
+            effectInstance.id = newID;
+            UpdateEffect(effectInstance, Protocol.EffectState.Success);
+            yield return new WaitForSeconds(0.1f);
+            SetTimedEffectState(effectInstance, true);
+        }
+
         // Process an effect instance in the running list.
         private bool StopEffect(CCEffectInstanceTimed effectInstance, bool removeFromList, bool force = false)
         {
@@ -972,7 +1017,10 @@ namespace WarpWorld.CrowdControl {
                 effectInstance.unscaledTimeLeft = effectInstance.effect.retryDelay;
 
                 if (removeFromList)
+                {
+                    SetTimedEffectState(effectInstance, false);
                     effectInstance.effect.OnStopEffect(effectInstance, false);
+                }
 
                 return false;
             }
@@ -984,8 +1032,8 @@ namespace WarpWorld.CrowdControl {
                 if (haltedTimers.ContainsKey(id) && haltedTimers[id].Count > 0)
                 {
                     OnEffectDequeue?.Invoke(effectInstance, EffectResult.Success);
-                    ResetEffect(effectInstance.effect);
-                    effectInstance.id = haltedTimers[id].Dequeue();
+                    StartCoroutine(ResetTimedEffect(effectInstance, haltedTimers[id].Dequeue()));
+                    
                     return false;
                 }
             }
@@ -1070,6 +1118,27 @@ namespace WarpWorld.CrowdControl {
             effectInstance.effect.Reset(effectInstance);
             effectInstance.effect.OnResetEffect();
             instance.OnEffectReset?.Invoke(effectInstance);
+        }
+
+        /// <summary>Checks all running timer effects to see if they should be running or not. </summary>
+        public static void UpdateTimerEffectStatuses()
+        {
+            if (instance == null || instance.runningEffects == null)
+            {
+                return;
+            }
+
+            foreach (CCEffectInstanceTimed timedEffect in instance.runningEffects.Values)
+            {
+                if (timedEffect.effect.ShouldBeRunning())
+                {
+                    Resume(timedEffect);
+                }
+                else
+                {
+                    Pause(timedEffect);
+                }
+            }
         }
 
         // Runs the action on every running effect instance matching the given effect behaviour.

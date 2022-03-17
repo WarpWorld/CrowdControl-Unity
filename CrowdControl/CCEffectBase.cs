@@ -61,6 +61,11 @@ namespace WarpWorld.CrowdControl
         // Register the effect
         private void Awake() 
         {
+            if (CrowdControl.instance != null && CrowdControl.instance.EffectIsRegistered(this))
+            {
+                return;
+            }
+
             StartCoroutine(RegisterEffect());
         }
 
@@ -94,6 +99,12 @@ namespace WarpWorld.CrowdControl
         public void ToggleVisible(bool visible)
         {
             CrowdControl.instance.ToggleEffectVisible(identifier, visible);
+        }
+
+        /// <summary>Determines whether this effect can be ran right now or not.</summary>
+        public virtual bool CanBeRan()
+        {
+            return true;
         }
     }
 }

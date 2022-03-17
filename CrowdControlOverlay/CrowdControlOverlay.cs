@@ -9,7 +9,6 @@ namespace WarpWorld.CrowdControl.Overlay
     [Flags]
     public enum DisplayFlags
     {
-        None = 0x00,
         /// <summary>Display the effect's name.</summary>
         EffectName = 1 << 0,
         /// <summary>Display the effect's icon.</summary>
@@ -26,7 +25,6 @@ namespace WarpWorld.CrowdControl.Overlay
         Log = 1 << 6,
         /// <summary>Display important messages.</summary>
         Messages = 1 << 7,
-        All = ~0
     }
 
     /// <summary>
@@ -59,7 +57,8 @@ namespace WarpWorld.CrowdControl.Overlay
 
         [Header("Configuration")]
         [Tooltip("Which parts to display on UI elements.")]
-        
+
+        [SerializeField]
         [Attributes.EnumFlag]
         public DisplayFlags _displayFlags =
             DisplayFlags.EffectName |
@@ -79,6 +78,8 @@ namespace WarpWorld.CrowdControl.Overlay
 
         [Tooltip("How long to display log elements for, in unscaled seconds.")]
         [Range(1, 30)] public float logDisplayTime = 5f;
+
+        public bool duplicated = false;
 
         //[Space]
         //[Tooltip("")]
@@ -117,6 +118,11 @@ namespace WarpWorld.CrowdControl.Overlay
 
         void OnDestroy()
         {
+            if (duplicated)
+            {
+                return;
+            }
+
             Assert.IsNotNull(instance);
             instance = null;
             logEntries = null;
@@ -124,6 +130,12 @@ namespace WarpWorld.CrowdControl.Overlay
 
         void Awake()
         {
+            if (instance != null)
+            {
+                duplicated = true;
+                return;
+            }
+
             Assert.IsNull(instance);
             instance = this;
             logEntries = new Queue<LogEntry>();
@@ -147,6 +159,8 @@ namespace WarpWorld.CrowdControl.Overlay
             cc.OnEffectQueue += OnEffectQueue;
             cc.OnEffectDequeue += OnEffectDequeue;
             cc.OnDisplayMessage += OnDisplayMessage;
+
+            token.Init();
         }
 
         void LateUpdate()
