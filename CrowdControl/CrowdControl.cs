@@ -132,7 +132,7 @@ namespace WarpWorld.CrowdControl {
         /// <summary>Invoked when an effect leaves the scheduling queue.</summary>
         public event Action<CCEffectInstance, EffectResult> OnEffectDequeue;
         /// <summary>Invoked when an important message needs to be displayed.</summary>
-        public event Action<string, float, Sprite> OnDisplayMessage;
+        public event Action<string> OnDisplayMessage;
         public event Action<bool> OnToggleTokenView;
         public event Action OnNoToken;
         public event Action OnSubmitTempToken;
@@ -666,7 +666,7 @@ namespace WarpWorld.CrowdControl {
         {
             yield return StartCoroutine(DownloadPlayerSprite(streamerUser));
 
-            OnDisplayMessage?.Invoke(message, displayTime, streamerUser.profileIcon);
+            //OnDisplayMessage?.Invoke(message, displayTime, streamerUser.profileIcon);
         }
 
         private void BlockError(byte [] bytes)
@@ -679,7 +679,7 @@ namespace WarpWorld.CrowdControl {
         {
             CCMessageUserMessage message = new CCMessageUserMessage(bytes);
 
-            OnDisplayMessage?.Invoke(message.receivedMessage, 5.0f, null);
+            //OnDisplayMessage?.Invoke(message.receivedMessage, 5.0f, null);
         }
 
         private void TriggerEffect(byte[] bytes)
@@ -769,7 +769,7 @@ namespace WarpWorld.CrowdControl {
             StartCoroutine(DownloadUserInfo(effect, viewers, blockID, parameters, test));
         }
 
-        private IEnumerator DownloadUserInfo(CCEffectBase effect, CCMessageEffectRequest.Viewer [] viewers, uint blockID, string parameters = null, bool test = false)
+        private IEnumerator DownloadUserInfo(CCEffectBase effect, CCMessageEffectRequest.Viewer [] viewers, uint receivedBlockID, string parameters = null, bool test = false)
         {
             TwitchUser displayUser;
 
@@ -806,18 +806,16 @@ namespace WarpWorld.CrowdControl {
             }
 
             if (effect is CCEffectTimed)
-                CreateEffectInstance<CCEffectInstanceTimed>(displayUser, effect as CCEffectTimed, blockID, parameters, test);
+                CreateEffectInstance<CCEffectInstanceTimed>(displayUser, effect as CCEffectTimed, receivedBlockID, parameters, test);
             else
-                CreateEffectInstance<CCEffectInstance>(displayUser, effect, blockID, parameters, test);
+                CreateEffectInstance<CCEffectInstance>(displayUser, effect, receivedBlockID, parameters, test);
         }
 
         private void CreateEffectInstance<T>(TwitchUser user, CCEffectBase effect, uint blockID, string parameters, bool test) where T : CCEffectInstance, new()
         {
             T effectInstance = new T();
 
-            _blockID = blockID++;
-
-            effectInstance.id = blockID;
+            effectInstance.id = blockID++;
             effectInstance.user = user; 
             effectInstance.effect = effect;
             effectInstance.retryCount = 0;
