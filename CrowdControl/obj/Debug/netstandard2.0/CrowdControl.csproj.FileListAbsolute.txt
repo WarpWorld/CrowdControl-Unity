@@ -1,0 +1,13 @@
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\bin\Debug\netstandard2.0\CrowdControl.deps.json
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\bin\Debug\netstandard2.0\CrowdControl.dll
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\bin\Debug\netstandard2.0\CrowdControl.pdb
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.csprojAssemblyReference.cache
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.csproj.CoreCompileInputs.cache
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.dll
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.pdb
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_Standard\Assets\WarpWorld\Managed\CrowdControl.dll
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_Standard\Assets\WarpWorld\Managed\CrowdControl.pdb
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_Standard\Assets\WarpWorld\Managed\netstandard2.0\CrowdControl.deps.json
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_Standard\Assets\WarpWorld\Managed\netstandard2.0\CrowdControl.dll
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_Standard\Assets\WarpWorld\Managed\netstandard2.0\CrowdControl.pdb
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\bin\Debug\netstandard2.0\Newtonsoft.Json.dll

@@ -1,99 +1,56 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6323B8B0-B190-475E-82E4-B8CDF10022E1}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-	
-    <RootNamespace>WarpWorld.CrowdControl.Overlay</RootNamespace>
-    <AssemblyName>CrowdControlOverlay</AssemblyName>
-    <TargetFrameworks>net35;net40;net45;netstandard2.0</TargetFrameworks>
-	
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-	
+    <TargetFrameworks>net35;net45;netstandard2.0</TargetFrameworks>
 	<DefineConstants Condition="'$(TargetFramework)' == 'net35'">NET35</DefineConstants>
-	<DefineConstants Condition="'$(TargetFramework)' == 'net40'">NET40</DefineConstants>
 	<DefineConstants Condition="'$(TargetFramework)' == 'net45'">NET45</DefineConstants>
-	<DefineConstants Condition="'$(TargetFramework)' == 'net5.0'">NET50</DefineConstants>
-	
-	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	<DefineConstants Condition="'$(TargetFramework)' == 'netstandard2.0'">NETSTANDARD20</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\CrowdControlOverlay.xml</DocumentationFile>
-    <Prefer32Bit>false</Prefer32Bit>
-	
-	<DefineConstants Condition="'$(TargetFramework)' == 'net35'">NET35</DefineConstants>
-	<DefineConstants Condition="'$(TargetFramework)' == 'net40'">NET40</DefineConstants>
-	<DefineConstants Condition="'$(TargetFramework)' == 'net45'">NET45</DefineConstants>
-	<DefineConstants Condition="'$(TargetFramework)' == 'net5.0'">NET50</DefineConstants>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net35|AnyCPU'">
+    <OutputPath>..\Unity_Net_35\Assets\WarpWorld\Managed\</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-	
-	<DefineConstants Condition="'$(TargetFramework)' == 'net35'">NET35</DefineConstants>
-	<DefineConstants Condition="'$(TargetFramework)' == 'net40'">NET40</DefineConstants>
-	<DefineConstants Condition="'$(TargetFramework)' == 'net45'">NET45</DefineConstants>
-	<DefineConstants Condition="'$(TargetFramework)' == 'net5.0'">NET50</DefineConstants>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <OutputPath>..\Unity_Net_45\Assets\WarpWorld\Managed\</OutputPath>
   </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <OutputPath>..\Unity_Net_Standard\Assets\WarpWorld\Managed\</OutputPath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net35|AnyCPU'">
+    <OutputPath>..\Unity_Net_35\Assets\WarpWorld\Managed\</OutputPath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
+    <OutputPath>..\Unity_Net_45\Assets\WarpWorld\Managed\</OutputPath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <OutputPath>..\Unity_Net_Standard\Assets\WarpWorld\Managed\</OutputPath>
+  </PropertyGroup>
+  
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="UnityEditor">
-      <HintPath>..\UnityDLLs\UnityEditor.dll</HintPath>
+    <Reference Include="CrowdControl" Condition="'$(TargetFramework)' == 'net35'">
+      <HintPath>..\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControl.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+	<Reference Include="CrowdControl" Condition="'$(TargetFramework)' == 'net45'">
+      <HintPath>..\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControl.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+	<Reference Include="CrowdControl" Condition="'$(TargetFramework)' == 'netstandard2.0'">
+      <HintPath>..\Unity_Net_Standard\Assets\WarpWorld\Managed\netstandard2.0\CrowdControl.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\UnityDLLs\UnityEngine.dll</HintPath>
+      <HintPath>..\include\UnityEngine.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\UnityDLLs\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\include\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
-  
-  <ItemGroup Condition="'$(TargetFramework)' == 'net35'">
-	<Reference Include="CrowdControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-		<HintPath>..\CrowdControl\obj\Debug\net35\CrowdControl.dll</HintPath>
-	</Reference>
-  </ItemGroup>
-  
-  <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
-	<Reference Include="CrowdControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-		<HintPath>..\CrowdControl\obj\Debug\net40\CrowdControl.dll</HintPath>
-	</Reference>
-  </ItemGroup>
-  
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-	<Reference Include="CrowdControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-		<HintPath>..\CrowdControl\obj\Debug\net45\CrowdControl.dll</HintPath>
-	</Reference>
-  </ItemGroup>
-  
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-	<Reference Include="CrowdControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-		<HintPath>..\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.dll</HintPath>
-	</Reference>
-  </ItemGroup>
-  
-  <Import Condition="'$(TargetFramework)' != 'net35'" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  
-  <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(TargetDir)CrowdControlOverlay.*" "$(SolutionDir)Assets\WarpWorld\Managed\"</PostBuildEvent>
-  </PropertyGroup>
 </Project>

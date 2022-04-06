@@ -122,7 +122,7 @@ namespace WarpWorld.CrowdControl.Overlay
             {
                 return;
             }
-
+            
             Assert.IsNotNull(instance);
             instance = null;
             logEntries = null;
@@ -144,7 +144,7 @@ namespace WarpWorld.CrowdControl.Overlay
         void Start()
         {
             var cc = CrowdControl.instance;
-            if (!cc) return;
+            if (!cc) return; 
 
             log.gameObject.SetActive(false);
             cc.OnEffectTrigger += OnEffectTrigger;

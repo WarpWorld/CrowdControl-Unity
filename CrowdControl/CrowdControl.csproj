@@ -1,99 +1,65 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-	<TargetFrameworks>net35;net40;net45;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net35;net45;netstandard2.0</TargetFrameworks>
+	<DefineConstants Condition="'$(TargetFramework)' == 'net35'">NET35</DefineConstants>
+	<DefineConstants Condition="'$(TargetFramework)' == 'net45'">NET45</DefineConstants>
+	<DefineConstants Condition="'$(TargetFramework)' == 'netstandard2.0'">NETSTANDARD20</DefineConstants>
+	
 	<RootNamespace>WarpWorld.CrowdControl</RootNamespace>
     <AssemblyName>CrowdControl</AssemblyName>
-	
-	<FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B4B78925-F5C2-4238-B59E-3CA510BACD58}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-	
-	<DefineConstants Condition="'$(TargetFramework)' == 'net35'">NET35</DefineConstants>
-	<DefineConstants Condition="'$(TargetFramework)' == 'net45'">NET45</DefineConstants>
-	
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\CrowdControl.xml</DocumentationFile>
-    <LangVersion>7.1</LangVersion>
-    <Prefer32Bit>false</Prefer32Bit>
-	
-	<DefineConstants Condition="'$(TargetFramework)' == 'net35'">NET35</DefineConstants>
-	<DefineConstants Condition="'$(TargetFramework)' == 'net45'">NET45</DefineConstants>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-	
-	<DefineConstants Condition="'$(TargetFramework)' == 'net35'">NET35</DefineConstants>
-	<DefineConstants Condition="'$(TargetFramework)' == 'net45'">NET45</DefineConstants>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <Compile Remove="Client.Slim\**" />
-    <EmbeddedResource Remove="Client.Slim\**" />
-    <None Remove="Client.Slim\**" />
-	<None Remove="newcsproj.txt" />
-    <None Remove="oldcsproj.txt" />
-    <None Remove="oldcsprojtrim.txt" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Reference Include="UnityEditor">
-      <HintPath>..\UnityDLLs\UnityEditor.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\UnityDLLs\UnityEngine.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="UnityScript" />
-    <Reference Include="UnityScript.Lang" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json" Condition="'$(TargetFramework)' == 'net35'">
+      <HintPath>..\include\Newtonsoft\net35\Newtonsoft.Json.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+	
+	<Reference Include="Newtonsoft.Json" Condition="'$(TargetFramework)' == 'net45'">
+      <HintPath>..\include\Newtonsoft\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+	
+	<Reference Include="Newtonsoft.Json" Condition="'$(TargetFramework)' == 'netstandard2.0'">
+      <HintPath>..\include\Newtonsoft\netstandard2.0\Newtonsoft.Json.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+	
+    <Reference Include="UnityEngine">
+      <HintPath>..\include\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net35|AnyCPU'">
+    <OutputPath>..\Unity_Net_35\Assets\WarpWorld\Managed\</OutputPath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <OutputPath>..\Unity_Net_45\Assets\WarpWorld\Managed\</OutputPath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <OutputPath>..\Unity_Net_Standard\Assets\WarpWorld\Managed\</OutputPath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net35|AnyCPU'">
+    <OutputPath>..\Unity_Net_35\Assets\WarpWorld\Managed\</OutputPath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
+    <OutputPath>..\Unity_Net_45\Assets\WarpWorld\Managed\</OutputPath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <OutputPath>..\Unity_Net_Standard\Assets\WarpWorld\Managed\</OutputPath>
+  </PropertyGroup>
+  
   <ItemGroup Condition="'$(TargetFramework)' == 'net35'">
     <PackageReference Include="TaskParallelLibrary" Version="1.0.2856" />
     <PackageReference Include="AsyncBridge" Version="0.3.1" />
 	<PackageReference Include="ValueTupleBridge" Version="0.1.5" />
   </ItemGroup>
-  
-  <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
-    <PackageReference Include="AsyncBridge" Version="0.3.1" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  
-  <Import Condition="'$(TargetFramework)' != 'net35'" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(TargetDir)CrowdControl.*" "$(SolutionDir)Assets\WarpWorld\Managed\"</PostBuildEvent>
-  </PropertyGroup>
 </Project>

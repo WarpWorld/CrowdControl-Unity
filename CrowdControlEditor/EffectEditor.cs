@@ -1,74 +1,137 @@
 ﻿using UnityEditor;
 using UnityEngine;
-using System.Reflection;
+using System.Collections.Generic;
 
-#pragma warning disable 1591
 namespace WarpWorld.CrowdControl {
     [CustomEditor(typeof(CCEffectBase), true)]
-    public class EffectEditor : Editor {
-        static readonly MethodInfo renderStaticPreview;
-
-        static EffectEditor() {
-            var editorAssembly = Assembly.Load("UnityEditor");
-            renderStaticPreview = editorAssembly
-                .GetType("UnityEditor.SpriteUtility")
-                .GetMethod("RenderStaticPreview", new[] { typeof(Sprite), typeof(Color), typeof(int), typeof(int) });
-        }
-
-        protected static GUIStyle boldFoldoutStyle;
-
-        protected CCEffectBase effect => target as CCEffectBase;
-
-        bool showInst;
-        bool showInfo;
-
-        protected void OnEnable() => showInfo = !IsInformationComplete();
+    class EffectEditor : CCEditor {
+        CCEffectBase effect => target as CCEffectBase;
 
         public override void OnInspectorGUI() {
-            base.OnInspectorGUI();
+            InitCoords();
 
-            // NOTE: can't initialize this in OnEnable because EditorStyles might be created after this editor.
-            if (boldFoldoutStyle == null) {
-                boldFoldoutStyle = new GUIStyle(EditorStyles.foldout) {
-                    font = EditorStyles.boldFont
-                };
-            }
+            AddProperty(ValueType._string, "displayName", "Name", 50.0f, 250.0f);
+            AddProperty(ValueType._int, "price", "Cost", 50.0f, 50.0f);
+            NewRow();
+            AddLabel("Description", 300.0f);
+            AddSpriteWithTint("icon", "iconColor", "Icon", 125.0f, 100.0f);
+            AddDividerBar();
+            SetNextOffset(22.5f);
+            NewRow();
+            AddProperty(ValueType._string, "description", "", 0.0f, 290.0f, 100.0f);
+            NewRow();
+            AddPropertyWithSlider(ValueType._int, "maxRetries", "Max Entries", 220.0f, 210.0f, 0, 60);
+            NewRow();
+            AddPropertyWithSlider(ValueType._float, "retryDelay", "Retry Delay", 220.0f, 210.0f, 0, 10);
+            AddPropertyWithSlider(ValueType._float, "pendingDelay", "Pending Delay", 220.0f, 210.0f, 0, 10);
+            GUILayout.Space(230);
 
-            /*showInst = EditorGUILayout.Foldout(showInst, "Instance", boldFoldoutStyle);
-            if (showInst) {
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("maxRetries"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("retryDelay"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("pendingDelay"));
-                OnInstanceGUI();
-            }*/
-
-            var sprite = effect.icon;
-            if (sprite != null)
+            if (effect is CCEffectTimed)
             {
-                EditorGUILayout.Space();
-                var sz = sprite.rect;
-                var rc = EditorGUILayout.GetControlRect(false, Mathf.Min(128, sz.height));
-                if (Event.current.type == EventType.Repaint)
-                {
-                    rc.width = rc.height * sz.width / sz.height;
-                    EditorStyles.textField.Draw(rc, false, false, false, false);
-
-                    var tex = renderStaticPreview.Invoke(null, new object[] {
-                            sprite, effect.iconColor, (int)sz.width, (int)sz.height
-                        });
-                    EditorGUI.DrawTextureTransparent(rc, tex as Texture2D, ScaleMode.StretchToFill);
-                }
+                DrawTimedEffect();
+            }
+            else if (effect is CCEffectParameters)
+            {
+                DrawParamEffect();
             }
 
-            //if (showInst) serializedObject.ApplyModifiedProperties();
+            EditorGUI.BeginChangeCheck();
+            serializedObject.ApplyModifiedProperties();
+        }
 
-            if (!IsInformationComplete())
-                EditorGUILayout.HelpBox("Effect is incomplete.", UnityEditor.MessageType.Warning);
+        private void DrawParamEffect()
+        {
+            SetNextOffset(50.0f, true);
+            AddDividerBar();
+            SetNextOffset(10.0f, true);
 
-            if (Application.isPlaying) {
-                EditorGUILayout.Space();
-                GUI.enabled = effect.isActiveAndEnabled;
-                OnInvokeGUI();
+            SerializedProperty ThisList = serializedObject.FindProperty("m_parameterEntries");
+            
+            for (int i = 0; i < ThisList.arraySize; i++)
+            {
+                SerializedProperty property = ThisList.GetArrayElementAtIndex(i);
+                AddProperty(ValueType._string, property.FindPropertyRelative("m_name"), "Name", 50.0f, 200.0f);          
+                NewRow();
+                AddSpriteWithTint(property.FindPropertyRelative("m_sprite"), property.FindPropertyRelative("m_tint"), "Icon", 90.0f, 100.0f);
+                AddEnumField(property.FindPropertyRelative("m_paramKind"), "Param Type", 100.0f);
+                SetNextOffset(45.0f);
+
+                if (property.FindPropertyRelative("m_paramKind").intValue == 1) // Quantity
+                {
+                    NewRow();
+                    IncreasePosition(110.0f);
+                    AddProperty(ValueType._int, property.FindPropertyRelative("m_min"), "Min", 50.0f, 50.0f);
+                    NewRow();
+                    IncreasePosition(110.0f);
+                    AddProperty(ValueType._int, property.FindPropertyRelative("m_max"), "Min", 50.0f, 50.0f);
+                }
+
+                else
+                {
+                    SerializedProperty options = property.FindPropertyRelative("m_options");
+
+                    AddArraySizeProperty(options, 50.0f);
+                    NewRow();
+
+                    for (int j = 0; j < options.arraySize; j++)
+                    {
+                        IncreasePosition(110.0f);
+                        AddProperty(ValueType._string, options.GetArrayElementAtIndex(j), string.Empty, 0.0f, 160.0f);
+                        NewRow();
+
+                        if (j > 3)
+                        {
+                            GUILayout.Space(25);
+                        }
+                    }
+                }
+
+
+                GUILayout.Space(145);
+            }
+
+            GUILayout.Space(40);
+        }
+
+        private void DrawTimedEffect()
+        {
+            NewRow();
+            AddDividerBar();
+
+            CCEffectTimed effectTimed = effect as CCEffectTimed;
+
+            AddPropertyWithSlider(ValueType._float, "duration", "Duration", 220.0f, 210.0f, 0, 600);
+            AddEnumField("displayType", "Dispaly Type", 200.0f);
+
+            GUILayout.Space(40);
+
+            if (Application.isPlaying)
+            {
+                NewRow();
+                AddDividerBar();
+
+                bool running = CrowdControl.instance.IsRunning(effectTimed);
+                bool paused = CrowdControl.instance.IsPaused(effectTimed);
+
+                if (AddButton("Start Locally", 100.0f)) { TestEffectLocally(); }
+
+                if (running || paused) {
+                    if (AddButton("Stop", 100.0f)) { CrowdControl.instance.StopOne(effectTimed); }
+                }
+
+                if (!paused && running) {
+                    if (AddButton("Pause", 100.0f)) { CrowdControl.DisableEffect(effectTimed); }
+                }
+
+                if (paused) {
+                    if (AddButton("Resume", 100.0f)) { CrowdControl.EnableEffect(effectTimed); }
+                }
+
+                if (running) {
+                    if (AddButton("Reset", 100.0f)) { CrowdControl.ResetEffect(effectTimed); }
+                }
+
+                GUILayout.Space(40);
             }
         }
 

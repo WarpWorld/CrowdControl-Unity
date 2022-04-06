@@ -4,18 +4,19 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.Assertions;
-using System.Reflection;
 
 namespace WarpWorld.CrowdControl {
     /// <summary>
     /// The Crowd Control client instance. Handles communications with the server and triggering effects.
     /// </summary>
     [DisallowMultipleComponent]
-    [AddComponentMenu("Crowd Control/Manager")]
+    [AddComponentMenu("Crowd Control/Crowd Control Manager")]
     [RequireComponent(typeof(CCEffectEntries))]
     public sealed class CrowdControl : MonoBehaviour {
         #region Configuration
 
+        [Tooltip("Name of the game")]
+        [SerializeField] string _gameName = "Unity Demo";
         [Tooltip("Unique game identifier provided by Warp World.")]
         [SerializeField] uint _gameKey;
         [Tooltip("Whether to use the Staging Server or production server.")]
@@ -65,11 +66,9 @@ namespace WarpWorld.CrowdControl {
         private ushort _port = 27442;
         private string _sslAddress = "gamesocket.crowdcontrol.live";
         private string _sslStagingAddress = "staging-gamesocket.crowdcontrol.live";
-        private uint _currentEffectID = 0;
         private ulong _deviceFingerprint;
         private uint _blockID = 1;
         private string _token = "";
-        private Assembly _gameAssembly;
         private bool _disconnectedFromDisable = false;
 
 #pragma warning restore 0649, 1591
@@ -102,7 +101,7 @@ namespace WarpWorld.CrowdControl {
 
         private byte[] _sendBuffer;
         private byte _recvSize;
-        private byte _sendSize;
+        private ushort _sendSize;
         private short _currentRetryCount;
         private bool _duplicatedInstance = false;
 
@@ -132,7 +131,7 @@ namespace WarpWorld.CrowdControl {
         /// <summary>Invoked when an effect leaves the scheduling queue.</summary>
         public event Action<CCEffectInstance, EffectResult> OnEffectDequeue;
         /// <summary>Invoked when an important message needs to be displayed.</summary>
-        public event Action<string> OnDisplayMessage;
+        public event Action<string, float, Sprite> OnDisplayMessage;
         public event Action<bool> OnToggleTokenView;
         public event Action OnNoToken;
         public event Action OnSubmitTempToken;
@@ -187,8 +186,6 @@ namespace WarpWorld.CrowdControl {
 
             Assert.IsNull(instance);
             instance = this;
-
-            _gameAssembly = Assembly.Load("Assembly-CSharp");
 
             pendingQueue = new Queue<CCEffectInstance>();
             haltedTimers = new Dictionary<uint, Queue<uint>>();
@@ -542,6 +539,8 @@ namespace WarpWorld.CrowdControl {
 
             effectsByID.Add(effectBase.identifier, effectBase);
             Log("Registered Effect ID " + effectBase.identifier);
+
+            effectBase.RegisterParameters(ccEffectEntries);
         }
 
         /// <summary> Toggles whether an effect can currently be sold during this session. </summary>
@@ -644,6 +643,21 @@ namespace WarpWorld.CrowdControl {
             StartCoroutine(DisplayMessageWithIcon(tokenHandShake.streamerName + " started the Crowd Control Session!"));
             isAuthenticated = true;
             OnAuthenticated?.Invoke();
+
+            if (_gameKey == 92) // No Game
+            {
+                StartCoroutine(SendTestMenu(new CCJsonBlock(_gameName, effectsByID)));
+            }
+        }
+
+        private IEnumerator SendTestMenu(CCJsonBlock jsonBlock)
+        {
+            for (int i = 0; i < jsonBlock.jsonStrings.Count; i++)
+            {
+                jsonBlock.CreateByteArray(_blockID++, i);
+                Send(jsonBlock);
+                yield return new WaitForSeconds(1.0f);
+            }
         }
 
         private IEnumerator DownloadPlayerSprite(TwitchUser user)
@@ -666,7 +680,7 @@ namespace WarpWorld.CrowdControl {
         {
             yield return StartCoroutine(DownloadPlayerSprite(streamerUser));
 
-            //OnDisplayMessage?.Invoke(message, displayTime, streamerUser.profileIcon);
+            OnDisplayMessage?.Invoke(message, displayTime, streamerUser.profileIcon);
         }
 
         private void BlockError(byte [] bytes)
@@ -679,28 +693,46 @@ namespace WarpWorld.CrowdControl {
         {
             CCMessageUserMessage message = new CCMessageUserMessage(bytes);
 
-            //OnDisplayMessage?.Invoke(message.receivedMessage, 5.0f, null);
+            OnDisplayMessage?.Invoke(message.receivedMessage, 5.0f, null);
         }
 
         private void TriggerEffect(byte[] bytes)
         {
             CCMessageEffectRequest effect = new CCMessageEffectRequest(bytes);
 
+            CCEffectBase ccEffect = null;
+
             if (!effectsByID.ContainsKey(effect.effectID))
             {
-                LogError("Invalid effect identifier '{0}'.", effect.effectID);
-                UpdateEffect(effect.effectID, Protocol.EffectState.PermanentFailure);
-                return;
+                foreach (CCEffectBase baseEffect in effectsByID.Values)
+                {
+                    if (baseEffect.HasParameterID(effect.effectID))
+                    {
+                        ccEffect = baseEffect;
+                        effect.parameters = effect.effectID + ", " + effect.parameters;
+                        break;
+                    }
+                }
+
+                if (ccEffect == null)
+                {
+                    LogError("Invalid effect identifier '{0}'.", effect.effectID);
+                    return;
+                }
+            }
+            else
+            {
+                ccEffect = effectsByID[effect.effectID];
             }
 
-            QueueEffect(effectsByID[effect.effectID], effect.viewers, effect.blockID, effect.parameters);
+            QueueEffect(ccEffect, effect.viewers, effect.blockID, effect.parameters);
         }
 
         private void ProcessMsg(PendingMessage message) {
-            byte[] bytes = message._bytes;
-            MessageType messageType = (MessageType)message._msgType;
+            byte[] bytes = message.Bytes;
+            MessageType messageType = (MessageType)message.MsgType;
 
-            Log("Received message type {0} of size {1}", messageType, message._size);
+            Log("Received message type {0} of size {1}", messageType, message.Size);
 
             switch (messageType)
             {
@@ -760,7 +792,7 @@ namespace WarpWorld.CrowdControl {
 
         private void SendCCEffectLocally(CCEffectBase effect, TwitchUser twitchUser)
         {
-            QueueEffect(effect, new CCMessageEffectRequest.Viewer [] { new CCMessageEffectRequest.Viewer(twitchUser.name) }, _blockID, effect.Params(), true);
+            QueueEffect(effect, new CCMessageEffectRequest.Viewer [] { new CCMessageEffectRequest.Viewer(twitchUser.name) }, _blockID++, effect.Params(), true);
         }
 
         // Allocates an effect instance and add it to the pending list.
@@ -807,27 +839,38 @@ namespace WarpWorld.CrowdControl {
 
             if (effect is CCEffectTimed)
                 CreateEffectInstance<CCEffectInstanceTimed>(displayUser, effect as CCEffectTimed, receivedBlockID, parameters, test);
+            else if (effect is CCEffectParameters)
+                CreateEffectInstance<CCEffectInstanceParameters>(displayUser, effect as CCEffectParameters, receivedBlockID, parameters, test);
+            else if (effect is CCEffectBidWar)
+                CreateEffectInstance<CCEffectInstanceBidWar>(displayUser, effect as CCEffectBidWar, receivedBlockID, parameters, test);
             else
                 CreateEffectInstance<CCEffectInstance>(displayUser, effect, receivedBlockID, parameters, test);
+        }
+
+        public bool PlaceBid(uint id, string bidName, uint amount)
+        {
+            return bidWarLibraries[id].PlaceBid(bidName, amount);
         }
 
         private void CreateEffectInstance<T>(TwitchUser user, CCEffectBase effect, uint blockID, string parameters, bool test) where T : CCEffectInstance, new()
         {
             T effectInstance = new T();
 
-            effectInstance.id = blockID++;
+            effectInstance.id = blockID;
             effectInstance.user = user; 
             effectInstance.effect = effect;
             effectInstance.retryCount = 0;
             effectInstance.unscaledStartTime = Time.unscaledTime; // TODO add some delay?
             effectInstance.isTest = test;
 
-            if (!string.IsNullOrEmpty(parameters))
+            if (effect is CCEffectParameters)
             {
+                CCEffectParameters paramInstance = effect as CCEffectParameters;
+
                 if (parameters.Contains(","))
-                    effectInstance.parameters = parameters.Split(',');
+                    paramInstance.AssignParameters(parameters.Split(','));
                 else
-                    effectInstance.parameters = new string[] { parameters };
+                    paramInstance.AssignParameters(new string[] { parameters });
             }
 
             uint effectID = effect.identifier;
@@ -838,54 +881,37 @@ namespace WarpWorld.CrowdControl {
             {
                 if (string.IsNullOrEmpty(parameters))
                 {
-                    LogError("Received effect " + effect.displayName + " has no parameters!");
                     CancelEffect(effectInstance);
                     return;
                 }
 
-                Type paramType = _gameAssembly.GetType(effectEntry.className, true);
-
-                if (!paramType.IsSubclassOf(typeof(CCEffectParameters)))
-                {
-                    LogError("Incorrect class type assigned to Effect " + effect.displayName + " in CCEFfectEntries.");
-                }
-                else
-                {
-                    CCEffectParameters paramEffect = effect as CCEffectParameters;
-                    paramEffect.AssignParameters(effectInstance.parameters);
-                }
+                CCEffectInstanceParameters paramsInstance = effectInstance as CCEffectInstanceParameters;
+                paramsInstance.AssignParameters(parameters);
+                (effectInstance as CCEffectInstanceParameters).AssignParameters(parameters);
             }
 
             else if (effectsByID[effectID] is CCEffectBidWar)
             {
-                if (string.IsNullOrEmpty(parameters) || effectInstance.parameters.Length != 2)
+                if (string.IsNullOrEmpty(parameters))
                 {
-                    LogError("Received effect " + effect.displayName + " has an incorrect amount of parameters! A bid war must have two (Bid Name, Bid Amount)");
                     CancelEffect(effectInstance);
                     return;
                 }
 
+                string[] splitParams = parameters.Split(',');
+
+                CCEffectInstanceBidWar bidWarInstance = effectInstance as CCEffectInstanceBidWar;
+                bidWarInstance.Init(splitParams[0], Convert.ToUInt32(splitParams[1]));
+
                 if (!bidWarLibraries.ContainsKey(effectID))
                     bidWarLibraries.Add(effectID, new CCBidWarLibrary());
 
-                string bidName = effectInstance.parameters[0];
-
-                bool newWinner = bidWarLibraries[effectID].PlaceBid(bidName, Convert.ToUInt32(effectInstance.parameters[1]));
+                bool newWinner = bidWarLibraries[effectID].PlaceBid(bidWarInstance.BidName, bidWarInstance.BidAmount);
 
                 if (!newWinner)
                     return;
 
-                Type paramType = _gameAssembly.GetType(effectEntry.className, true);
-
-                if (!paramType.IsSubclassOf(typeof(CCEffectBidWar)))
-                {
-                    LogError("Incorrect class type assigned to Effect " + effect.displayName + " in CCEFfectEntries.");
-                }
-                else
-                {
-                    CCEffectBidWar bidWarEffect = effect as CCEffectBidWar;
-                    bidWarEffect.AssignTint(bidName);
-                }
+                (effect as CCEffectBidWar).AssignTint(bidWarInstance.BidName);
             }
 
             pendingQueue.Enqueue(effectInstance);
@@ -1101,7 +1127,6 @@ namespace WarpWorld.CrowdControl {
             effectInstance.effect.Pause(effectInstance);
             effectInstance.effect.OnPauseEffect();
             instance.OnEffectPause?.Invoke(effectInstance);
-
             instance.UpdateEffect(effectInstance, Protocol.EffectState.TimedPause, 0);
         }
 
@@ -1110,8 +1135,6 @@ namespace WarpWorld.CrowdControl {
             effectInstance.effect.Resume(effectInstance);
             effectInstance.effect.OnResumeEffect();
             instance.OnEffectResume?.Invoke(effectInstance);
-
-            instance.UpdateEffect(effectInstance, Protocol.EffectState.TimedResume, Convert.ToUInt16(effectInstance.unscaledTimeLeft));
         }
 
         /// <summary>Resets a timer command</summary>
@@ -1120,6 +1143,7 @@ namespace WarpWorld.CrowdControl {
             effectInstance.effect.Reset(effectInstance);
             effectInstance.effect.OnResetEffect();
             instance.OnEffectReset?.Invoke(effectInstance);
+            instance.UpdateEffect(effectInstance, Protocol.EffectState.TimedResume, Convert.ToUInt16(effectInstance.unscaledTimeLeft));
         }
 
         /// <summary>Checks all running timer effects to see if they should be running or not. </summary>
@@ -1245,7 +1269,7 @@ namespace WarpWorld.CrowdControl {
 
     #elif UNITY_WEBGL
 
-    #elif UNITY_PS5
+    #elif UNITY_PS5  
 
 #else
 #error "Unknown CrowdControl Platform"

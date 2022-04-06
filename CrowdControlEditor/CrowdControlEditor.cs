@@ -1,37 +1,55 @@
 ﻿using UnityEditor;
 using UnityEngine;
-using System.Reflection;
-using System;
 
 namespace WarpWorld.CrowdControl {
     [CustomEditor(typeof(CrowdControl))]
-    class CrowdControlEditor : Editor {
+    class CrowdControlEditor : CCEditor {
         CrowdControl cc => target as CrowdControl;
 
-        uint gameKey;
-        FieldInfo gameKeyField;
-
-        SerializedProperty effectEntries;
-
-        void OnEnable() {
-            gameKeyField = typeof(CrowdControl).GetField("_gameKey", BindingFlags.Instance | BindingFlags.NonPublic);
-            gameKey = Convert.ToUInt32(gameKeyField.GetValue(target));
-            effectEntries = serializedObject.FindProperty("ccEffectEntries");
-        }
-
         public override void OnInspectorGUI() {
-            base.OnInspectorGUI();
+            InitCoords();
 
-            EditorGUILayout.Space();
-            EditorGUI.BeginChangeCheck();
+            if (!Application.isPlaying)
+            {
+                AddProperty(ValueType._int, "_gameKey", "Game Key", 75.0f, 35.0f);
+                AddProperty(ValueType._string, "_gameName", "Game Name", 85.0f, 200.0f);
+                NewRow();
+            }
 
-            gameKey = Convert.ToUInt32(gameKeyField.GetValue(target));
+            AddPropertyWithSlider(ValueType._int, "_reconnectRetryCount", "Reconnect Retry Count", 200.0f, 35.0f, -1, 100);
+            AddPropertyWithSlider(ValueType._float, "_reconnectRetryDelay", "Reconnect Retry Delay", 200.0f, 35.0f, 0.0f, 60.0f);
+
+            NewRow();
+            AddPropertyWithSlider(ValueType._float, "delayBetweenEffects", "Delay Between Effects", 200.0f, 35.0f, 0, 10);
+            AddEnumField("_broadcasterType", "Broadcaster Type", 200.0f);
+
+            NewRow();
+            AddLabel("Icons", 100.0f, 1.2f, FontStyle.Bold);
+            NewRow();
+
+            AddSpriteWithTint("_tempUserIcon", "_tempUserColor", "Temp User Icon", 125.0f, 100.0f);
+            AddSpriteWithTint("_crowdUserIcon", "_crowdUserColor", "Crowd User Icon", 125.0f, 100.0f);
+            AddSpriteWithTint("_errorUserIcon", "_errorUserColor", "Error User Icon", 125.0f, 100.0f);
+
+            NewRow();
+            AddLabel("Debug Output", 150.0f, 1.2f, FontStyle.Bold);
+            NewRow();
+
+            AddProperty(ValueType._bool, "_debugLog", "Log", 45.0f, 50.0f);
+            AddProperty(ValueType._bool, "_debugWarning", "Warning", 110.0f, 50.0f);
+            AddProperty(ValueType._bool, "_debugError", "Error", 50.0f, 50.0f);
+            AddProperty(ValueType._bool, "_debugExceptions", "Exception", 100.0f, 50.0f);
+
+            GUILayout.Space(350);
+
+            /*gameKey = Convert.ToUInt32(gameKeyField.GetValue(target));
 
             if (gameKey == 0) 
                 EditorGUILayout.HelpBox("Missing game key. Only local test effects will be supported.", UnityEditor.MessageType.Error);
 
             EditorGUILayout.Space();
             GUI.enabled = !Application.isPlaying;
+
             if (GUILayout.Button("Generate Server Data")) GenerateServerData();
 
             if (Application.isPlaying) {
@@ -40,7 +58,10 @@ namespace WarpWorld.CrowdControl {
                 GUI.enabled = cc.HasRunningEffects();
                 if (GUILayout.Button("Stop All Effects"))
                     cc.StopAllEffects();
-            }
+            }*/
+
+            EditorGUI.BeginChangeCheck();
+            serializedObject.ApplyModifiedProperties();
         }
 
         void GenerateServerData() {

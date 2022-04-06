@@ -1,0 +1,8 @@
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Debug\net40\CrowdControlEditor.csprojAssemblyReference.cache
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Debug\net40\CrowdControlEditor.csproj.CoreCompileInputs.cache
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Debug\net40\CrowdControlEditor.AssemblyInfoInputs.cache
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Debug\net40\CrowdControlEditor.AssemblyInfo.cs
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_40\Assets\WarpWorld\Managed\net40\CrowdControlEditor.dll
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_40\Assets\WarpWorld\Managed\net40\CrowdControlEditor.pdb
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Debug\net40\CrowdControlEditor.dll
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Debug\net40\CrowdControlEditor.pdb

@@ -1,0 +1,9 @@
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\obj\Debug\net40\CrowdControl.csprojAssemblyReference.cache
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\obj\Debug\net40\CrowdControl.csproj.CoreCompileInputs.cache
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_40\Assets\WarpWorld\Managed\CrowdControl.dll
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_40\Assets\WarpWorld\Managed\CrowdControl.pdb
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\obj\Debug\net40\CrowdControl.csproj.CopyComplete
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\obj\Debug\net40\CrowdControl.dll
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\obj\Debug\net40\CrowdControl.pdb
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_40\Assets\WarpWorld\Managed\net40\CrowdControl.dll
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_40\Assets\WarpWorld\Managed\net40\CrowdControl.pdb

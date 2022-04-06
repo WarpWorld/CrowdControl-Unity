@@ -1,0 +1,17 @@
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\bin\Debug\net45\CrowdControlEditor.dll
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\bin\Debug\net45\CrowdControlEditor.pdb
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\bin\Debug\net45\CrowdControl.dll
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\bin\Debug\net45\UnityEditor.dll
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\bin\Debug\net45\UnityEngine.dll
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\bin\Debug\net45\CrowdControl.pdb
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\bin\Debug\net45\UnityEditor.xml
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\bin\Debug\net45\UnityEngine.xml
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.csprojAssemblyReference.cache
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.csproj.CoreCompileInputs.cache
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.AssemblyInfoInputs.cache
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.AssemblyInfo.cs
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.dll
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.pdb
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControlEditor.dll
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControlEditor.pdb
+C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.csproj.CopyComplete

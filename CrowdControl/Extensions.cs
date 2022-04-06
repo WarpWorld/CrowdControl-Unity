@@ -2,17 +2,11 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
-
-#if !(NET35 || NET40)
-using System.Runtime.CompilerServices;
-#endif
 
 namespace System
 {
     internal static class ArrayEx
     {
-
         // ReSharper disable once MemberHidesStaticFromOuterClass
         private static class SingletonArray<T> { public static readonly T[] Empty = new T[0]; }
         public static T[] Empty<T>() => SingletonArray<T>.Empty;

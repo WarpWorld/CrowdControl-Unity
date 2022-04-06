@@ -1,0 +1,14 @@
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\obj\Debug\net35\CrowdControl.csproj.CoreCompileInputs.cache
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\bin\Debug\net35\CrowdControl.dll
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\bin\Debug\net35\CrowdControl.pdb
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\bin\Debug\net35\AsyncBridge.dll
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\bin\Debug\net35\System.Threading.dll
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\bin\Debug\net35\ValueTupleBridge.dll
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\obj\Debug\net35\CrowdControl.csproj.CopyComplete
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\obj\Debug\net35\CrowdControl.dll
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\obj\Debug\net35\CrowdControl.pdb
+C:\Users\Adam\source\repos\CrowdControl\CrowdControl\obj\Debug\net35\CrowdControl.csprojAssemblyReference.cache
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_35\Assets\WarpWorld\Managed\CrowdControl.dll
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_35\Assets\WarpWorld\Managed\CrowdControl.pdb
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControl.dll
+C:\Users\Adam\source\repos\CrowdControl\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControl.pdb

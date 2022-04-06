@@ -13,7 +13,7 @@ public class CCEffectEntryDrawer : PropertyDrawer {
 	}
 
 	public override void OnGUI (Rect position, SerializedProperty property, GUIContent label) {
-        
+
         int oldIndentLevel = EditorGUI.indentLevel;
         float oldLabelWidth = EditorGUIUtility.labelWidth;
 
@@ -21,11 +21,6 @@ public class CCEffectEntryDrawer : PropertyDrawer {
         
         label = EditorGUI.BeginProperty(position, label, property);
 		Rect contentPosition = EditorGUI.PrefixLabel(position, label);
-
-        contentPosition.width *= 0.2f;
-		EditorGUI.PropertyField(contentPosition, property.FindPropertyRelative("id"), GUIContent.none);
-		contentPosition.x += contentPosition.width;
-		contentPosition.width *= 3f;
         List<string> options = AllEffects();
 
         float oldWidth = EditorStyles.popup.fixedWidth;
@@ -33,7 +28,7 @@ public class CCEffectEntryDrawer : PropertyDrawer {
         EditorStyles.popup.fixedWidth = contentPosition.width;
         GUIContent[] comboItemDatabaseGUIContents = Array.ConvertAll(options.ToArray(), i => new GUIContent(i));
 
-        SerializedProperty sp = property.FindPropertyRelative("className");
+        SerializedProperty sp = property.FindPropertyRelative("ClassName");
         int selectedIndex = EditorGUI.Popup(contentPosition, label, CurrentSelectedIndex(sp, options), comboItemDatabaseGUIContents);
         sp.stringValue = options[selectedIndex];
 
@@ -58,6 +53,7 @@ public class CCEffectEntryDrawer : PropertyDrawer {
     {
         Type type = typeof(CCEffectBase);
         List<string> effectNames = new List<string>();
+
         Assembly asm = Assembly.Load("Assembly-CSharp");
 
         Type[] baseEffects = asm.GetTypes();
