@@ -31,6 +31,8 @@ namespace WarpWorld.CrowdControl {
 
             TimedEffectBegin = 0x40,
             TimedEffectEnd = 0x41,
+            TimedPause = 0x42,
+            TimedResume = 0x43,
 
             AvailableForOrder = 0x60,
             UnavailableForOrder = 0x61,

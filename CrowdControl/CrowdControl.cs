@@ -509,7 +509,7 @@ namespace WarpWorld.CrowdControl {
 
         private void EffectFailure(CCEffectInstance instance)
         {
-            UpdateEffect(instance, EffectIsBidWar(instance.effectID) ? Protocol.EffectState.BidWarFailure : Protocol.EffectState.PermanentFailure);
+            UpdateEffect(instance, EffectIsBidWar(instance.effectID) ? Protocol.EffectState.BidWarFailure : Protocol.EffectState.TemporaryFailure);
         }
 
         private void EffectDelay(uint effectID, byte delay = 5)
@@ -1101,6 +1101,8 @@ namespace WarpWorld.CrowdControl {
             effectInstance.effect.Pause(effectInstance);
             effectInstance.effect.OnPauseEffect();
             instance.OnEffectPause?.Invoke(effectInstance);
+
+            instance.UpdateEffect(effectInstance, Protocol.EffectState.TimedPause, 0);
         }
 
         /// <summary>Resumes a timer command</summary>
@@ -1108,6 +1110,8 @@ namespace WarpWorld.CrowdControl {
             effectInstance.effect.Resume(effectInstance);
             effectInstance.effect.OnResumeEffect();
             instance.OnEffectResume?.Invoke(effectInstance);
+
+            instance.UpdateEffect(effectInstance, Protocol.EffectState.TimedResume, Convert.ToUInt16(effectInstance.unscaledTimeLeft));
         }
 
         /// <summary>Resets a timer command</summary>

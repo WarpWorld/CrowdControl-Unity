@@ -327,7 +327,7 @@ namespace WarpWorld.CrowdControl
         {
             this.blockID = blockID;
 
-            bool usesTime = status == Protocol.EffectState.TimedEffectBegin || status == Protocol.EffectState.ExactDelay || status == Protocol.EffectState.DelayedSuccess || status == Protocol.EffectState.EstimatedDelay;
+            bool usesTime = status == Protocol.EffectState.TimedEffectBegin || status == Protocol.EffectState.ExactDelay || status == Protocol.EffectState.DelayedSuccess || status == Protocol.EffectState.EstimatedDelay || status == Protocol.EffectState.TimedResume;
 
             ushort messageSize = 0x0F;
             
