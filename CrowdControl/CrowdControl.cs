@@ -262,7 +262,7 @@ namespace WarpWorld.CrowdControl {
 
             if (_adjustPauseTime)
             {
-                UpdateTimerEffectStatuses();
+                UpdateTimerEffectsFromIdle();
 
                 if (!_paused)
                 {
@@ -1172,6 +1172,31 @@ namespace WarpWorld.CrowdControl {
             instance.UpdateEffect(effectInstance, Protocol.EffectState.TimedResume, Convert.ToUInt16(effectInstance.unscaledTimeLeft));
         }
 
+        private static void UpdateTimerEffectsFromIdle()
+        {
+            if (instance == null || instance.runningEffects == null)
+            {
+                return;
+            }
+
+            foreach (CCEffectInstanceTimed timedEffect in instance.runningEffects.Values)
+            {
+                if (!timedEffect.effect.ShouldBeRunning())
+                {
+                    continue;
+                }
+
+                if (!instance._paused)
+                {
+                    EnableEffect(timedEffect.effect);
+                }
+                else
+                {
+                    DisableEffect(timedEffect.effect);
+                }
+            }
+        }
+
         /// <summary>Checks all running timer effects to see if they should be running or not. </summary>
         public static void UpdateTimerEffectStatuses()
         {
@@ -1182,7 +1207,7 @@ namespace WarpWorld.CrowdControl {
 
             foreach (CCEffectInstanceTimed timedEffect in instance.runningEffects.Values)
             {
-                if (timedEffect.effect.ShouldBeRunning() && !instance._paused)
+                if (timedEffect.effect.ShouldBeRunning())
                 {
                     EnableEffect(timedEffect.effect);
                 }
