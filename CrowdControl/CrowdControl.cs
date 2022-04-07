@@ -1149,6 +1149,11 @@ namespace WarpWorld.CrowdControl {
 
         /// <summary>Pauses a timer effect.</summary>
         public static void Pause(CCEffectInstanceTimed effectInstance) {
+            if (effectInstance.isPaused)
+            {
+                return;
+            }
+
             effectInstance.effect.Pause(effectInstance);
             effectInstance.effect.OnPauseEffect();
             instance.OnEffectPause?.Invoke(effectInstance);
@@ -1157,6 +1162,11 @@ namespace WarpWorld.CrowdControl {
 
         /// <summary>Resumes a timer command</summary>
         public static void Resume(CCEffectInstanceTimed effectInstance) {
+            if (!effectInstance.isPaused)
+            {
+                return;
+            }
+
             effectInstance.effect.Resume(effectInstance);
             effectInstance.effect.OnResumeEffect();
             instance.OnEffectResume?.Invoke(effectInstance);
