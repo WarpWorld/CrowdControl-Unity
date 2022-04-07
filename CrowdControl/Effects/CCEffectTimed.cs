@@ -77,7 +77,7 @@ namespace WarpWorld.CrowdControl {
         protected internal void Resume(CCEffectInstance effectInstance)
         {
             CCEffectInstanceTimed effectInstanceTimed = effectInstance as CCEffectInstanceTimed;
-            effectInstanceTimed.unscaledEndTime = Time.unscaledTime + effectInstanceTimed.unscaledTimeLeft;
+            effectInstanceTimed.unscaledTimeLeft += Time.unscaledDeltaTime;
             paused = false;
         }
 

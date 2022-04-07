@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -104,6 +105,8 @@ namespace WarpWorld.CrowdControl {
         private ushort _sendSize;
         private short _currentRetryCount;
         private bool _duplicatedInstance = false;
+        private bool _paused = false;
+	    private bool _adjustPauseTime = false;
 
         /// <summary>Did we start a session?</summary>
         public bool isAuthenticated { get; private set; }
@@ -243,9 +246,32 @@ namespace WarpWorld.CrowdControl {
             effectsByID.Clear();
         }
 
+        void OnApplicationPause(bool paused)
+        {
+            _paused = paused;
+
+            if (paused)
+            {
+                _adjustPauseTime = true;
+            }
+        }
+
         void Update() {
             // Handle connection timeout and reconnects.
-            var now = Time.unscaledTime;
+            float now = Time.unscaledTime;
+
+            if (_adjustPauseTime)
+            {
+                UpdateTimerEffectStatuses();
+
+                if (!_paused)
+                {
+                    timeToNextPing = now + Protocol.PING_INTERVAL;
+                    timeToTimeout = now + Protocol.PING_INTERVAL * 2;
+                    _adjustPauseTime = false;
+                }
+            }
+
             if (now >= timeToTimeout && isConnected) {
                 Disconnect(true);
             }
@@ -397,7 +423,7 @@ namespace WarpWorld.CrowdControl {
 
         private void Send(CCRequest message)
         {
-            _socketProvider.Send(message.ByteStream);
+            Task.Factory.StartNew(() => _socketProvider.Send(message.ByteStream));
         }
 
         private async void DisconnectAndDisposeSocket(CCRequest message)
@@ -456,16 +482,15 @@ namespace WarpWorld.CrowdControl {
                     _socketProvider.Dispose();
                     _socketProvider = null;
                 }
-
-                timeToNextPing = float.MaxValue;
-                timeToTimeout = float.MaxValue;
-                isConnecting = false;
-                OnDisconnected?.Invoke();
             }
             if (fromError) {
                 ConnectError();
             }
 
+            timeToNextPing = float.MaxValue;
+            timeToTimeout = float.MaxValue;
+            isConnecting = false;
+            OnDisconnected?.Invoke();
             isAuthenticated = false;
         }
 
@@ -1135,6 +1160,7 @@ namespace WarpWorld.CrowdControl {
             effectInstance.effect.Resume(effectInstance);
             effectInstance.effect.OnResumeEffect();
             instance.OnEffectResume?.Invoke(effectInstance);
+            instance.UpdateEffect(effectInstance, Protocol.EffectState.TimedResume, Convert.ToUInt16(effectInstance.unscaledTimeLeft));
         }
 
         /// <summary>Resets a timer command</summary>
@@ -1156,13 +1182,13 @@ namespace WarpWorld.CrowdControl {
 
             foreach (CCEffectInstanceTimed timedEffect in instance.runningEffects.Values)
             {
-                if (timedEffect.effect.ShouldBeRunning())
+                if (timedEffect.effect.ShouldBeRunning() && !instance._paused)
                 {
-                    Resume(timedEffect);
+                    EnableEffect(timedEffect.effect);
                 }
                 else
                 {
-                    Pause(timedEffect);
+                    DisableEffect(timedEffect.effect);
                 }
             }
         }
