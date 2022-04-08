@@ -207,7 +207,7 @@ namespace WarpWorld.CrowdControl.Overlay
         }
 
         void OnEffectQueue(CCEffectInstance effectInstance) => queuePanel.Add(queue, effectInstance, _displayFlags);
-        void OnEffectDequeue(CCEffectInstance effectInstance, EffectResult result) => queuePanel.Remove(effectInstance.effectID);
+        void OnEffectDequeue(uint id, EffectResult result) => queuePanel.Remove(id);
 
         void OnEffectStart(CCEffectInstanceTimed effectInstance)
         {

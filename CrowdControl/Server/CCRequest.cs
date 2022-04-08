@@ -226,8 +226,6 @@ namespace WarpWorld.CrowdControl
             WriteMessageType(MessageType.JsonBlock, ref offset);
             Protocol.Write(byteStream, ref offset, blockID);
             Protocol.Write(byteStream, ref offset, jsonStrings[index]);
-
-            UnityEngine.Debug.LogError(jsonStrings[index]);
             WriteChecksumByte();
         }
 

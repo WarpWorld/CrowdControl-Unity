@@ -28,14 +28,18 @@ namespace WarpWorld.CrowdControl.Overlay {
         void ILayoutController.SetLayoutHorizontal()
         {
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, GetWidth());
-
-           
             StartCoroutine(SetLayout());
         }
 
         private IEnumerator SetLayout()
         {
             yield return new WaitForEndOfFrame();
+        }
+
+        public void UpdateLayout()
+        {
+            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, GetWidth());
+            StartCoroutine(SetLayout());
         }
     }
 }

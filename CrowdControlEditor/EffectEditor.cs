@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 namespace WarpWorld.CrowdControl {
@@ -11,13 +12,16 @@ namespace WarpWorld.CrowdControl {
             InitCoords();
 
             AddProperty(ValueType._string, "displayName", "Name", 50.0f, 250.0f);
-            AddProperty(ValueType._int, "price", "Cost", 50.0f, 50.0f);
+
+            if (!(effect is CCEffectBidWar))
+            {
+                AddProperty(ValueType._int, "price", "Cost", 50.0f, 50.0f);
+            }
+
             NewRow();
             AddLabel("Description", 300.0f);
             AddSpriteWithTint("icon", "iconColor", "Icon", 125.0f, 100.0f);
-            AddDividerBar();
-            SetNextOffset(22.5f);
-            NewRow();
+            SetNextOffset(22.5f, true);
             AddProperty(ValueType._string, "description", "", 0.0f, 290.0f, 100.0f);
             NewRow();
             AddPropertyWithSlider(ValueType._int, "maxRetries", "Max Entries", 220.0f, 210.0f, 0, 60);
@@ -34,43 +38,114 @@ namespace WarpWorld.CrowdControl {
             {
                 DrawParamEffect();
             }
+            else if (effect is CCEffectBidWar)
+            {
+                DrawBidWar();
+            }
 
             EditorGUI.BeginChangeCheck();
             serializedObject.ApplyModifiedProperties();
         }
 
+        private List<bool> m_paramFoldout = new List<bool>();
+
+        private void DrawBidWar()
+        {
+            GUILayout.Space(30.0f);
+            SetNextOffset(40.0f, true);
+            SerializedProperty ThisList = serializedObject.FindProperty("m_bidWarEntries");
+            AddArraySizeProperty(ThisList, 50.0f, "Bid Wars", 100.0f, 99, 17.5f);
+
+            float increaseX = 0.0f;
+
+            for (int i = 0; i < ThisList.arraySize; i++)
+            {
+                IncreasePosition(increaseX);
+
+                SerializedProperty property = ThisList.GetArrayElementAtIndex(i);
+
+                NewRow();
+                IncreasePosition(increaseX);
+                AddProperty(ValueType._string, property.FindPropertyRelative("m_name"), string.Empty, 0.0f, 100.0f);
+                NewRow();
+                IncreasePosition(increaseX);
+                AddSpriteWithTint(property.FindPropertyRelative("m_sprite"), property.FindPropertyRelative("m_tint"), "Icon", 90.0f, 100.0f);
+
+                if (i % 3 == 2)
+                {
+                    SetNextOffset(100.0f, true);
+                    increaseX = 0.0f;
+                }
+                else
+                {
+                    increaseX += 125.0f;
+                    SetNextOffset(-50.0f, true);
+
+                    if (i % 3 == 0)
+                    {
+                        GUILayout.Space(150.0f);
+                    }
+                }
+            }
+        }
+
         private void DrawParamEffect()
         {
             SetNextOffset(50.0f, true);
-            AddDividerBar();
-            SetNextOffset(10.0f, true);
 
             SerializedProperty ThisList = serializedObject.FindProperty("m_parameterEntries");
-            
+
+            AddLabel("Parameter types", 130.0f, 1.2f, FontStyle.Bold);
+            AddArraySizeProperty(ThisList, 50.0f, 5, 17.5f);
+            NewRowWithSpace();
+
+            if (m_paramFoldout.Count > ThisList.arraySize)
+            {
+                m_paramFoldout.RemoveRange(ThisList.arraySize, m_paramFoldout.Count - ThisList.arraySize);
+            }
+
+            while (m_paramFoldout.Count < ThisList.arraySize)
+            {
+                m_paramFoldout.Add(false);
+            }
+
             for (int i = 0; i < ThisList.arraySize; i++)
             {
                 SerializedProperty property = ThisList.GetArrayElementAtIndex(i);
-                AddProperty(ValueType._string, property.FindPropertyRelative("m_name"), "Name", 50.0f, 200.0f);          
+                m_paramFoldout[i] = AddFoldout(property, m_paramFoldout[i], "m_name");
+                NewRowWithSpace();
+
+                if (!m_paramFoldout[i])
+                {
+                    continue;
+                }
+
+                AddProperty(ValueType._string, property.FindPropertyRelative("m_name"), "Name", 50.0f, 225.0f);
                 NewRow();
                 AddSpriteWithTint(property.FindPropertyRelative("m_sprite"), property.FindPropertyRelative("m_tint"), "Icon", 90.0f, 100.0f);
-                AddEnumField(property.FindPropertyRelative("m_paramKind"), "Param Type", 100.0f);
-                SetNextOffset(45.0f);
 
                 if (property.FindPropertyRelative("m_paramKind").intValue == 1) // Quantity
                 {
+                    GUILayout.Space(150);
+                    AddEnumField(property.FindPropertyRelative("m_paramKind"), "Param Type", 160.0f);
+                    SetNextOffset(45.0f, true);
+                    IncreasePosition(110.0f);
+                    AddProperty(ValueType._int, property.FindPropertyRelative("m_min"), "Min", 40.0f, 50.0f);
                     NewRow();
                     IncreasePosition(110.0f);
-                    AddProperty(ValueType._int, property.FindPropertyRelative("m_min"), "Min", 50.0f, 50.0f);
+                    AddProperty(ValueType._int, property.FindPropertyRelative("m_max"), "Max", 40.0f, 50.0f);
+                    SetNextOffset(30.0f, true);
                     NewRow();
-                    IncreasePosition(110.0f);
-                    AddProperty(ValueType._int, property.FindPropertyRelative("m_max"), "Min", 50.0f, 50.0f);
                 }
-
                 else
                 {
+                    GUILayout.Space(150);
+                    AddEnumField(property.FindPropertyRelative("m_paramKind"), "Param Type", 100.0f);
+                    SetNextOffset(45.0f);
+
                     SerializedProperty options = property.FindPropertyRelative("m_options");
 
-                    AddArraySizeProperty(options, 50.0f);
+                    AddArraySizeProperty(options, 50.0f, 99, 35.5f);
                     NewRow();
 
                     for (int j = 0; j < options.arraySize; j++)
@@ -79,24 +154,27 @@ namespace WarpWorld.CrowdControl {
                         AddProperty(ValueType._string, options.GetArrayElementAtIndex(j), string.Empty, 0.0f, 160.0f);
                         NewRow();
 
-                        if (j > 3)
+                        if (j > 2)
                         {
                             GUILayout.Space(25);
                         }
                     }
+
+                    if (options.arraySize <= 3)
+                    {
+                        NewRow(Convert.ToUInt32(3 - options.arraySize));
+                    }
+
+                    SetNextOffset(5.0f, true);
                 }
-
-
-                GUILayout.Space(145);
             }
 
-            GUILayout.Space(40);
+            GUILayout.Space(5);
         }
 
         private void DrawTimedEffect()
         {
             NewRow();
-            AddDividerBar();
 
             CCEffectTimed effectTimed = effect as CCEffectTimed;
 
@@ -108,7 +186,6 @@ namespace WarpWorld.CrowdControl {
             if (Application.isPlaying)
             {
                 NewRow();
-                AddDividerBar();
 
                 bool running = CrowdControl.instance.IsRunning(effectTimed);
                 bool paused = CrowdControl.instance.IsPaused(effectTimed);

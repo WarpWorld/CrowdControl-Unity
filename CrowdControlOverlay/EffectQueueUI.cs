@@ -14,8 +14,8 @@ namespace WarpWorld.CrowdControl.Overlay {
         protected internal override void Setup(CCEffectInstance effectInstance)
         {
             this.effectInstance = effectInstance;
-            effectIcon.sprite = effectInstance.effect.icon;
-            effectIcon.color = effectInstance.effect.iconColor;
+            effectIcon.sprite = effectInstance.effect.Icon;
+            effectIcon.color = effectInstance.effect.IconColor;
             total = 1;
             SetTotal();
         }

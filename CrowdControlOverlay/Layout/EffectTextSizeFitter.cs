@@ -11,6 +11,7 @@ namespace WarpWorld.CrowdControl.Overlay {
                 var child = transform.GetChild(i) as RectTransform;
                 width = Mathf.Max(width, LayoutUtility.GetPreferredWidth(child) + child.offsetMin.x - child.offsetMax.x);
             }
+
             return width;
         }
     }

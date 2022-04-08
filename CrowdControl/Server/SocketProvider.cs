@@ -225,7 +225,6 @@ namespace WarpWorld.CrowdControl
                 if (!Connected) { return false; }
                 try
                 {
-
 #if (NET35 || NET40)
                     await Task.Factory.StartNew(() => _stream.Write(message, 0, message.Length), _quitting.Token);
 #else

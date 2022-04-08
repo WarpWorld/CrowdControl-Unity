@@ -21,6 +21,7 @@ namespace WarpWorld.CrowdControl.Overlay {
         [SerializeField] protected RectTransform userNameElement;
         [SerializeField] protected RectTransform userIconElement;
         [SerializeField] protected GameObject textContainer;
+        [SerializeField] protected EffectTextSizeFitter textSizeFitter;
         
         private Dictionary<string, Sprite> _spriteDictionary = new Dictionary<string, Sprite>();
 
@@ -33,12 +34,17 @@ namespace WarpWorld.CrowdControl.Overlay {
         }
 
         protected internal override void Setup(CCEffectInstance effectInstance) {
-            effectIcon.sprite = effectInstance.effect.icon;
-            effectIcon.color = effectInstance.effect.iconColor;
-            effectName.text = effectInstance.effect.displayName;
+            effectIcon.sprite = effectInstance.effect.Icon;
+            effectIcon.color = effectInstance.effect.IconColor;
+            effectName.text = effectInstance.effect.Name;
             userIcon.color = effectInstance.user.profileIconColor;
             userIcon.sprite = effectInstance.user.profileIcon;
             userName.text = effectInstance.user.displayName;
+
+            if (textSizeFitter.gameObject.activeSelf)
+            {
+                textSizeFitter.UpdateLayout();
+            }
         }
     }
 }

@@ -13,15 +13,29 @@ namespace WarpWorld.CrowdControl
         [SerializeField]
         [Tooltip("A list of bid names for this bid war")]
         private List<BidWarEntry> m_bidWarEntries = new List<BidWarEntry>();
-        private List<string> m_bidWarEntryStrings = new List<string>();
-        private Dictionary<string, Color> m_tintDictionary = new Dictionary<string, Color>();
-        private Color m_defaultTint = Color.clear;
+        private CCBidWarLibrary m_bidWarLibrary = new CCBidWarLibrary();
+        private BidWarEntry m_winnerEntry = null;
 
-        public override Sprite Icon
-        {
-            get
-            {
-                return icon;
+        public override string Name {
+            get {
+                if (m_winnerEntry == null)
+                {
+                    return displayName;
+                }
+
+                return string.Format("{0}: {1}", displayName, m_winnerEntry.Name);
+            }
+        }
+
+        public override Sprite Icon {
+            get {
+                return m_winnerEntry != null && m_winnerEntry.Sprite != null ? m_winnerEntry.Sprite : icon;
+            }
+        }
+
+        public override Color IconColor {
+            get {
+                return m_winnerEntry != null && m_winnerEntry.Tint != null ? m_winnerEntry.Tint : iconColor;
             }
         }
 
@@ -30,50 +44,46 @@ namespace WarpWorld.CrowdControl
         {
             foreach (BidWarEntry entry in m_bidWarEntries)
             {
-                AddParameter(entry.Name, effectEntries);
+                RegisterBidWarEntry(entry, effectEntries);
             }
         }
 
         /// <summary>All Parameters for this effect as a string.</summary>
         public override string Params()
         {
-            return string.Join(",", m_bidWarEntryStrings.ToArray());
-        }
+            List<string> names = new List<string>();
 
-        /// <summary>Retrieve the tint associated with what's being bid and apply it to the icon.</summary>
-        public void AssignTint(string bidName)
-        {
-            if (m_tintDictionary.ContainsKey(bidName))
+            foreach (BidWarEntry entry in m_bidWarEntries)
             {
-                if (m_defaultTint.Equals(Color.clear))
-                    m_defaultTint = iconColor;
-
-                iconColor = m_tintDictionary[bidName];
-                return;
+                names.Add(entry.Name);
             }
 
-            if (m_defaultTint.Equals(Color.clear))
-                return;
-
-            iconColor = m_defaultTint;
-            m_defaultTint = Color.clear;
+            return string.Join(",", names.ToArray());
         }
 
         /// <summary>Adds a new paramter to the bid war list</summary>
-        public void AddParameter(string bidName, CCEffectEntries effectEntries)
+        public void RegisterBidWarEntry(BidWarEntry entry, CCEffectEntries effectEntries)
         {
             uint startIndex = Convert.ToUInt32(effectEntries.Count);
 
-            uint key = Utils.ComputeMd5Hash(bidName.ToString() + identifier);
+            uint key = Utils.ComputeMd5Hash(entry.Name.ToString() + identifier);
+            entry.SetID(key);
 
-            BidWarEntry newBidEntry = new BidWarEntry(key, bidName);
-            BidWarEntries.Add(key, newBidEntry);
-            AddParameter(newBidEntry, effectEntries);
+            BidWarEntries.Add(key, entry);
+            effectEntries.AddParameter(entry.ID, entry.Name, identifier, ItemKind.BidWarValue);
+            CrowdControl.instance.Log("Registered Paramter {0} for {1} index {2}", entry.Name, displayName, entry.ID);
         }
 
-        public void PlaceBid(string bidName, uint amount)
+        public bool PlaceBid(uint bidID, uint amount)
         {
-            CrowdControl.instance.PlaceBid(identifier, bidName, amount);
+            bool newWinner = m_bidWarLibrary.PlaceBid(bidID, amount);
+
+            if (newWinner)
+            {
+                m_winnerEntry = BidWarEntries[bidID];
+            }
+
+            return newWinner;
         }
         
         public override bool HasParameterID(uint id)
@@ -91,18 +101,14 @@ namespace WarpWorld.CrowdControl
 
         private void Awake()
         {
+            identifier = Utils.ComputeMd5Hash(this.GetType().FullName);
+
             if (CrowdControl.instance != null && CrowdControl.instance.EffectIsRegistered(this))
             {
                 return;
             }
 
             StartCoroutine(RegisterEffect());
-        }
-
-        private void AddParameter(BidWarEntry entry, CCEffectEntries effectEntries)
-        {
-            effectEntries.AddParameter(entry.ID, BidWarEntries[entry.ID].Name, identifier, ItemKind.BidWarValue);
-            CrowdControl.instance.Log("Registered Paramter {0} for {1} index {2}", entry.Name, displayName, entry.ID);
         }
     }
 }

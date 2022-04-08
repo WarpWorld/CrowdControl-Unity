@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+﻿      using UnityEditor;
 using UnityEngine;
 
 namespace WarpWorld.CrowdControl {
@@ -32,6 +32,10 @@ namespace WarpWorld.CrowdControl {
             AddSpriteWithTint("_errorUserIcon", "_errorUserColor", "Error User Icon", 125.0f, 100.0f);
 
             NewRow();
+            AddProperty(ValueType._bool, "_staging", "Staging", 100.0f, 50.0f);
+            AddProperty(ValueType._bool, "_dontDestroyOnLoad", "Don't Destroy on Load", 300.0f, 50.0f);
+
+            SetNextOffset(45.0f, true);
             AddLabel("Debug Output", 150.0f, 1.2f, FontStyle.Bold);
             NewRow();
 
@@ -40,7 +44,18 @@ namespace WarpWorld.CrowdControl {
             AddProperty(ValueType._bool, "_debugError", "Error", 50.0f, 50.0f);
             AddProperty(ValueType._bool, "_debugExceptions", "Exception", 100.0f, 50.0f);
 
-            GUILayout.Space(350);
+            GUILayout.Space(375);
+
+            if (Application.isPlaying)
+            {
+                GUILayout.Space(25);
+                SetNextOffset(45.0f, true);
+
+                GUI.enabled = cc.HasRunningEffects();
+                
+                if (AddButton("Stop all Effects", 200.0f))
+                    cc.StopAllEffects();
+            }
 
             /*gameKey = Convert.ToUInt32(gameKeyField.GetValue(target));
 

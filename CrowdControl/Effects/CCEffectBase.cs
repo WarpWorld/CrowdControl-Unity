@@ -57,6 +57,10 @@ namespace WarpWorld.CrowdControl
 
         public virtual Sprite Icon { get { return icon; } }
 
+        public virtual string Name { get { return displayName; } }
+
+        public virtual Color IconColor { get { return iconColor; } }
+
         /// <summary>Additional Info for the effect. Can be overridden by a derived class.</summary>
         public virtual string Params() { return string.Empty; }
 
@@ -90,8 +94,6 @@ namespace WarpWorld.CrowdControl
 
         protected IEnumerator RegisterEffect()
         {
-            identifier = Utils.ComputeMd5Hash(this.GetType().FullName);
-
             while (CrowdControl.instance == null)
                 yield return new WaitForSeconds(1.0f);
 
@@ -101,6 +103,8 @@ namespace WarpWorld.CrowdControl
         // Register the effect
         private void Awake()
         {
+            identifier = Utils.ComputeMd5Hash(this.GetType().FullName);
+
             if (CrowdControl.instance != null && CrowdControl.instance.EffectIsRegistered(this))
             {
                 return;

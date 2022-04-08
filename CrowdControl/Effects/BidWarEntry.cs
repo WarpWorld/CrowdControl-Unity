@@ -12,7 +12,7 @@ namespace WarpWorld.CrowdControl
 
         [SerializeField] private string m_name;
         [SerializeField] private Sprite m_sprite;
-        [SerializeField] private Color m_tint;
+        [SerializeField] private Color m_tint = Color.white;
 
         public BidWarEntry(uint key, string paramName, Sprite sprite = null)
         {
