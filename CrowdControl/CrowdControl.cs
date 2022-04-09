@@ -115,6 +115,8 @@ namespace WarpWorld.CrowdControl
         public bool isConnecting { get; private set; }
         /// <summary>Are you connected or not</summary>
         public bool isConnected => _socketProvider != null && _socketProvider.Connected;
+        /// <summary>The latest disconnect occured due to an error.</summary>
+        public bool disconnectedFromError { get; private set; }
         #endregion
 
         #region Events
@@ -168,6 +170,8 @@ namespace WarpWorld.CrowdControl
             }
 
             if (_dontDestroyOnLoad) DontDestroyOnLoad(gameObject);
+
+            ccEffectEntries = gameObject.GetComponent<CCEffectEntries>();
 
             crowdUser = new TwitchUser
             {
@@ -282,7 +286,7 @@ namespace WarpWorld.CrowdControl
             {
                 Disconnect(true);
             }
-            else if (!isConnected && !isConnecting && now >= timeToNextPing)
+            else if (!isConnected && !isConnecting && now >= timeToNextPing && disconnectedFromError)
             {
                 timeToNextPing = float.MaxValue;
                 ConnectSocket();
@@ -328,7 +332,7 @@ namespace WarpWorld.CrowdControl
                     Assert.IsFalse(isConnecting);
                     Send(new CCMessagePing(_blockID++));
                     timeToNextPing = now + Protocol.PING_INTERVAL;
-                    timeToTimeout = Time.unscaledTime + Protocol.PING_INTERVAL * 2;
+                    timeToTimeout = Time.unscaledTime + Protocol.PING_INTERVAL / 2;
                 }
             }
         }
@@ -505,13 +509,18 @@ namespace WarpWorld.CrowdControl
             if (fromError)
             {
                 ConnectError();
+                timeToNextPing = Time.unscaledTime + Protocol.PING_INTERVAL;
+            }
+            else
+            {
+                timeToNextPing = float.MaxValue;
             }
 
-            timeToNextPing = float.MaxValue;
             timeToTimeout = float.MaxValue;
             isConnecting = false;
             OnDisconnected?.Invoke();
             isAuthenticated = false;
+            disconnectedFromError = fromError;
         }
 
         public void UpdateEffect(uint effectID, Protocol.EffectState effectState, uint callbackID = 0, ushort payload = 0)
@@ -932,9 +941,6 @@ namespace WarpWorld.CrowdControl
             }
 
             uint effectID = effect.identifier;
-
-            ccEffectEntries = gameObject.GetComponent<CCEffectEntries>();
-
             CCEffectEntry effectEntry = ccEffectEntries[effectID];
 
             if (effectsByID[effectID] is CCEffectParameters)
