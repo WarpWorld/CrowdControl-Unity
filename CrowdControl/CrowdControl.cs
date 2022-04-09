@@ -332,7 +332,7 @@ namespace WarpWorld.CrowdControl
                     Assert.IsFalse(isConnecting);
                     Send(new CCMessagePing(_blockID++));
                     timeToNextPing = now + Protocol.PING_INTERVAL;
-                    timeToTimeout = Time.unscaledTime + Protocol.PING_INTERVAL / 2;
+                    timeToTimeout = Time.unscaledTime + Protocol.PING_INTERVAL * 2;
                 }
             }
         }
