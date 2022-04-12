@@ -478,7 +478,6 @@ namespace WarpWorld.CrowdControl
 
         private void DisconnectedSocket()
         {
-            UnityEngine.Debug.LogError("DISCONNECT");
             _disconnectFromTimeout = true;
         }
 
