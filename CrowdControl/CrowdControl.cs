@@ -108,6 +108,7 @@ namespace WarpWorld.CrowdControl
         private bool _duplicatedInstance = false;
         private bool _paused = false;
         private bool _adjustPauseTime = false;
+        private bool _disconnectFromTimeout = false;
 
         /// <summary>Did we start a session?</summary>
         public bool isAuthenticated { get; private set; }
@@ -282,7 +283,15 @@ namespace WarpWorld.CrowdControl
                 }
             }
 
-            if (now >= timeToTimeout && isConnected)
+            if (_disconnectFromTimeout)
+            {
+                _disconnectFromTimeout = false;
+                StartCoroutine(DisplayMessageWithIcon("The Crowd Control connection has timed out."));
+                Disconnect(false);
+                return;
+            }
+
+            if ((now >= timeToTimeout) && isConnected)
             {
                 Disconnect(true);
             }
@@ -467,6 +476,12 @@ namespace WarpWorld.CrowdControl
             ConnectSocket();
         }
 
+        private void DisconnectedSocket()
+        {
+            UnityEngine.Debug.LogError("DISCONNECT");
+            _disconnectFromTimeout = true;
+        }
+
         private async void ConnectSocket()
         {
             isConnecting = true;
@@ -474,6 +489,7 @@ namespace WarpWorld.CrowdControl
 
             _socketProvider = new SocketProvider();
             _socketProvider.OnMessageReceived += ReceivedBytes;
+            _socketProvider.OnDisconnected += DisconnectedSocket;
             await _socketProvider.Connect(_staging ? _sslStagingAddress : _sslAddress, _port);
 
             timeToNextPing = Time.unscaledTime + Protocol.PING_INTERVAL;
@@ -732,8 +748,8 @@ namespace WarpWorld.CrowdControl
 
         private IEnumerator DisplayMessageWithIcon(string message, float displayTime = 5.0f)
         {
+            yield return new WaitUntil(() => Application.isPlaying);
             yield return StartCoroutine(DownloadPlayerSprite(streamerUser));
-
             OnDisplayMessage?.Invoke(message, displayTime, streamerUser.profileIcon);
         }
 
