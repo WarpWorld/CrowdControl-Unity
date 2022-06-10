@@ -715,7 +715,7 @@ namespace WarpWorld.CrowdControl
 
             if (_gameKey == 92) // No Game
             {
-                StartCoroutine(SendTestMenu(new CCJsonBlock(_gameName, effectsByID)));
+                StartCoroutine(SendTestMenu(new CCJsonBlock("No Game", effectsByID)));
             }
         }
 
