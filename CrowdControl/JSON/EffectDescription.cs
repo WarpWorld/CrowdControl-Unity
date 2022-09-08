@@ -75,13 +75,14 @@ namespace WarpWorld.CrowdControl
         [JsonIgnore]
         public bool Parameter = false;
 
-        public EffectDescription(uint key, CCEffectBase effect)
+        public EffectDescription(uint key, CCEffectBase effect, string parent = "")
         {
             Name = effect.displayName;
             SafeName = effect.identifier.ToString();
             Durational = (effect is CCEffectTimed);
             Kind = ItemKind.Effect;
             Price = effect.price;
+            Parent = parent;
 
             if (effect is CCEffectBidWar)
             {
@@ -101,6 +102,14 @@ namespace WarpWorld.CrowdControl
             {
                 ParamTypes.Add(paramKey.ToString());
             }
+        }
+
+        public EffectDescription(string name, ItemKind kind, string key, string parent)
+        {
+            Name = name;
+            SafeName = key;
+            Kind = kind;
+            Parent = parent;
         }
 
         public EffectDescription(BidWarEntry entry, CCEffectBase parent, ItemKind kind)

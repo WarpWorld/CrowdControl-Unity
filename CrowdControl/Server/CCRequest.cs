@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace WarpWorld.CrowdControl
 {
-    public enum MessageType 
+    public enum MessageType
     {
         Version = 0xF0,
         TokenAquisition = 0xF1,
@@ -38,7 +38,7 @@ namespace WarpWorld.CrowdControl
         protected byte checksum = 0;
         public uint blockID;
 
-        public byte [] ByteStream
+        public byte[] ByteStream
         {
             get
             {
@@ -60,7 +60,7 @@ namespace WarpWorld.CrowdControl
 
         protected void WriteChecksumByte()
         {
-            
+
             uint sum = 0;
 
             for (int i = 0; i < byteStream.Length; i++)
@@ -100,7 +100,7 @@ namespace WarpWorld.CrowdControl
             WriteChecksumByte();
         }
 
-        public CCMessageVersion(byte [] buffer)
+        public CCMessageVersion(byte[] buffer)
         {
             int offset = 3;
             Protocol.Read(buffer, ref offset, out blockID);
@@ -138,7 +138,7 @@ namespace WarpWorld.CrowdControl
             WriteChecksumByte();
         }
 
-        public CCMessageTokenAquisition(byte [] buffer)
+        public CCMessageTokenAquisition(byte[] buffer)
         {
             int offset = 3;
             Protocol.Read(buffer, ref offset, out blockID);
@@ -181,7 +181,7 @@ namespace WarpWorld.CrowdControl
         public string streamerIconURL;
         public BroadcasterType broadcasterType;
         public Greeting greeting;
- 
+
 
         protected override void CreateByteArray()
         {
@@ -195,7 +195,7 @@ namespace WarpWorld.CrowdControl
             WriteChecksumByte();
         }
 
-        public CCMessageTokenHandshake(byte [] buffer)
+        public CCMessageTokenHandshake(byte[] buffer)
         {
             int offset = 3;
             Protocol.Read(buffer, ref offset, out blockID);
@@ -265,10 +265,38 @@ namespace WarpWorld.CrowdControl
 
             segments.Enqueue(json);
 
+            Dictionary<string, string> folderHierarchy = new Dictionary<string, string>();
+
             foreach (uint key in effectList.Keys)
             {
                 CCEffectBase effect = effectList[key];
-                EffectDescription effectDesc = new EffectDescription(key, effect);
+                string folderParent = string.Empty;
+
+                if (!string.IsNullOrEmpty(effect.folderPath))
+                {
+                    string[] folders = new string[1] { effect.folderPath };
+
+                    if (effect.folderPath.Contains("/"))
+                    {
+                        folders = effect.folderPath.Split('/');
+                    }
+
+                    for (int i = 0; i < folders.Length; i++)
+                    {
+                        string folderKey = Utils.ComputeMd5Hash(folders[i] + folderParent).ToString();
+
+                        if (!folderHierarchy.ContainsKey(folderKey))
+                        {
+                            folderHierarchy.Add(folderKey, folderParent);
+                            EffectDescription folderDesc = new EffectDescription(folders[i], ItemKind.Folder, folderKey, folderParent);
+                            remaining.Enqueue(folderDesc);
+                        }
+
+                        folderParent = folderKey;
+                    }
+                }
+
+                EffectDescription effectDesc = new EffectDescription(key, effect, folderParent);
                 remaining.Enqueue(effectDesc);
 
                 if (effect is CCEffectBidWar)
@@ -465,7 +493,7 @@ namespace WarpWorld.CrowdControl
                             status == Protocol.EffectState.EstimatedDelay || status == Protocol.EffectState.TimedResume;
 
             ushort messageSize = 0x0F;
-            
+
             if (usesTime)
             {
                 messageSize += 2;

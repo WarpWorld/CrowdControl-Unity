@@ -7,7 +7,8 @@ namespace WarpWorld.CrowdControl {
         CrowdControl cc => target as CrowdControl;
 
         public override void OnInspectorGUI() {
-            InitCoords();
+            Rect rt = GUILayoutUtility.GetRect(new GUIContent("some button"), GUIStyle.none);
+            InitCoords(rt.y);
 
             if (!Application.isPlaying)
             {
@@ -29,7 +30,7 @@ namespace WarpWorld.CrowdControl {
 
             AddSpriteWithTint("_tempUserIcon", "_tempUserColor", "Temp User Icon", 125.0f, 100.0f);
             AddSpriteWithTint("_crowdUserIcon", "_crowdUserColor", "Crowd User Icon", 125.0f, 100.0f);
-            AddSpriteWithTint("_errorUserIcon", "_errorUserColor", "Error User Icon", 125.0f, 100.0f);
+            AddSpriteWithTint("_errorUserIcon", "_errorUserColor", "Error User Icon", 125.0f, 100.0f); 
 
             NewRow();
             AddProperty(ValueType._bool, "_staging", "Staging", 100.0f, 50.0f);

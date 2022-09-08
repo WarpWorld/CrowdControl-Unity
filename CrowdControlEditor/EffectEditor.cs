@@ -9,7 +9,8 @@ namespace WarpWorld.CrowdControl {
         CCEffectBase effect => target as CCEffectBase;
 
         public override void OnInspectorGUI() {
-            InitCoords();
+            Rect rt = GUILayoutUtility.GetRect(new GUIContent(""), GUIStyle.none);
+            InitCoords(rt.y);
 
             AddProperty(ValueType._string, "displayName", "Name", 50.0f, 250.0f);
 
@@ -23,7 +24,10 @@ namespace WarpWorld.CrowdControl {
             AddSpriteWithTint("icon", "iconColor", "Icon", 125.0f, 100.0f);
             SetNextOffset(22.5f, true);
             AddProperty(ValueType._string, "description", "", 0.0f, 290.0f, 100.0f);
-            NewRow();
+            SetNextOffset(112.5f, true);
+            AddProperty(ValueType._string, "folderPath", "Folder Path", 50.0f, 150.0f);
+            SetNextOffset(-10.0f, true);
+            SetX(230.0f);
             AddPropertyWithSlider(ValueType._int, "maxRetries", "Max Entries", 220.0f, 210.0f, 0, 60);
             NewRow();
             AddPropertyWithSlider(ValueType._float, "retryDelay", "Retry Delay", 220.0f, 210.0f, 0, 10);

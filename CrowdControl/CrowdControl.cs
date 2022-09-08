@@ -981,6 +981,11 @@ namespace WarpWorld.CrowdControl
 
                 string[] splitParams = parameters.Split(',');
 
+                if (splitParams.Length < 2 || splitParams[1] == " ") {
+                    CancelEffect(effectInstance);
+                    return;
+                }
+
                 CCEffectInstanceBidWar bidWarInstance = effectInstance as CCEffectInstanceBidWar;
                 bidWarInstance.Init(splitParams[0], Convert.ToUInt32(splitParams[1]));
 

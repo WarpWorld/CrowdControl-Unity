@@ -59,6 +59,9 @@ namespace WarpWorld.CrowdControl
 
         public virtual string Name { get { return displayName; } }
 
+        /// <summary>Folder this effect belongs to</summary>
+        public string folderPath;
+
         public virtual Color IconColor { get { return iconColor; } }
 
         /// <summary>Additional Info for the effect. Can be overridden by a derived class.</summary>
