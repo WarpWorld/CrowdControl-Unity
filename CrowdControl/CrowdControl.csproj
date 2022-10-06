@@ -23,7 +23,7 @@
     </Reference>
 	
 	<Reference Include="Newtonsoft.Json" Condition="'$(TargetFramework)' == 'netstandard2.0'">
-      <HintPath>..\include\Newtonsoft\netstandard2.0\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\include\Newtonsoft\standard\Newtonsoft.Json.dll</HintPath>
       <Private>false</Private>
     </Reference>
 	

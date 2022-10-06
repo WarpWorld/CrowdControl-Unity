@@ -7,7 +7,7 @@ namespace WarpWorld.CrowdControl.Overlay
 {
     /// <summary>Determines which parts of overlay elements to display.</summary>
     [Flags]
-    public enum DisplayFlags
+    public enum DisplayFlags 
     {
         /// <summary>Display the effect's name.</summary>
         EffectName = 1 << 0,

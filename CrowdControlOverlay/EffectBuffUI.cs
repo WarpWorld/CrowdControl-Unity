@@ -5,7 +5,7 @@ using System;
 #pragma warning disable 1591
 namespace WarpWorld.CrowdControl.Overlay {
     [AddComponentMenu("Crowd Control/Effect Buff UI")]
-    public class EffectBuffUI : EffectLogUI {
+    public class EffectBuffUI : EffectLogUI { 
         [Space]
         [SerializeField] protected Image progress;
         [SerializeField] protected GameObject timeContainer;

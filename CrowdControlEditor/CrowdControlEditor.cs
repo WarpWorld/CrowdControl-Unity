@@ -1,12 +1,12 @@
 ﻿      using UnityEditor;
 using UnityEngine;
 
-namespace WarpWorld.CrowdControl {
+namespace WarpWorld.CrowdControl { 
     [CustomEditor(typeof(CrowdControl))]
     class CrowdControlEditor : CCEditor {
         CrowdControl cc => target as CrowdControl;
 
-        public override void OnInspectorGUI() {
+        public override void OnInspectorGUI() { 
             Rect rt = GUILayoutUtility.GetRect(new GUIContent("some button"), GUIStyle.none);
             InitCoords(rt.y);
 

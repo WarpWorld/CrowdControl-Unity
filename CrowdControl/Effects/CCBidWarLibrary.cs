@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace WarpWorld.CrowdControl
 {
     /// <summary>Keeps information of all of the bids for a bid war effect. </summary>
-    class CCBidWarLibrary
+    class CCBidWarLibrary 
     {
         private Dictionary<uint, uint> bids = new Dictionary<uint, uint>();
 

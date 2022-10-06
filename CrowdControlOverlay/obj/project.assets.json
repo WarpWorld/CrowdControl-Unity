@@ -189,11 +189,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Adam\\source\\repos\\CrowdControl\\CrowdControlOverlay\\CrowdControlOverlay.csproj",
+      "projectUniqueName": "C:\\Users\\Adam\\Desktop\\CC-Unity\\CrowdControl-Unity\\CrowdControlOverlay\\CrowdControlOverlay.csproj",
       "projectName": "CrowdControlOverlay",
-      "projectPath": "C:\\Users\\Adam\\source\\repos\\CrowdControl\\CrowdControlOverlay\\CrowdControlOverlay.csproj",
+      "projectPath": "C:\\Users\\Adam\\Desktop\\CC-Unity\\CrowdControl-Unity\\CrowdControlOverlay\\CrowdControlOverlay.csproj",
       "packagesPath": "C:\\Users\\Adam\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Adam\\source\\repos\\CrowdControl\\CrowdControlOverlay\\obj\\",
+      "outputPath": "C:\\Users\\Adam\\Desktop\\CC-Unity\\CrowdControl-Unity\\CrowdControlOverlay\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "fallbackFolders": [

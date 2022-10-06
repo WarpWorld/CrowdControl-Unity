@@ -30,6 +30,10 @@ namespace WarpWorld.CrowdControl
         [JsonProperty(PropertyName = "durational")]
         private bool Durational;
 
+        /// <summary> The default time of the effect. </summary>
+        [JsonProperty(PropertyName = "duration")]
+        private string Duration;
+
         [JsonProperty(PropertyName = "formula")]
         private Formulas Formula = Formulas.Sum;
 
@@ -79,7 +83,19 @@ namespace WarpWorld.CrowdControl
         {
             Name = effect.displayName;
             SafeName = effect.identifier.ToString();
-            Durational = (effect is CCEffectTimed);
+
+            if (effect is CCEffectTimed) {
+                int time = System.Convert.ToInt32((effect as CCEffectTimed).duration);
+
+                int seconds = time % 60;
+                int minutes = (time / 60) % 60;
+                int hours = (time / 2400);
+
+                Durational = true;
+
+                Duration = string.Format("{0}:{1}:{2}", hours.ToString("00"), minutes.ToString("00"), seconds.ToString("00"));
+            }
+
             Kind = ItemKind.Effect;
             Price = effect.price;
             Parent = parent;

@@ -19,7 +19,7 @@ namespace WarpWorld.CrowdControl
         [JsonProperty(PropertyName = "type")]
         private byte BlockType = 0xD1;
 
-        [JsonProperty(PropertyName = "gameName")]
+        [JsonProperty(PropertyName = "gamename")]
         public string GameName;
 
         [JsonProperty(PropertyName = "items")]

@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace WarpWorld.CrowdControl
+namespace WarpWorld.CrowdControl 
 {
     public class NullStringConverter : JsonConverter<string>
     {

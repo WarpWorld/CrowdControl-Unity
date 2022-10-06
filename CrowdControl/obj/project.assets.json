@@ -281,11 +281,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Adam\\source\\repos\\CrowdControl\\CrowdControl\\CrowdControl.csproj",
+      "projectUniqueName": "C:\\Users\\Adam\\Desktop\\CC-Unity\\CrowdControl-Unity\\CrowdControl\\CrowdControl.csproj",
       "projectName": "CrowdControl",
-      "projectPath": "C:\\Users\\Adam\\source\\repos\\CrowdControl\\CrowdControl\\CrowdControl.csproj",
+      "projectPath": "C:\\Users\\Adam\\Desktop\\CC-Unity\\CrowdControl-Unity\\CrowdControl\\CrowdControl.csproj",
       "packagesPath": "C:\\Users\\Adam\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Adam\\source\\repos\\CrowdControl\\CrowdControl\\obj\\",
+      "outputPath": "C:\\Users\\Adam\\Desktop\\CC-Unity\\CrowdControl-Unity\\CrowdControl\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "fallbackFolders": [

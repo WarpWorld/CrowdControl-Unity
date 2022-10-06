@@ -19,3 +19,12 @@ C:\Users\Adam\source\repos\CrowdControl\Unity_Net_35\Assets\WarpWorld\Managed\Cr
 C:\Users\Adam\source\repos\CrowdControl\Unity_Net_35\Assets\WarpWorld\Managed\CrowdControlEditor.pdb
 C:\Users\Adam\source\repos\CrowdControl\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControlEditor.dll
 C:\Users\Adam\source\repos\CrowdControl\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControlEditor.pdb
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControlEditor.dll
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControlEditor.pdb
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net35\CrowdControlEditor.csprojAssemblyReference.cache
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net35\CrowdControlEditor.csproj.CoreCompileInputs.cache
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net35\CrowdControlEditor.AssemblyInfoInputs.cache
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net35\CrowdControlEditor.AssemblyInfo.cs
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net35\CrowdControlEditor.csproj.CopyComplete
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net35\CrowdControlEditor.dll
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net35\CrowdControlEditor.pdb

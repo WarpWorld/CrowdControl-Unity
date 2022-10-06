@@ -182,7 +182,6 @@ namespace WarpWorld.CrowdControl
         public BroadcasterType broadcasterType;
         public Greeting greeting;
 
-
         protected override void CreateByteArray()
         {
             InitBuffer(0x19);
@@ -227,6 +226,7 @@ namespace WarpWorld.CrowdControl
             Protocol.Write(byteStream, ref offset, blockID);
             Protocol.Write(byteStream, ref offset, jsonStrings[index]);
             WriteChecksumByte();
+            //CrowdControl.LogError(jsonStrings[index]);
         }
 
         public CCJsonBlock(string gameName, Dictionary<uint, CCEffectBase> effectList)
@@ -464,14 +464,15 @@ namespace WarpWorld.CrowdControl
         public string parameters;
 
         public int viewerCount = 0;
+        public int durationTime = 0;
 
         public CCMessageEffectRequest(byte[] buffer)
         {
             int offset = 3;
             Protocol.Read(buffer, ref offset, out blockID);
             Protocol.Read(buffer, ref offset, out effectID);
+            Protocol.Read(buffer, ref offset, out durationTime);
             Protocol.Read(buffer, ref offset, out viewerCount);
-
             viewers = new Viewer[viewerCount];
 
             for (int i = 0; i < viewerCount; i++)

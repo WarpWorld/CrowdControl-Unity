@@ -28,7 +28,7 @@ namespace WarpWorld.CrowdControl {
             AddProperty(ValueType._string, "folderPath", "Folder Path", 50.0f, 150.0f);
             SetNextOffset(-10.0f, true);
             SetX(230.0f);
-            AddPropertyWithSlider(ValueType._int, "maxRetries", "Max Entries", 220.0f, 210.0f, 0, 60);
+            AddPropertyWithSlider(ValueType._int, "maxRetries", "Max Retries", 220.0f, 210.0f, 0, 60);
             NewRow();
             AddPropertyWithSlider(ValueType._float, "retryDelay", "Retry Delay", 220.0f, 210.0f, 0, 10);
             AddPropertyWithSlider(ValueType._float, "pendingDelay", "Pending Delay", 220.0f, 210.0f, 0, 10);
