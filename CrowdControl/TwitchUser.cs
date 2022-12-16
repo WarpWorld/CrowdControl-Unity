@@ -5,7 +5,7 @@ namespace WarpWorld.CrowdControl
     // TODO share with other WarpWorld components? WarpWorld.Twitch maybe?
     /// <summary>
     /// Information about a Twitch user profile.
-    /// </summary>
+    /// </summary> 
     public class TwitchUser
     {
         /// <summary>Unique Twitch user identifier.</summary>

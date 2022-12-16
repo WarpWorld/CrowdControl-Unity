@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace WarpWorld.CrowdControl
+namespace WarpWorld.CrowdControl  
 {
     /// <summary>
     /// The Crowd Control client instance. Handles communications with the server and triggering effects.
@@ -95,6 +95,7 @@ namespace WarpWorld.CrowdControl
         private Dictionary<uint, Queue<uint>> haltedTimers;
         private Dictionary<uint, CCEffectInstanceTimed> runningEffects = new Dictionary<uint, CCEffectInstanceTimed>(); // Timed effects currently running.
         private readonly Dictionary<string, TwitchUser> twitchUsers = new Dictionary<string, TwitchUser>();
+        private Dictionary<string, CCGeneric> generics = new Dictionary<string, CCGeneric>();
         private Dictionary<uint, CCEffectBase> effectsByID = new Dictionary<uint, CCEffectBase>();
 
         private float timeUntilNextEffect;
@@ -109,6 +110,8 @@ namespace WarpWorld.CrowdControl
         private bool _paused = false;
         private bool _adjustPauseTime = false;
         private bool _disconnectFromTimeout = false;
+
+        public bool StagingServer { get { return _staging; } }
 
         /// <summary>Did we start a session?</summary>
         public bool isAuthenticated { get; private set; }
@@ -476,6 +479,10 @@ namespace WarpWorld.CrowdControl
             ConnectSocket();
         }
 
+        private void SendGenericTest(string key, Dictionary<string, string>[] parameters) {
+            
+        }
+
         private void DisconnectedSocket()
         {
             _disconnectFromTimeout = true;
@@ -592,9 +599,12 @@ namespace WarpWorld.CrowdControl
         }
 
         /// <summary> Check if the effect is registered already or not. </summary>
-        public bool EffectIsRegistered(CCEffectBase effectBase)
-        {
+        public bool EffectIsRegistered(CCEffectBase effectBase) {
             return effectsByID.ContainsKey(effectBase.identifier);
+        }
+
+        public void RegisterGeneric(CCGeneric generic) {
+            generics.Add(generic.genericName, generic);
         }
 
         /// <summary> Registers this effect during runtime. </summary>
@@ -765,6 +775,11 @@ namespace WarpWorld.CrowdControl
             OnDisplayMessage?.Invoke(message.receivedMessage, 5.0f, null);
         }
 
+        private void TriggerGeneric(byte [] bytes)
+        {
+            
+        }
+
         private void TriggerEffect(byte[] bytes)
         {
             CCMessageEffectRequest effect = new CCMessageEffectRequest(bytes);
@@ -794,6 +809,11 @@ namespace WarpWorld.CrowdControl
                 ccEffect = effectsByID[effect.effectID];
             }
 
+            if (ccEffect is CCEffectTimed)
+            {
+                (ccEffect as CCEffectTimed).SetDuration(effect.durationTime);
+            }
+
             QueueEffect(ccEffect, effect.viewers, effect.blockID, effect.parameters);
         }
 
@@ -804,13 +824,13 @@ namespace WarpWorld.CrowdControl
 
             Log("Received message type {0} of size {1}", messageType, message.Size);
 
-            switch (messageType)
+            switch (messageType) 
             {
                 case MessageType.Version:
                     HelloMessage(bytes);
                     break;
                 case MessageType.TokenAquisition:
-                    TokenAquisition(bytes);
+                    TokenAquisition(bytes); 
                     break;
                 case MessageType.TokenHandshake:
                     TokenHandshake(bytes);
@@ -824,12 +844,28 @@ namespace WarpWorld.CrowdControl
                 case MessageType.EffectRequest:
                     TriggerEffect(bytes);
                     break;
+                case MessageType.Generic:
+                    TriggerGeneric(bytes);
+                    break;
             }
         }
 
         #endregion
 
         #region Effect Handlings
+
+        public void TestGeneric(CCGeneric generic) {
+            if (!isActiveAndEnabled) return;
+
+            KeyValuePair<string, string> [] keyValues = new KeyValuePair<string, string>[generic.keys.Length];
+
+            for (int i = 0; i < generic.keys.Length; i++) {
+                keyValues[i] = new KeyValuePair<string, string>(generic.keys[i], generic.values[i]);
+            }
+
+            CCMessageGeneric messageGeneric = new CCMessageGeneric(_blockID++, generic.Name, keyValues);
+            Send(messageGeneric);
+        }
 
         /// <summary>Test an effect locally. Its events won't be sent to the server.</summary>
         public void TestEffect(CCEffectBase effect)
@@ -906,8 +942,8 @@ namespace WarpWorld.CrowdControl
                         user.name = viewer.displayName;
                         user.profileIconUrl = viewer.iconURL;
                         yield return StartCoroutine(DownloadPlayerSprite(user));
-                        twitchUsers[user.name] = user;
-                    }
+                        twitchUsers[user.name] = user; 
+                    } 
 
                     if (viewers.Length >= 2 || effect is CCEffectBidWar)
                     {

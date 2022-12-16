@@ -3,7 +3,7 @@ using UnityEngine;
 using System;
 using System.Reflection;
 
-#pragma warning disable 1591
+#pragma warning disable 1591 
 namespace WarpWorld.CrowdControl {
     public class EnumFlag : PropertyAttribute
     {

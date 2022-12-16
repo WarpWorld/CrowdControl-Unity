@@ -39,7 +39,7 @@ namespace WarpWorld.CrowdControl.Overlay {
         public void UpdateLayout()
         {
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, GetWidth());
-            StartCoroutine(SetLayout());
+            //StartCoroutine(SetLayout());
         }
     }
 }

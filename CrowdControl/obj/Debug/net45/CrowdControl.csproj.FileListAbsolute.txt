@@ -10,7 +10,7 @@ C:\Users\Adam\source\repos\CrowdControl\Unity_Net_45\Assets\WarpWorld\Managed\ne
 C:\Users\Adam\source\repos\CrowdControl\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControl.pdb
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControl.dll
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControl.pdb
-C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdControl.csprojAssemblyReference.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdControl.csproj.CoreCompileInputs.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdControl.dll
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdControl.pdb
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdControl.csprojAssemblyReference.cache

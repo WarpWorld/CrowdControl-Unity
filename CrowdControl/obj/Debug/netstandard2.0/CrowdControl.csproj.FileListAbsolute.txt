@@ -14,7 +14,7 @@ C:\Users\Adam\source\repos\CrowdControl\CrowdControl\bin\Debug\netstandard2.0\Ne
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_Standard\Assets\WarpWorld\Managed\netstandard2.0\CrowdControl.deps.json
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_Standard\Assets\WarpWorld\Managed\netstandard2.0\CrowdControl.dll
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_Standard\Assets\WarpWorld\Managed\netstandard2.0\CrowdControl.pdb
-C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.csprojAssemblyReference.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.csproj.CoreCompileInputs.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.dll
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.pdb
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.csprojAssemblyReference.cache

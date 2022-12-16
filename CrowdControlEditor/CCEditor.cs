@@ -20,15 +20,23 @@ namespace WarpWorld.CrowdControl
             return new Rect(x + 20.0f, y - 10.0f, width, height);
         }
 
-        protected void AddLabel(string content, float x, float y, float width, float fontScale = 1.0f, FontStyle fontStyle = FontStyle.Normal) {
+        protected void AddLabel(string content, float x, float y, float width, float fontScale = 1.0f, FontStyle fontStyle = FontStyle.Normal, bool ignoreVersion = false) {
             GUIStyle style = new GUIStyle(GUI.skin.label);
             style.fontStyle = fontStyle;
             style.fontSize = Convert.ToInt32(style.fontSize * fontScale);
-            GUI.Label(GetRect(x, y + 17.5f, width - x - 12.5f + x, 50.0f), new GUIContent(content), style);
+
+            int versionYear = Convert.ToInt32(Application.unityVersion.Substring(0, Application.unityVersion.IndexOf(".")));
+
+            if (versionYear >= 2020 && !ignoreVersion) {
+                GUI.Label(GetRect(x, y - 1.0f, width - x - 12.5f + x, 50.0f), new GUIContent(content), style);
+            }
+            else {
+                GUI.Label(GetRect(x, y + 17.5f, width - x - 12.5f + x, 50.0f), new GUIContent(content), style);
+            }
         }
 
-        protected void AddLabel(string content, float labelWidth, float fontScale = 1.0f, FontStyle fontStyle = FontStyle.Normal) {
-            AddLabel(content, m_coords.x, m_coords.y, labelWidth, fontScale, fontStyle);
+        protected void AddLabel(string content, float labelWidth, float fontScale = 1.0f, FontStyle fontStyle = FontStyle.Normal, bool ignoreVersion = false) {
+            AddLabel(content, m_coords.x, m_coords.y, labelWidth, fontScale, fontStyle, ignoreVersion);
             IncreasePosition(labelWidth);
         }
 
@@ -40,7 +48,14 @@ namespace WarpWorld.CrowdControl
             Rect rect = GetRect(x + propertyX, y + 17f, propertyWidth, height);
 
             if (!string.IsNullOrEmpty(name)) {
-                AddLabel(name, x, y, propertyX);
+                int versionYear = Convert.ToInt32(Application.unityVersion.Substring(0, Application.unityVersion.IndexOf(".")));
+
+                if (valueType == ValueType._bool && versionYear >= 2020) {
+                    AddLabel(name, x, y + 13.5f, propertyX); 
+                }
+                else {
+                    AddLabel(name, x, y, propertyX);
+                }
             } else {
                 propertyX = 0;
             }

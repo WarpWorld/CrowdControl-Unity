@@ -36,7 +36,11 @@ namespace WarpWorld.CrowdControl.Overlay {
         protected internal override void Setup(CCEffectInstance effectInstance) {
             effectIcon.sprite = effectInstance.effect.Icon;
             effectIcon.color = effectInstance.effect.IconColor;
-            effectName.text = effectInstance.effect.Name;
+
+            if (effectName.gameObject.activeSelf)
+            {
+                effectName.text = effectInstance.effect.Name;
+            } 
             userIcon.color = effectInstance.user.profileIconColor;
             userIcon.sprite = effectInstance.user.profileIcon;
             userName.text = effectInstance.user.displayName;

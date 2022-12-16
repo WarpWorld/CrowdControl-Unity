@@ -25,7 +25,7 @@ namespace WarpWorld.CrowdControl {
             SetNextOffset(22.5f, true);
             AddProperty(ValueType._string, "description", "", 0.0f, 290.0f, 100.0f);
             SetNextOffset(112.5f, true);
-            AddProperty(ValueType._string, "folderPath", "Folder Path", 50.0f, 150.0f);
+            AddProperty(ValueType._string, "folderPath", "Folder Path", 80.0f, 130.0f);
             SetNextOffset(-10.0f, true);
             SetX(230.0f);
             AddPropertyWithSlider(ValueType._int, "maxRetries", "Max Retries", 220.0f, 210.0f, 0, 60);
@@ -99,7 +99,7 @@ namespace WarpWorld.CrowdControl {
 
             SerializedProperty ThisList = serializedObject.FindProperty("m_parameterEntries");
 
-            AddLabel("Parameter types", 130.0f, 1.2f, FontStyle.Bold);
+            AddLabel("Parameter types", 150.0f, 1.2f, FontStyle.Bold);
             AddArraySizeProperty(ThisList, 50.0f, 5, 17.5f);
             NewRowWithSpace();
 

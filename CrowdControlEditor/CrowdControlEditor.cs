@@ -37,7 +37,7 @@ namespace WarpWorld.CrowdControl {
             AddProperty(ValueType._bool, "_dontDestroyOnLoad", "Don't Destroy on Load", 300.0f, 50.0f);
 
             SetNextOffset(45.0f, true);
-            AddLabel("Debug Output", 150.0f, 1.2f, FontStyle.Bold);
+            AddLabel("Debug Output", 150.0f, 1.2f, FontStyle.Bold, true);
             NewRow();
 
             AddProperty(ValueType._bool, "_debugLog", "Log", 45.0f, 50.0f);

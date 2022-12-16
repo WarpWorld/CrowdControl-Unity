@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System;
 
-#pragma warning disable 1591
+#pragma warning disable 1591 
 namespace WarpWorld.CrowdControl.Overlay {
     [AddComponentMenu("Crowd Control/Effect Buff UI")]
     public class EffectBuffUI : EffectLogUI { 

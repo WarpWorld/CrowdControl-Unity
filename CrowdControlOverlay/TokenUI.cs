@@ -35,6 +35,7 @@ namespace WarpWorld.CrowdControl.Overlay
         [SerializeField] private TokenUIView _needTokenView;
         [SerializeField] private TokenUIView _connectedView;
         [SerializeField] private Text _tokenInputField;
+        [SerializeField] private Text _tokenInstructions;
 
         public Action<string> onSubmit;
 
@@ -76,9 +77,16 @@ namespace WarpWorld.CrowdControl.Overlay
         {
             _view = view;
 
-            foreach (View v in _viewDictionary.Keys)
-            {
+            foreach (View v in _viewDictionary.Keys) {
                 _viewDictionary[v]._view.gameObject.SetActive(_view == v);
+            }
+
+            if (view == View.InputToken) {
+                if (CrowdControl.instance.StagingServer) {
+                    _tokenInstructions.text = "Please retrieve a temporary token from:\nhttps://staging.crowdcontrol.live/activate";
+                } else {
+                    _tokenInstructions.text = "Please retrieve a temporary token from:\nhttps://crowdcontrol.live/activate";
+                }
             }
         }
 

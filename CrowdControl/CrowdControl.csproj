@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="ILMerge" Version="3.0.29" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFrameworks>net35;net45;netstandard2.0</TargetFrameworks>
 	<DefineConstants Condition="'$(TargetFramework)' == 'net35'">NET35</DefineConstants>
@@ -13,17 +17,17 @@
 
   <ItemGroup>
     <Reference Include="Newtonsoft.Json" Condition="'$(TargetFramework)' == 'net35'">
-      <HintPath>..\include\Newtonsoft\net35\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\include\Newtonsoft\net35\Newtonsoft.JsonCC.dll</HintPath>
       <Private>false</Private>
     </Reference>
 	
 	<Reference Include="Newtonsoft.Json" Condition="'$(TargetFramework)' == 'net45'">
-      <HintPath>..\include\Newtonsoft\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\include\Newtonsoft\net45\Newtonsoft.JsonCC.dll</HintPath>
       <Private>false</Private>
     </Reference>
 	
 	<Reference Include="Newtonsoft.Json" Condition="'$(TargetFramework)' == 'netstandard2.0'">
-      <HintPath>..\include\Newtonsoft\standard\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\include\Newtonsoft\standard\Newtonsoft.JsonCC.dll</HintPath>
       <Private>false</Private>
     </Reference>
 	

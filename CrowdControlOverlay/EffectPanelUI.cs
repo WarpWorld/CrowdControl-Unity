@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
+using System.Collections.Generic;  
 
 #pragma warning disable 1591
 namespace WarpWorld.CrowdControl.Overlay {
     [RequireComponent(typeof(RectTransform), typeof(GridLayoutGroup))]
     [AddComponentMenu("Crowd Control/Effect UI Panel")]
-    public class EffectPanelUI : MonoBehaviour
+    public class EffectPanelUI : MonoBehaviour 
     {
         private Dictionary<uint, EffectUINode> activeEffects = new Dictionary<uint, EffectUINode>();
         private Dictionary<uint, Queue<EffectUINode>> nodePool = new Dictionary<uint, Queue<EffectUINode>>();

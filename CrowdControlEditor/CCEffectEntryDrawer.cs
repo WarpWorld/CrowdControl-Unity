@@ -13,7 +13,6 @@ public class CCEffectEntryDrawer : PropertyDrawer {
 	}
 
 	public override void OnGUI (Rect position, SerializedProperty property, GUIContent label) {
-
         int oldIndentLevel = EditorGUI.indentLevel;
         float oldLabelWidth = EditorGUIUtility.labelWidth;
 
@@ -33,7 +32,7 @@ public class CCEffectEntryDrawer : PropertyDrawer {
         sp.stringValue = options[selectedIndex];
 
         EditorGUI.EndProperty();
-		EditorGUI.indentLevel = oldIndentLevel;
+		EditorGUI.indentLevel = oldIndentLevel; 
         EditorGUIUtility.labelWidth = oldLabelWidth;
         EditorStyles.popup.fixedWidth = oldWidth;
     }

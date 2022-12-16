@@ -94,5 +94,10 @@ namespace WarpWorld.CrowdControl {
         {
             return paused;
         }
+
+        public void SetDuration(int durationTime)
+        {
+            duration = (durationTime / 1000.0f);
+        }
     }
 }

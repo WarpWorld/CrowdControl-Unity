@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using Newtonsoft.JsonCC;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
 
@@ -7,6 +7,7 @@ namespace WarpWorld.CrowdControl
 {
     public enum MessageType
     {
+        Generic = 0xD0,
         Version = 0xF0,
         TokenAquisition = 0xF1,
         TokenHandshake = 0xF2,
@@ -74,6 +75,42 @@ namespace WarpWorld.CrowdControl
         protected virtual void CreateByteArray()
         {
 
+        }
+    }
+
+    public class CCMessageGeneric : CCRequest // 0xD0
+    {
+        private string genericName;
+        private KeyValuePair<string, string>[] parameters;
+
+        protected override void CreateByteArray() {
+            ushort size = (ushort)(14 + genericName.Length * 2);
+
+            for (int i = 0; i < parameters.Length; i++) {
+                size += (ushort)(parameters[i].Key.Length * 2 + 2);
+                size += (ushort)(parameters[i].Value.Length * 2 + 2);
+            }
+
+            InitBuffer(size);
+            WriteMessageType(MessageType.Generic, ref offset);
+            Protocol.Write(byteStream, ref offset, blockID);
+
+            Protocol.Write(byteStream, ref offset, genericName);
+            Protocol.Write(byteStream, ref offset, (uint)parameters.Length);
+
+            for (int i = 0; i < parameters.Length; i++) {
+                Protocol.Write(byteStream, ref offset, parameters[i].Key);
+                Protocol.Write(byteStream, ref offset, parameters[i].Value);
+            }
+
+            WriteChecksumByte();
+        }
+
+        public CCMessageGeneric(uint blockID, string name, KeyValuePair<string, string>[] paramList) {
+            this.blockID = blockID;
+            genericName = name;
+            parameters = paramList;
+            CreateByteArray();
         }
     }
 
@@ -167,7 +204,6 @@ namespace WarpWorld.CrowdControl
         {
             this.blockID = blockID;
             this.token = token;
-            UnityEngine.Debug.LogError(token);
             CreateByteArray();
         }
     }
@@ -226,7 +262,6 @@ namespace WarpWorld.CrowdControl
             Protocol.Write(byteStream, ref offset, blockID);
             Protocol.Write(byteStream, ref offset, jsonStrings[index]);
             WriteChecksumByte();
-            //CrowdControl.LogError(jsonStrings[index]);
         }
 
         public CCJsonBlock(string gameName, Dictionary<uint, CCEffectBase> effectList)
