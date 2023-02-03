@@ -80,14 +80,22 @@ namespace WarpWorld.CrowdControl
 
     public class CCMessageGeneric : CCRequest // 0xD0
     {
-        private string genericName;
-        private KeyValuePair<string, string>[] parameters;
+        public string genericName;
+        public List<KeyValuePair<string, string>> parameters = new List<KeyValuePair<string, string>>();
+
+        public ResponseType response;
 
         protected override void CreateByteArray() {
             ushort size = (ushort)(14 + genericName.Length * 2);
 
-            for (int i = 0; i < parameters.Length; i++) {
+            for (int i = 0; i < parameters.Count; i++) {
                 size += (ushort)(parameters[i].Key.Length * 2 + 2);
+
+                if (string.IsNullOrEmpty(parameters[i].Value)) {
+                    size += 2;
+                    continue;
+                }
+
                 size += (ushort)(parameters[i].Value.Length * 2 + 2);
             }
 
@@ -96,21 +104,40 @@ namespace WarpWorld.CrowdControl
             Protocol.Write(byteStream, ref offset, blockID);
 
             Protocol.Write(byteStream, ref offset, genericName);
-            Protocol.Write(byteStream, ref offset, (uint)parameters.Length);
+            Protocol.Write(byteStream, ref offset, (uint)parameters.Count);
 
-            for (int i = 0; i < parameters.Length; i++) {
+            for (int i = 0; i < parameters.Count; i++) {
                 Protocol.Write(byteStream, ref offset, parameters[i].Key);
+
+                if (string.IsNullOrEmpty(parameters[i].Value)) {
+                    Protocol.Write(byteStream, ref offset, (ushort)0);
+                    continue;
+                }
+
                 Protocol.Write(byteStream, ref offset, parameters[i].Value);
             }
 
             WriteChecksumByte();
         }
 
-        public CCMessageGeneric(uint blockID, string name, KeyValuePair<string, string>[] paramList) {
+        public CCMessageGeneric(uint blockID, string name, KeyValuePair<string, string>[] paramArray) {
             this.blockID = blockID;
             genericName = name;
-            parameters = paramList;
+            parameters = new List<KeyValuePair<string, string>>(paramArray);
             CreateByteArray();
+        }
+
+        public CCMessageGeneric(byte[] buffer) {
+            int offset = 3;
+            Protocol.Read(buffer, ref offset, out blockID);
+            Protocol.Read(buffer, ref offset, out genericName);
+            Protocol.Read(buffer, ref offset, out int count);
+
+            for (int i = 0; i < count; i++) {
+                Protocol.Read(buffer, ref offset, out string key);
+                Protocol.Read(buffer, ref offset, out string value);
+                parameters.Add(new KeyValuePair<string, string>(key, value));
+            }
         }
     }
 
@@ -264,8 +291,7 @@ namespace WarpWorld.CrowdControl
             WriteChecksumByte();
         }
 
-        public CCJsonBlock(string gameName, Dictionary<uint, CCEffectBase> effectList)
-        {
+        public CCJsonBlock(string gameName, Dictionary<uint, CCEffectBase> effectList, CCEffectEntries ccEffectEntries) {
             const int PADDING = 0;
             const int BLOCK_OVERHEAD = 10;
             const int MAX_LENGTH = (0x10000 - (BLOCK_OVERHEAD + PADDING)) / 2; //we take half because it's UTF16
@@ -274,14 +300,15 @@ namespace WarpWorld.CrowdControl
 
             List<ItemType> itemTypes = new List<ItemType>();
 
-            foreach (uint key in effectList.Keys)
-            {
+            foreach (uint key in effectList.Keys) {
                 CCEffectBase effect = effectList[key];
 
-                if (effect is CCEffectParameters)
-                {
-                    foreach (ParameterEntry entry in (effect as CCEffectParameters).ParameterEntries.Values)
-                    {
+                if (!ccEffectEntries.EffectDictionary.ContainsKey(effect.identifier)) {
+                    continue;
+                }
+
+                if (effect is CCEffectParameters) {
+                    foreach (ParameterEntry entry in (effect as CCEffectParameters).ParameterEntries.Values) {
                         itemTypes.Add(new ItemType(entry));
                     }
                 }
@@ -291,8 +318,7 @@ namespace WarpWorld.CrowdControl
             Queue<EffectDescription> remaining = new Queue<EffectDescription>();
             JsonSerializerSettings settings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
 
-            string json = JsonConvert.SerializeObject(new MenuData
-            {
+            string json = JsonConvert.SerializeObject(new MenuData {
                 GameName = gameName,
                 ItemTypes = itemTypes,
                 LoadType = MenuData.MenuLoadType.Overwrite
@@ -302,26 +328,26 @@ namespace WarpWorld.CrowdControl
 
             Dictionary<string, string> folderHierarchy = new Dictionary<string, string>();
 
-            foreach (uint key in effectList.Keys)
-            {
+            foreach (uint key in effectList.Keys) {
                 CCEffectBase effect = effectList[key];
+
+                if (!ccEffectEntries.EffectDictionary.ContainsKey(effect.identifier)) {
+                    continue;
+                }
+
                 string folderParent = string.Empty;
 
-                if (!string.IsNullOrEmpty(effect.folderPath))
-                {
+                if (!string.IsNullOrEmpty(effect.folderPath)) {
                     string[] folders = new string[1] { effect.folderPath };
 
-                    if (effect.folderPath.Contains("/"))
-                    {
+                    if (effect.folderPath.Contains("/")) {
                         folders = effect.folderPath.Split('/');
                     }
 
-                    for (int i = 0; i < folders.Length; i++)
-                    {
+                    for (int i = 0; i < folders.Length; i++) {
                         string folderKey = Utils.ComputeMd5Hash(folders[i] + folderParent).ToString();
 
-                        if (!folderHierarchy.ContainsKey(folderKey))
-                        {
+                        if (!folderHierarchy.ContainsKey(folderKey)) {
                             folderHierarchy.Add(folderKey, folderParent);
                             EffectDescription folderDesc = new EffectDescription(folders[i], ItemKind.Folder, folderKey, folderParent);
                             remaining.Enqueue(folderDesc);
@@ -334,55 +360,49 @@ namespace WarpWorld.CrowdControl
                 EffectDescription effectDesc = new EffectDescription(key, effect, folderParent);
                 remaining.Enqueue(effectDesc);
 
-                if (effect is CCEffectBidWar)
-                {
-                    foreach (BidWarEntry entry in (effect as CCEffectBidWar).BidWarEntries.Values)
-                    {
+                if (effect is CCEffectBidWar) {
+                    foreach (BidWarEntry entry in (effect as CCEffectBidWar).BidWarEntries.Values) {
                         remaining.Enqueue(new EffectDescription(entry, effect, ItemKind.BidWarValue));
                     }
 
                     continue;
                 }
 
-                if (effect is CCEffectParameters)
-                {
-                    foreach (ParameterEntry entry in (effect as CCEffectParameters).ParameterEntries.Values)
-                    {
+                if (effect is CCEffectParameters) {
+                    foreach (ParameterEntry entry in (effect as CCEffectParameters).ParameterEntries.Values) {
                         remaining.Enqueue(new EffectDescription(entry, effect, ItemKind.Usable));
 
                         entry.InitOptions();
 
-                        foreach (ParameterOption option in entry.Options)
-                        {
+                        foreach (ParameterOption option in entry.Options) {
                             remaining.Enqueue(new EffectDescription(option));
                         }
                     }
                 }
             }
 
-            while (remaining.Count > 0)
-            {
+            while (remaining.Count > 0) {
                 EffectDescription currentDescription = remaining.Dequeue();
 
-                if (currentDescription.Kind == ItemKind.Usable && !currentDescription.Parameter)
-                {
+                if (currentDescription.Kind == ItemKind.Usable && !currentDescription.Parameter) {
                     continue;
                 }
 
                 append.Items.Add(currentDescription);
                 json = JsonConvert.SerializeObject(append, settings);
 
-                if (json.Length > MAX_LENGTH)
-                {
-                    if (append.Items.Count <= 1)
-                    {
-                        if (string.IsNullOrEmpty(currentDescription.Description?.Trim()))
-                        {
+                
+
+
+                /*if (json.Length > MAX_LENGTH) {
+                    if (append.Items.Count <= 1) {
+                        if (string.IsNullOrEmpty(currentDescription.Description?.Trim())) {
                             throw new SerializationException("Cannot auto-serialize this menu into 64k blocks.");
                         }
 
                         currentDescription.EraseDescription();
                     }
+
                     append.Items.Remove(currentDescription);
                     remaining.Enqueue(currentDescription);
 
@@ -390,17 +410,15 @@ namespace WarpWorld.CrowdControl
                     append.Items.Clear();
 
                     segments.Enqueue(json);
-                }
+                }*/
             }
 
-            if (append.Items.Count > 0)
-            {
+            if (append.Items.Count > 0) {
                 json = JsonConvert.SerializeObject(append, settings);
                 segments.Enqueue(json);
             }
 
-            while (segments.Count > 0)
-            {
+            while (segments.Count > 0) {
                 jsonStrings.Add(segments.Dequeue());
             }
         }

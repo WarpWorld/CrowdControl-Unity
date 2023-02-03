@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿#if !UNITY_STANDALONE_WIN
+
+using UnityEditor;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
@@ -49,6 +51,8 @@ namespace WarpWorld.CrowdControl {
 
             EditorGUI.BeginChangeCheck();
             serializedObject.ApplyModifiedProperties();
+
+            DrawDefaultInspector();
         }
 
         private List<bool> m_paramFoldout = new List<bool>();
@@ -235,3 +239,4 @@ namespace WarpWorld.CrowdControl {
         //protected void TestEffectRemotely() => CrowdControl.instance?.SendCCEffectThroughServer(effect, "Test");
     }
 }
+#endif

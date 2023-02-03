@@ -14,13 +14,13 @@ namespace WarpWorld.CrowdControl {
         [Range(1, 600)]
         [Tooltip("Duration in seconds before the effect is automatically ended.")]
         /// <summary>Duration in seconds before the effect is automatically ended. </summary>
-        public float duration = 60;
+        [HideInInspector] public float duration = 60;
 
         /// <summary>Is the timer paused?</summary>
         public bool paused { get; internal set; }
 
         /// <summary> Whether the timer displays text or a fill graphic. </summary>
-        public DisplayType displayType;
+        [HideInInspector] public DisplayType displayType;
 
 #pragma warning disable 1591
         /// <summary>Ran when the effect is enabled. Can be overridden by a derived class.</summary>

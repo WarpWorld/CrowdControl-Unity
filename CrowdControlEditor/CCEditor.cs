@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿#if !UNITY_STANDALONE_WIN
+
+using UnityEditor;
 using UnityEngine;
 using System;
 
@@ -26,8 +28,9 @@ namespace WarpWorld.CrowdControl
             style.fontSize = Convert.ToInt32(style.fontSize * fontScale);
 
             int versionYear = Convert.ToInt32(Application.unityVersion.Substring(0, Application.unityVersion.IndexOf(".")));
+            int version = Convert.ToInt32(Application.unityVersion.Substring(0, Application.unityVersion.IndexOf(".")));
 
-            if (versionYear >= 2020 && !ignoreVersion) {
+            if (NewLabelPlacement() && !ignoreVersion) {
                 GUI.Label(GetRect(x, y - 1.0f, width - x - 12.5f + x, 50.0f), new GUIContent(content), style);
             }
             else {
@@ -44,13 +47,19 @@ namespace WarpWorld.CrowdControl
             AddProperty(serializedObject.FindProperty(key), valueType, name, x, y, propertyX, propertyWidth, height);
         }
 
+        private bool NewLabelPlacement() {
+            int versionYear = Convert.ToInt32(Application.unityVersion.Substring(0, Application.unityVersion.IndexOf(".")));
+            string versionNum = Application.unityVersion.Substring(Application.unityVersion.IndexOf(".") + 1);
+            int version = Convert.ToInt32(versionNum.Substring(0, versionNum.IndexOf(".")));
+             
+            return (versionYear >= 2020) || (versionYear == 2019 && version > 10);
+        }
+
         protected void AddProperty(SerializedProperty property, ValueType valueType, string name, float x, float y, float propertyX, float propertyWidth, float height = 20.0f) {
             Rect rect = GetRect(x + propertyX, y + 17f, propertyWidth, height);
 
             if (!string.IsNullOrEmpty(name)) {
-                int versionYear = Convert.ToInt32(Application.unityVersion.Substring(0, Application.unityVersion.IndexOf(".")));
-
-                if (valueType == ValueType._bool && versionYear >= 2020) {
+                if (valueType == ValueType._bool && NewLabelPlacement()) {
                     AddLabel(name, x, y + 13.5f, propertyX); 
                 }
                 else {
@@ -214,3 +223,5 @@ namespace WarpWorld.CrowdControl
         }
     }
 }
+
+#endif

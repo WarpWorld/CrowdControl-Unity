@@ -1,18 +1,28 @@
-﻿using UnityEditor;
+﻿#if !UNITY_STANDALONE_WIN
+
+using UnityEditor;
 using UnityEngine;
 using System;
-using System.Reflection;
 using WarpWorld.CrowdControl;
 using System.Collections.Generic;
+using UnityEditor.Compilation;
 
 [CustomPropertyDrawer(typeof(CCEffectEntry))]
 public class CCEffectEntryDrawer : PropertyDrawer {
-    
-	public override float GetPropertyHeight (SerializedProperty property, GUIContent label) {
+
+    UnityEditor.Compilation.Assembly[] playerAssemblies = null;
+    private bool assemblyLoaded = false;
+
+    public override float GetPropertyHeight (SerializedProperty property, GUIContent label) {
 		return 20f;
 	}
 
 	public override void OnGUI (Rect position, SerializedProperty property, GUIContent label) {
+        if (!assemblyLoaded) {
+            AssemblyReloadEvents.afterAssemblyReload += ReloadAssemblies;
+            assemblyLoaded = true;
+        }
+
         int oldIndentLevel = EditorGUI.indentLevel;
         float oldLabelWidth = EditorGUIUtility.labelWidth;
 
@@ -29,7 +39,15 @@ public class CCEffectEntryDrawer : PropertyDrawer {
 
         SerializedProperty sp = property.FindPropertyRelative("ClassName");
         int selectedIndex = EditorGUI.Popup(contentPosition, label, CurrentSelectedIndex(sp, options), comboItemDatabaseGUIContents);
-        sp.stringValue = options[selectedIndex];
+
+        if (selectedIndex >= options.Count) {  
+            sp.stringValue = "";
+        }
+        else if (selectedIndex >= options.Count) {
+            sp.stringValue = options[0];
+        } else  {
+            sp.stringValue = options[selectedIndex];
+        } 
 
         EditorGUI.EndProperty();
 		EditorGUI.indentLevel = oldIndentLevel; 
@@ -37,10 +55,8 @@ public class CCEffectEntryDrawer : PropertyDrawer {
         EditorStyles.popup.fixedWidth = oldWidth;
     }
 
-    private int CurrentSelectedIndex(SerializedProperty sp, List<string> options)
-    {
-        for (int i = 0; i < options.Count; i++)
-        {
+    private int CurrentSelectedIndex(SerializedProperty sp, List<string> options) {
+        for (int i = 0; i < options.Count; i++) {
             if (sp.stringValue == options[i])
                 return i;
         }
@@ -48,21 +64,34 @@ public class CCEffectEntryDrawer : PropertyDrawer {
         return 0;
     }
 
-    private List<string> AllEffects()
-    {
+    private void ReloadAssemblies() {
+        playerAssemblies = CompilationPipeline.GetAssemblies();
+    }
+
+    private List<string> AllEffects() {
         Type type = typeof(CCEffectBase);
         List<string> effectNames = new List<string>();
 
-        Assembly asm = Assembly.Load("Assembly-CSharp");
+        if (playerAssemblies == null) {
+            ReloadAssemblies();
+        }
 
-        Type[] baseEffects = asm.GetTypes();
+        foreach (var assembly in playerAssemblies) {
+            if (assembly.name.Contains("UnityEngine.") || assembly.name.Contains("UnityEditor.") || assembly.name.Contains("Unity.") || assembly.name.Contains("System."))  {
+                continue;
+            }
 
-        foreach (Type baseEffect in baseEffects)
-        {
-            if (type.IsAssignableFrom(baseEffect))
-                effectNames.Add(baseEffect.ToString());
+            System.Reflection.Assembly asm = System.Reflection.Assembly.Load(assembly.name.ToString());
+
+            Type[] baseEffects = asm.GetTypes();
+
+            foreach (Type baseEffect in baseEffects) {
+                if (type.IsAssignableFrom(baseEffect))
+                    effectNames.Add(baseEffect.ToString());
+            }
         }
 
         return effectNames;
     }
 }
+#endif

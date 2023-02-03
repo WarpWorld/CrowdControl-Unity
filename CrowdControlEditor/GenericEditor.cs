@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿#if !UNITY_STANDALONE_WIN
+
+using UnityEditor;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
@@ -33,8 +35,12 @@ namespace WarpWorld.CrowdControl {
             }
 
             if (Application.isPlaying) {
-                if (AddButton("Trigger Test", 100.0f)) {
+                if (AddButton("Send Test", 100.0f)) {
                     TestGeneric();
+                }
+
+                if (AddButton("Receive Test", 100.0f)) {
+                    GetGeneric();
                 }
 
                 NewRow();
@@ -48,5 +54,7 @@ namespace WarpWorld.CrowdControl {
         }
 
         protected void TestGeneric() => CrowdControl.instance?.TestGeneric(generic);
+        protected void GetGeneric() => CrowdControl.instance?.GetGeneric(generic);
     }
 }
+#endif

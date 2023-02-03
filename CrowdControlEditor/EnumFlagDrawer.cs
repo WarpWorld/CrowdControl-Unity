@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿#if !UNITY_STANDALONE_WIN
+
+using UnityEditor;
 using UnityEngine;
 using System;
 using System.Reflection;
@@ -19,3 +21,4 @@ namespace WarpWorld.CrowdControl {
         }
     }
 }
+#endif

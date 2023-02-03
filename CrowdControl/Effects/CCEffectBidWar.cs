@@ -7,10 +7,11 @@ namespace WarpWorld.CrowdControl
     /// <summary> Base effect for bid war effects. </summary>
     public abstract class CCEffectBidWar : CCEffectBase
     {
-        public Dictionary<uint, BidWarEntry> BidWarEntries { get; private set; } = new Dictionary<uint, BidWarEntry>();
+        [HideInInspector] public Dictionary<uint, BidWarEntry> BidWarEntries { get; private set; } = new Dictionary<uint, BidWarEntry>();
 
         /// <summary>A list of bid names for this bid war</summary>
         [SerializeField]
+        [HideInInspector]
         [Tooltip("A list of bid names for this bid war")]
         private List<BidWarEntry> m_bidWarEntries = new List<BidWarEntry>();
         private CCBidWarLibrary m_bidWarLibrary = new CCBidWarLibrary();
@@ -40,21 +41,17 @@ namespace WarpWorld.CrowdControl
         }
 
         /// <summary> Takes the list of this effect's parameters and adds them to the effect list. </summary>
-        public override void RegisterParameters(CCEffectEntries effectEntries)
-        {
-            foreach (BidWarEntry entry in m_bidWarEntries)
-            {
+        public override void RegisterParameters(CCEffectEntries effectEntries) {
+            foreach (BidWarEntry entry in m_bidWarEntries) {
                 RegisterBidWarEntry(entry, effectEntries);
             }
         }
 
         /// <summary>All Parameters for this effect as a string.</summary>
-        public override string Params()
-        {
+        public override string Params() {
             List<string> names = new List<string>();
 
-            foreach (BidWarEntry entry in m_bidWarEntries)
-            {
+            foreach (BidWarEntry entry in m_bidWarEntries) {
                 names.Add(entry.Name);
             }
 
@@ -71,7 +68,7 @@ namespace WarpWorld.CrowdControl
 
             BidWarEntries.Add(key, entry);
             effectEntries.AddParameter(entry.ID, entry.Name, identifier, ItemKind.BidWarValue);
-            CrowdControl.instance.Log("Registered Paramter {0} for {1} index {2}", entry.Name, displayName, entry.ID);
+            CrowdControl.instance?.Log("Registered Paramter {0} for {1} index {2}", entry.Name, displayName, entry.ID);
         }
 
         public bool PlaceBid(uint bidID, uint amount)
@@ -101,7 +98,7 @@ namespace WarpWorld.CrowdControl
 
         private void Awake()
         {
-            identifier = Utils.ComputeMd5Hash(this.GetType().FullName);
+            identifier = Utils.ComputeMd5Hash(Name + "-" + GetType().ToString());
 
             if (CrowdControl.instance != null && CrowdControl.instance.EffectIsRegistered(this))
             {

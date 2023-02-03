@@ -12,11 +12,11 @@ namespace WarpWorld.CrowdControl
 #pragma warning disable 1587
         [Tooltip("Image to display in the CrowdControl Twitch extension and in the onscreen overlay.")]
         /// <summary>Image to display in the CrowdControl Twitch extension and in the onscreen overlay. </summary>
-        public Sprite icon;
+        [HideInInspector] public Sprite icon;
 
         [Tooltip("Color used to tint the effect's icon.")]
         /// <summary>Color used to tint the effect's icon. </summary>
-        public Color iconColor = Color.white;
+        [HideInInspector] public Color iconColor = Color.white;
 
         /// <summary>Unique identifier of the effect. </summary>
         [HideInInspector]
@@ -24,45 +24,45 @@ namespace WarpWorld.CrowdControl
 
         [Tooltip("Name of the effect displayed to the users.")]
         /// <summary>Name of the effect displayed to the users. </summary>
-        public string displayName;
+        [HideInInspector] public string displayName;
 
         [TextArea]
         [Tooltip("Information about the effect, displayed in the extension.")]
         /// <summary>Information about the effect, displayed in the extension. </summary>
-        public string description;
+        [HideInInspector] public string description;
 
         [Tooltip("The price it costs to activate this effect")]
         /// <summary>Information about the effect, displayed in the extension. </summary>
-        public uint price = 10;
+        [HideInInspector] public uint price = 10;
 
         [Range(0, 60)]
         [Tooltip("Number of retries before the effect instance fails.")]
         /// <summary>Number of retries before the effect instance fails. </summary>
-        public int maxRetries = 3;
+        [HideInInspector] public int maxRetries = 3;
 
         [Range(0, 10)]
         [Tooltip("Delay in seconds before retrying to trigger an effect instance.")]
         /// <summary>Delay in seconds before retrying to trigger an effect instance. </summary>
-        public float retryDelay = 5;
+        [HideInInspector] public float retryDelay = 5;
 
         [Range(0, 10)]
         [Tooltip("Delay in seconds to wait before triggering the next effect instance.")]
         /// <summary>Delay in seconds to wait before triggering the next effect instance. </summary>
-        public float pendingDelay = .5f;
+        [HideInInspector] public float pendingDelay = .5f;
 #pragma warning restore 1587
 #pragma warning restore 1591
 
         // Wait until this time before triggering the next effect instance. Used by CrowdControl.TryStart.
         internal float delayUntilUnscaledTime = 0.0f;
 
-        public virtual Sprite Icon { get { return icon; } }
+        [HideInInspector] public virtual Sprite Icon { get { return icon; } }
 
-        public virtual string Name { get { return displayName; } }
+        [HideInInspector] public virtual string Name { get { return displayName; } }
 
         /// <summary>Folder this effect belongs to</summary>
-        public string folderPath;
+        [HideInInspector] public string folderPath;
 
-        public virtual Color IconColor { get { return iconColor; } }
+        [HideInInspector] public virtual Color IconColor { get { return iconColor; } }
 
         /// <summary>Additional Info for the effect. Can be overridden by a derived class.</summary>
         public virtual string Params() { return string.Empty; }
@@ -103,13 +103,15 @@ namespace WarpWorld.CrowdControl
             CrowdControl.instance.RegisterEffect(this);
         }
 
-        // Register the effect
-        private void Awake()
-        {
-            identifier = Utils.ComputeMd5Hash(this.GetType().FullName);
+        public void SetIdentifier() {
+            identifier = Utils.ComputeMd5Hash(Name + "-" + GetType().ToString());
+        }
 
-            if (CrowdControl.instance != null && CrowdControl.instance.EffectIsRegistered(this))
-            {
+        // Register the effect
+        private void Awake() {
+            SetIdentifier();
+
+            if (CrowdControl.instance != null && CrowdControl.instance.EffectIsRegistered(this)) {
                 return;
             }
 

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace WarpWorld.CrowdControl
+namespace WarpWorld.CrowdControl 
 {
     [System.Serializable]
     public class BidWarEntry

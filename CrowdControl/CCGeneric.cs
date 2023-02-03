@@ -23,5 +23,20 @@ namespace WarpWorld.CrowdControl {
             StartCoroutine(RegisterGeneric());
             values = new string[keys.Length];
         }
+
+        public void Apply(CCMessageGeneric messageGeneric) {
+            foreach (KeyValuePair<string, string> keyValue in messageGeneric.parameters) {
+                for (int i = 0; i < keys.Length; i++) {
+                    if (string.Equals(keys[i], keyValue.Key)) {
+                        values[i] = keyValue.Value;
+                        break;
+                    }
+                }
+            }
+
+            OnAssigned();
+        }
+
+        public virtual void OnAssigned() { }
     }
 }

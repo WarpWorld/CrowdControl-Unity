@@ -7,9 +7,10 @@ namespace WarpWorld.CrowdControl
     public abstract class CCEffectParameters : CCEffectBase
     {
         /// <summary>List of entries for this parameter effect</summary>
-        public Dictionary<uint, ParameterEntry> ParameterEntries { get; private set; } = new Dictionary<uint, ParameterEntry>();
+        [HideInInspector] public Dictionary<uint, ParameterEntry> ParameterEntries { get; private set; } = new Dictionary<uint, ParameterEntry>();
 
         [SerializeField]
+        [HideInInspector]
         [Tooltip("List of entries for this parameter effect")]
         private List<ParameterEntry> m_parameterEntries = new List<ParameterEntry>();
         private List<string> m_parameterStrings = new List<string>();
@@ -66,7 +67,7 @@ namespace WarpWorld.CrowdControl
                 entry.SetID(key);
                 ParameterEntries.Add(key, entry);
                 effectEntries.AddParameter(key, entry.Name, identifier, ItemKind.Usable);
-                CrowdControl.instance.Log("Registered Paramter {0} for {1} with key {2}", entry.Name, displayName, key);
+                CrowdControl.instance?.Log("Registered Paramter {0} for {1} with key {2}", entry.Name, displayName, key);
 
                 if (entry.ParamKind != ParameterEntry.Kind.Item)
                 {
@@ -78,7 +79,7 @@ namespace WarpWorld.CrowdControl
                 foreach (ParameterOption option in entry.Options)
                 {
                     effectEntries.AddParameter(option.ID, option.Name, option.ParentID, ItemKind.Effect);
-                    CrowdControl.instance.Log("Registered Paramter Options {0} for {1} with key {2}", option.Name, entry.Name, option.ID);
+                    CrowdControl.instance?.Log("Registered Paramter Options {0} for {1} with key {2}", option.Name, entry.Name, option.ID);
                 }
             }
         }
