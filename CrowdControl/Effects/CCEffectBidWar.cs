@@ -7,9 +7,9 @@ namespace WarpWorld.CrowdControl
     /// <summary> Base effect for bid war effects. </summary>
     public abstract class CCEffectBidWar : CCEffectBase
     {
+        /// <summary>A list of Bid War entries that viewers can choose from. </summary>
         [HideInInspector] public Dictionary<uint, BidWarEntry> BidWarEntries { get; private set; } = new Dictionary<uint, BidWarEntry>();
 
-        /// <summary>A list of bid names for this bid war</summary>
         [SerializeField]
         [HideInInspector]
         [Tooltip("A list of bid names for this bid war")]
@@ -17,6 +17,7 @@ namespace WarpWorld.CrowdControl
         private CCBidWarLibrary m_bidWarLibrary = new CCBidWarLibrary();
         private BidWarEntry m_winnerEntry = null;
 
+        /// <summary>The winning Bid War Entry's name. If there's no winner, this will return the name of this Bid War Effect</summary>
         public override string Name {
             get {
                 if (m_winnerEntry == null)
@@ -28,19 +29,21 @@ namespace WarpWorld.CrowdControl
             }
         }
 
+        /// <summary>The winning Bid War Entry's icon. If there's no winner, this will return the icon of this Bid War effect</summary>
         public override Sprite Icon {
             get {
                 return m_winnerEntry != null && m_winnerEntry.Sprite != null ? m_winnerEntry.Sprite : icon;
             }
         }
 
+        /// <summary>The winning Bid War Entry's icon. If there's no winner, this will return the icon's tint of this Bid War effect</summary>
         public override Color IconColor {
             get {
                 return m_winnerEntry != null && m_winnerEntry.Tint != null ? m_winnerEntry.Tint : iconColor;
             }
         }
 
-        /// <summary> Takes the list of this effect's parameters and adds them to the effect list. </summary>
+        /// <summary> Takes the list of this effect's parameters and adds them to the effect list</summary>
         public override void RegisterParameters(CCEffectEntries effectEntries) {
             foreach (BidWarEntry entry in m_bidWarEntries) {
                 RegisterBidWarEntry(entry, effectEntries);
@@ -71,6 +74,7 @@ namespace WarpWorld.CrowdControl
             CrowdControl.instance?.Log("Registered Paramter {0} for {1} index {2}", entry.Name, displayName, entry.ID);
         }
 
+        /// <summary>Place a bid towards one of the bid war entries. Returns true if this causes a new winner.</summary>
         public bool PlaceBid(uint bidID, uint amount)
         {
             bool newWinner = m_bidWarLibrary.PlaceBid(bidID, amount);
@@ -82,7 +86,8 @@ namespace WarpWorld.CrowdControl
 
             return newWinner;
         }
-        
+
+        /// <summary>Returns true if any of the Bid War Entries contains an internal ID.</summary>
         public override bool HasParameterID(uint id)
         {
             return BidWarEntries.ContainsKey(id);

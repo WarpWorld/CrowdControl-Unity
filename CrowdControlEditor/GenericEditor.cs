@@ -2,8 +2,6 @@
 
 using UnityEditor;
 using UnityEngine;
-using System;
-using System.Collections.Generic;
 
 namespace WarpWorld.CrowdControl {
     [CustomEditor(typeof(CCGeneric), true)] 
@@ -53,8 +51,8 @@ namespace WarpWorld.CrowdControl {
             serializedObject.ApplyModifiedProperties();
         }
 
-        protected void TestGeneric() => CrowdControl.instance?.TestGeneric(generic);
-        protected void GetGeneric() => CrowdControl.instance?.GetGeneric(generic);
+        protected void TestGeneric() => CrowdControl.instance?.SendGenericTest(generic);
+        protected void GetGeneric() => CrowdControl.instance?.GetGenericTest(generic);
     }
 }
 #endif

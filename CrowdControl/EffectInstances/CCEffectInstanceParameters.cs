@@ -8,6 +8,7 @@
             Parameters = newParams.Substring(1, newParams.Length - 2).Split(',');
         }
 
+        /// <summary>Get the parameter based on it's specific index.</summary>
         public string GetParameter(int index)
         {
             if (Parameters == null || Parameters.Length == 0 || index >= Parameters.Length)

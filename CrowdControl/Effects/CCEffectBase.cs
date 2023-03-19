@@ -55,13 +55,16 @@ namespace WarpWorld.CrowdControl
         // Wait until this time before triggering the next effect instance. Used by CrowdControl.TryStart.
         internal float delayUntilUnscaledTime = 0.0f;
 
+        /// <summary>The effect's icon.</summary>
         [HideInInspector] public virtual Sprite Icon { get { return icon; } }
 
+        /// <summary>The name of this effect.</summary>
         [HideInInspector] public virtual string Name { get { return displayName; } }
 
         /// <summary>Folder this effect belongs to</summary>
         [HideInInspector] public string folderPath;
 
+        /// <summary>The color tint of this effect's icon</summary>
         [HideInInspector] public virtual Color IconColor { get { return iconColor; } }
 
         /// <summary>Additional Info for the effect. Can be overridden by a derived class.</summary>
@@ -103,6 +106,7 @@ namespace WarpWorld.CrowdControl
             CrowdControl.instance.RegisterEffect(this);
         }
 
+        /// <summary>Sets the internal ID of this effect.</summary>
         public void SetIdentifier() {
             identifier = Utils.ComputeMd5Hash(Name + "-" + GetType().ToString());
         }

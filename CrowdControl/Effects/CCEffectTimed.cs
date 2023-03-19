@@ -95,6 +95,7 @@ namespace WarpWorld.CrowdControl {
             return paused;
         }
 
+        /// <summary> Set the duration of this Timed Effect </summary>
         public void SetDuration(int durationTime)
         {
             duration = (durationTime / 1000.0f);

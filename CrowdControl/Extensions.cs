@@ -17,7 +17,7 @@ namespace WarpWorld.CrowdControl
 {
     internal static class Extensions
     {
-        public static Task WaitAsync(this WaitHandle waitHandle)
+        private static Task WaitAsync(this WaitHandle waitHandle)
         {
             if (waitHandle == null) { throw new ArgumentNullException(nameof(waitHandle)); }
 
@@ -28,7 +28,7 @@ namespace WarpWorld.CrowdControl
             return result;
         }
 
-        public static Task<bool> WaitAsync(this WaitHandle waitHandle, TimeSpan timeout)
+        private static Task<bool> WaitAsync(this WaitHandle waitHandle, TimeSpan timeout)
         {
             if (waitHandle == null) { throw new ArgumentNullException(nameof(waitHandle)); }
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
@@ -55,7 +55,7 @@ namespace WarpWorld.CrowdControl
 
 
 #if NET35
-        public static bool HasFlag(this Enum variable, Enum value)
+        private static bool HasFlag(this Enum variable, Enum value)
         {
             // check if from the same type.
             if (variable.GetType() != value.GetType())

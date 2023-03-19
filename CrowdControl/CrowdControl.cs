@@ -82,12 +82,16 @@ namespace WarpWorld.CrowdControl
 
         /// <summary>Singleton instance. Will be <see langword="null"/> if the behaviour isn't in the scene.</summary>
         public static CrowdControl instance { get; private set; }
+
         /// <summary>Reference to the test user object. Used to dispatch local effects.</summary>
         public static TwitchUser testUser { get; private set; }
+
         /// <summary>Reference to the crowd user object. Used to dispatch pooled effects.</summary>
         public static TwitchUser crowdUser { get; private set; }
+
         /// <summary>Reference to the crowd user object. Used to dispatch effects with an unknown contributor.</summary>
         public static TwitchUser anonymousUser { get; private set; }
+
         /// <summary>Reference to the streamer user object.</summary>
         public static TwitchUser streamerUser { get; private set; }
 
@@ -118,10 +122,13 @@ namespace WarpWorld.CrowdControl
 
         /// <summary>Did we start a session?</summary>
         public bool isAuthenticated { get; private set; }
+
         /// <summary>Whether the connection to the server is currently initializing.</summary>
         public bool isConnecting { get; private set; }
+
         /// <summary>Are you connected or not</summary>
         public bool isConnected => _socketProvider != null && _socketProvider.Connected;
+
         /// <summary>The latest disconnect occured due to an error.</summary>
         public bool disconnectedFromError { get; private set; }
         #endregion
@@ -145,9 +152,13 @@ namespace WarpWorld.CrowdControl
         public event Action<uint, EffectResult> OnEffectDequeue;
         /// <summary>Invoked when an important message needs to be displayed.</summary>
         public event Action<string, float, Sprite> OnDisplayMessage;
+        /// <summary>Invoked when the token input field is displayed.</summary>
         public event Action<bool> OnToggleTokenView;
+        /// <summary>Invoked when you attempt to connect without any temporary token.</summary>
         public event Action OnNoToken;
+        /// <summary>Invoked when you submit your temporary token.</summary>
         public event Action OnSubmitTempToken;
+        /// <summary>Invoked when you attempt to connect with an incorrect temporary token.</summary>
         public event Action OnTempTokenFailure;
 
         /// <summary>Invoked when an <see cref="CCEffectBase"/> is successfully triggered.</summary>
@@ -472,6 +483,9 @@ namespace WarpWorld.CrowdControl
             _socketProvider = null;
         }
 
+        /// <summary>
+        /// Gets the JSON Manifest of your effect pack.
+        /// </summary>
         public string GetJSONManifest() {
             CCJsonBlock jsonBlock = new CCJsonBlock(_gameName, effectsByID, ccEffectEntries);
             return jsonBlock.jsonStrings[0] + " " + jsonBlock.jsonStrings[1];
@@ -620,7 +634,7 @@ namespace WarpWorld.CrowdControl
         }
 
         public void RegisterGeneric(CCGeneric generic) {
-            generics.Add(generic.genericName, generic);
+            generics.Add(generic.Name, generic);
         }
 
         public void ReRegisterEffects() {
@@ -629,7 +643,7 @@ namespace WarpWorld.CrowdControl
                 return;
             }
 
-            ccEffectEntries.ResetDictionary();
+            ccEffectEntries.PrivateResetDictionary();
 
             foreach (uint effectBaseID in effectsByID.Keys) { 
                 RegisterEffect(effectsByID[effectBaseID], true); 
@@ -638,7 +652,7 @@ namespace WarpWorld.CrowdControl
 
         /// <summary> Registers this effect during runtime. </summary>
         public void RegisterEffect(CCEffectBase effectBase, bool silent = false) {
-            ccEffectEntries.AddEffect(effectBase);
+            ccEffectEntries.PrivateAddEffect(effectBase);
 
             if (!effectsByID.ContainsKey(effectBase.identifier)) {
                 effectsByID.Add(effectBase.identifier, effectBase);
@@ -818,9 +832,17 @@ namespace WarpWorld.CrowdControl
             OnDisplayMessage?.Invoke(message.receivedMessage, 5.0f, null);
         }
 
-        private void TriggerGeneric(byte [] bytes)
-        {
-            
+        private void TriggerGeneric(byte [] bytes) {
+            CCMessageGeneric messageGeneric = new CCMessageGeneric(bytes);
+
+            foreach (string s in generics.Keys) {
+                if (string.Equals(s, messageGeneric.genericName)) {
+                    generics[s].Apply(messageGeneric);
+                    return;
+                }
+            }
+
+            LogError("Generic Class " + messageGeneric.genericName + " not found!");
         }
 
         private void TriggerEffect(byte[] bytes)
@@ -897,34 +919,17 @@ namespace WarpWorld.CrowdControl
 
         #region Effect Handlings
 
-        public void TestGeneric(CCGeneric generic) {
+        /// <summary>Test a generic being sent to the server.</summary>
+        public void SendGenericTest(CCGeneric generic) {
             if (!isActiveAndEnabled) return;
-
-            KeyValuePair<string, string> [] keyValues = new KeyValuePair<string, string>[generic.keys.Length];
-
-            for (int i = 0; i < generic.keys.Length; i++) {
-                keyValues[i] = new KeyValuePair<string, string>(generic.keys[i], generic.values[i]);
-            }
-
-            CCMessageGeneric messageGeneric = new CCMessageGeneric(_blockID++, generic.Name, keyValues);
+            CCMessageGeneric messageGeneric = new CCMessageGeneric(_blockID++, generic.Name, generic.Data());
             Send(messageGeneric);
         }
 
-        public void GetGeneric(CCGeneric generic) {
-            byte[] testBuffer = new byte[] {
-                0x0, 0x3A, 0xD0, 0x0, 0x0, 0x0, 0x5, 0x0, 0x47, 0x0, 0x65, 0x0, 0x6E, 0x0, 0x65, 0x0, 0x72, 0x0, 0x69, 0x0, 0x63, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1, 0x0, 0x54, 0x0, 0x65, 0x0, 0x73, 0x0, 0x74, 0x0, 0x0, 0x0, 0x73, 0x0, 0x66, 0x0, 0x64, 0x0, 0x61, 0x0, 0x73, 0x0, 0x66, 0x0, 0x64, 0x0, 0x73, 0x0, 0x61, 0x0, 0x0, 0x1C
-            };
-
-            CCMessageGeneric messageGeneric = new CCMessageGeneric(testBuffer);
-
-            foreach (string s in generics.Keys) {
-                if (string.Equals(s, messageGeneric.genericName)) {
-                    generics[s].Apply(messageGeneric);
-                    return;
-                }
-            }
-
-            LogError("Generic Class " + messageGeneric.genericName + " not found!");
+        /// <summary>Test a generic locally.</summary>
+        public void GetGenericTest(CCGeneric generic) {
+            CCMessageGeneric testGeneric = new CCMessageGeneric(_blockID++, generic.Name, generic.Data());
+            TriggerGeneric(testGeneric.ByteStream);
         }
 
         /// <summary>Test an effect locally. Its events won't be sent to the server.</summary>

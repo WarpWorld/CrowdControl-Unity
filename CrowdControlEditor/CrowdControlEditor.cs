@@ -114,13 +114,13 @@ namespace WarpWorld.CrowdControl {
             CCEffectEntries effectEntries = cc.gameObject.GetComponent<CCEffectEntries>();
             Dictionary<uint, CCEffectBase> effectsByID = new Dictionary<uint, CCEffectBase>();
 
-            effectEntries.ResetDictionary();
-            effectEntries.PopulateDictionary();
+            effectEntries.PrivateResetDictionary();
+            effectEntries.PrivatePopulateDictionary();
 
             CCEffectBase [] effectBases = FindObjectsOfType<CCEffectBase>();
 
             foreach (CCEffectBase effectBase in effectBases) {
-                effectEntries.AddEffect(effectBase);
+                effectEntries.PrivateAddEffect(effectBase);
 
                 if (!effectsByID.ContainsKey(effectBase.identifier)) {
                     effectBase.SetIdentifier();
@@ -130,7 +130,7 @@ namespace WarpWorld.CrowdControl {
             }
 
             CCJsonBlock jsonBlock = new CCJsonBlock(gameName, effectsByID, effectEntries);
-            effectEntries.ResetDictionary();
+            effectEntries.PrivateResetDictionary();
 
             foreach (CCEffectBase effectBase in effectBases) {
                 if (effectBase is CCEffectBidWar) {

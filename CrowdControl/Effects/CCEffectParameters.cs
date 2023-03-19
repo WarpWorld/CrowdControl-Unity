@@ -84,6 +84,7 @@ namespace WarpWorld.CrowdControl
             }
         }
 
+        /// <summary>Returns true if this Parameter Effect is the parent of the parameter ID. Overridable</summary>
         public override bool HasParameterID(uint id)
         {
             return ParameterEntries.ContainsKey(id);

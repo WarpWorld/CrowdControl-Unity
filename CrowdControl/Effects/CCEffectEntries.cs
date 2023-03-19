@@ -13,11 +13,11 @@ namespace WarpWorld.CrowdControl {
         public Dictionary<uint, CCEffectEntry> EffectDictionary = new Dictionary<uint, CCEffectEntry>();
          
         private void Awake() {
-            ResetDictionary();
-            PopulateDictionary();
+            PrivateResetDictionary();
+            PrivatePopulateDictionary();
         }
 
-        public void PopulateDictionary() {
+        public void PrivatePopulateDictionary() {
             for (int i = 0; i < effectArray.Length; i++) {
                 if (string.IsNullOrEmpty(effectArray[i].ClassName)) {
                     continue;
@@ -27,11 +27,11 @@ namespace WarpWorld.CrowdControl {
             }
         }
 
-        public void ResetDictionary() {
+        public void PrivateResetDictionary() {
             EffectDictionary = new Dictionary<uint, CCEffectEntry>();
         }
 
-        public bool AddEffect(CCEffectBase effect) {
+        public bool PrivateAddEffect(CCEffectBase effect) {
             for (int i = 0; i < effectArray.Length; i++) {
                 if (Equals(effect.GetType().ToString(), effectArray[i].ClassName)) {
                     if (EffectDictionary.ContainsKey(effect.identifier)) {
@@ -51,8 +51,7 @@ namespace WarpWorld.CrowdControl {
         /// <summary>How many effects does the game have?</summary>
         public int Count { get { return EffectDictionary.Count; } }
 
-        public void AddParameter(uint key, string paramName, uint parentID, ItemKind type)
-        {
+        public void AddParameter(uint key, string paramName, uint parentID, ItemKind type) {
             EffectDictionary.Add(key, new CCEffectEntry(key, type.ToString(), parentID));
         }
     }
