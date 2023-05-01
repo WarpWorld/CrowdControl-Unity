@@ -17,9 +17,9 @@ namespace WarpWorld.CrowdControl {
             Rect rt = GUILayoutUtility.GetRect(new GUIContent("some button"), GUIStyle.none);
             InitCoords(rt.y);
 
-            if (!Application.isPlaying)
+            if (!Application.isPlaying) 
             {
-                AddProperty(ValueType._int, "_gameKey", "Game Key", 77.5f, 35.0f);
+                AddProperty(ValueType._string, "_gameKey", "Game Key", 87.5f, 100.0f);
                 AddProperty(ValueType._string, "_gameName", "Game Name", 87.5f, 200.0f);
                 NewRow();
             }
@@ -112,7 +112,7 @@ namespace WarpWorld.CrowdControl {
             string gameName = serializedObject.FindProperty("_gameName").stringValue;
 
             CCEffectEntries effectEntries = cc.gameObject.GetComponent<CCEffectEntries>();
-            Dictionary<uint, CCEffectBase> effectsByID = new Dictionary<uint, CCEffectBase>();
+            Dictionary<string, CCEffectBase> effectsByID = new Dictionary<string, CCEffectBase>();
 
             effectEntries.PrivateResetDictionary();
             effectEntries.PrivatePopulateDictionary();
@@ -122,9 +122,9 @@ namespace WarpWorld.CrowdControl {
             foreach (CCEffectBase effectBase in effectBases) {
                 effectEntries.PrivateAddEffect(effectBase);
 
-                if (!effectsByID.ContainsKey(effectBase.identifier)) {
+                if (!effectsByID.ContainsKey(effectBase.effectKey)) {
                     effectBase.SetIdentifier();
-                    effectsByID.Add(effectBase.identifier, effectBase);
+                    effectsByID.Add(effectBase.effectKey, effectBase);
                     effectBase.RegisterParameters(effectEntries);
                 }
             }
@@ -144,12 +144,8 @@ namespace WarpWorld.CrowdControl {
                 }
             }
 
-            if (jsonBlock.jsonStrings.Count < 2) {
-                return;
-            }
-
             JSONWindow jSONWindow = (JSONWindow)EditorWindow.GetWindow(typeof(JSONWindow), true, "JSON");
-            JSONWindow.Init(jsonBlock.jsonStrings[0] + ",\n" + jsonBlock.jsonStrings[1]);
+            JSONWindow.Init(jsonBlock.jsonString);
         }
     }
 }

@@ -17,9 +17,7 @@ namespace WarpWorld.CrowdControl {
             AddProperty(ValueType._string, "displayName", "Name", 50.0f, 250.0f);
 
             if (!(effect is CCEffectBidWar))
-            {
                 AddProperty(ValueType._int, "price", "Cost", 50.0f, 50.0f);
-            }
 
             NewRow();
             AddLabel("Description", 300.0f);
@@ -27,25 +25,60 @@ namespace WarpWorld.CrowdControl {
             SetNextOffset(22.5f, true);
             AddProperty(ValueType._string, "description", "", 0.0f, 290.0f, 100.0f);
             SetNextOffset(112.5f, true);
-            AddProperty(ValueType._string, "folderPath", "Folder Path", 80.0f, 130.0f);
-            SetNextOffset(-10.0f, true);
-            SetX(230.0f);
+
+            AddEnumField("morality", "Morality Type", 200.0f);
+
+
+            // AddProperty(ValueType._string, "folderPath", "Folder Path", 80.0f, 130.0f);
+            //SetNextOffset(-10.0f, true);
             AddPropertyWithSlider(ValueType._int, "maxRetries", "Max Retries", 220.0f, 210.0f, 0, 60);
+            
             NewRow();
             AddPropertyWithSlider(ValueType._float, "retryDelay", "Retry Delay", 220.0f, 210.0f, 0, 10);
             AddPropertyWithSlider(ValueType._float, "pendingDelay", "Pending Delay", 220.0f, 210.0f, 0, 10);
-            GUILayout.Space(230);
 
-            if (effect is CCEffectTimed)
-            {
+            
+
+            SetNextOffset(50.5f, true);
+
+            SerializedProperty CategoryList = serializedObject.FindProperty("Categories");
+            AddProperty(ValueType._bool, "inactive", "Inactive", 300.0f, 75.0f);
+            AddProperty(ValueType._bool, "disabled", "Disabled", 300.0f, 75.0f);
+            AddProperty(ValueType._bool, "noPooling", "Non-Poolable", 300.0f, 130.0f);
+            AddArraySizeProperty(CategoryList, 75.0f, "Categories", 100.0f, 99, 17.5f);
+            //IncreasePosition(100.0f);
+
+            GUILayout.Space(45.0f);
+            SetNextOffset(45.0f, true);
+
+            if (CategoryList.arraySize == 0) {
+                GUILayout.Space(25.0f);
+            }
+
+
+            for (int i = 0; i < CategoryList.arraySize; i++) {
+                SerializedProperty property = CategoryList.GetArrayElementAtIndex(i);
+                AddProperty(ValueType._string, property, string.Empty, 0.0f, 150.0f);
+
+                if (i % 3 == 0)
+                    GUILayout.Space(25.0f);
+
+                if (i >= 2) {
+                    
+                    if (i % 3 == 2)
+                        SetNextOffset(25.0f, true);
+                }
+            }
+
+            GUILayout.Space(245);
+
+            if (effect is CCEffectTimed) {
                 DrawTimedEffect();
             }
-            else if (effect is CCEffectParameters)
-            {
+            else if (effect is CCEffectParameters)  {
                 DrawParamEffect();
             }
-            else if (effect is CCEffectBidWar)
-            {
+            else if (effect is CCEffectBidWar) {
                 DrawBidWar();
             }
 
@@ -57,17 +90,15 @@ namespace WarpWorld.CrowdControl {
 
         private List<bool> m_paramFoldout = new List<bool>();
 
-        private void DrawBidWar()
-        {
-            GUILayout.Space(30.0f);
+        private void DrawBidWar() {
             SetNextOffset(40.0f, true);
+            GUILayout.Space(65.0f);
             SerializedProperty ThisList = serializedObject.FindProperty("m_bidWarEntries");
             AddArraySizeProperty(ThisList, 50.0f, "Bid Wars", 100.0f, 99, 17.5f);
 
             float increaseX = 0.0f;
 
-            for (int i = 0; i < ThisList.arraySize; i++)
-            {
+            for (int i = 0; i < ThisList.arraySize; i++) {
                 IncreasePosition(increaseX);
 
                 SerializedProperty property = ThisList.GetArrayElementAtIndex(i);
@@ -79,27 +110,23 @@ namespace WarpWorld.CrowdControl {
                 IncreasePosition(increaseX);
                 AddSpriteWithTint(property.FindPropertyRelative("m_sprite"), property.FindPropertyRelative("m_tint"), "Icon", 90.0f, 100.0f);
 
-                if (i % 3 == 2)
-                {
+                if (i % 3 == 2) {
                     SetNextOffset(100.0f, true);
                     increaseX = 0.0f;
                 }
-                else
-                {
+                else {
                     increaseX += 125.0f;
                     SetNextOffset(-50.0f, true);
 
-                    if (i % 3 == 0)
-                    {
+                    if (i % 3 == 0) {
                         GUILayout.Space(150.0f);
                     }
                 }
             }
         }
 
-        private void DrawParamEffect()
-        {
-            SetNextOffset(50.0f, true);
+        private void DrawParamEffect() {
+            SetNextOffset(40.0f, true);
 
             SerializedProperty ThisList = serializedObject.FindProperty("m_parameterEntries");
 
@@ -107,18 +134,15 @@ namespace WarpWorld.CrowdControl {
             AddArraySizeProperty(ThisList, 50.0f, 5, 17.5f);
             NewRowWithSpace();
 
-            if (m_paramFoldout.Count > ThisList.arraySize)
-            {
+            if (m_paramFoldout.Count > ThisList.arraySize) {
                 m_paramFoldout.RemoveRange(ThisList.arraySize, m_paramFoldout.Count - ThisList.arraySize);
             }
 
-            while (m_paramFoldout.Count < ThisList.arraySize)
-            {
+            while (m_paramFoldout.Count < ThisList.arraySize) {
                 m_paramFoldout.Add(false);
             }
 
-            for (int i = 0; i < ThisList.arraySize; i++)
-            {
+            for (int i = 0; i < ThisList.arraySize; i++) {
                 SerializedProperty property = ThisList.GetArrayElementAtIndex(i);
                 m_paramFoldout[i] = AddFoldout(property, m_paramFoldout[i], "m_name");
                 NewRowWithSpace();
@@ -177,7 +201,7 @@ namespace WarpWorld.CrowdControl {
                 }
             }
 
-            GUILayout.Space(5);
+            GUILayout.Space(30);
         }
 
         private void DrawTimedEffect()
@@ -216,13 +240,13 @@ namespace WarpWorld.CrowdControl {
                     if (AddButton("Reset", 100.0f)) { CrowdControl.ResetEffect(effectTimed); }
                 }
 
-                GUILayout.Space(40);
+                GUILayout.Space(65);
             }
         }
 
         /// <summary>Returns <see langword="true"/> when the incomplete warning box should be displayed.</summary>
         protected virtual bool IsInformationComplete() => effect.icon != null &&
-                effect.identifier > 0 &&
+                !string.IsNullOrEmpty(effect.effectKey) &&
                 !string.IsNullOrEmpty(effect.displayName);
 
         protected virtual void OnInstanceGUI() {}

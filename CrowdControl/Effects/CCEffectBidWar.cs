@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Text.RegularExpressions;
 
 namespace WarpWorld.CrowdControl
 {
@@ -8,7 +9,7 @@ namespace WarpWorld.CrowdControl
     public abstract class CCEffectBidWar : CCEffectBase
     {
         /// <summary>A list of Bid War entries that viewers can choose from. </summary>
-        [HideInInspector] public Dictionary<uint, BidWarEntry> BidWarEntries { get; private set; } = new Dictionary<uint, BidWarEntry>();
+        [HideInInspector] public Dictionary<string, BidWarEntry> BidWarEntries { get; private set; } = new Dictionary<string, BidWarEntry>();
 
         [SerializeField]
         [HideInInspector]
@@ -62,20 +63,18 @@ namespace WarpWorld.CrowdControl
         }
 
         /// <summary>Adds a new paramter to the bid war list</summary>
-        public void RegisterBidWarEntry(BidWarEntry entry, CCEffectEntries effectEntries)
-        {
+        public void RegisterBidWarEntry(BidWarEntry entry, CCEffectEntries effectEntries) {
             uint startIndex = Convert.ToUInt32(effectEntries.Count);
 
-            uint key = Utils.ComputeMd5Hash(entry.Name.ToString() + identifier);
-            entry.SetID(key);
-
-            BidWarEntries.Add(key, entry);
-            effectEntries.AddParameter(entry.ID, entry.Name, identifier, ItemKind.BidWarValue);
+            Regex rgx = new Regex("[^a-z0-9-]");
+            string entryKey = entry.Name.ToLower();
+            entryKey = rgx.Replace(entryKey, "");
+            BidWarEntries.Add($"{effectKey}_{entryKey}", entry);
             CrowdControl.instance?.Log("Registered Paramter {0} for {1} index {2}", entry.Name, displayName, entry.ID);
         }
 
         /// <summary>Place a bid towards one of the bid war entries. Returns true if this causes a new winner.</summary>
-        public bool PlaceBid(uint bidID, uint amount)
+        public bool PlaceBid(string bidID, uint amount)
         {
             bool newWinner = m_bidWarLibrary.PlaceBid(bidID, amount);
 
@@ -88,7 +87,7 @@ namespace WarpWorld.CrowdControl
         }
 
         /// <summary>Returns true if any of the Bid War Entries contains an internal ID.</summary>
-        public override bool HasParameterID(uint id)
+        public override bool HasParameterID(string id)
         {
             return BidWarEntries.ContainsKey(id);
         }
@@ -101,14 +100,11 @@ namespace WarpWorld.CrowdControl
         /// <summary> Invoked when an effect instance is scheduled to start. The effect should only be applied when <see cref="EffectResult.Success"/> is returned. </summary>
         protected internal abstract EffectResult OnTriggerEffect(CCEffectInstanceBidWar effectInstance);
 
-        private void Awake()
-        {
-            identifier = Utils.ComputeMd5Hash(Name + "-" + GetType().ToString());
+        private void Awake() {
+            SetIdentifier();
 
-            if (CrowdControl.instance != null && CrowdControl.instance.EffectIsRegistered(this))
-            {
+            if (CrowdControl.instance != null && CrowdControl.instance.EffectIsRegistered(this)) 
                 return;
-            }
 
             StartCoroutine(RegisterEffect());
         }

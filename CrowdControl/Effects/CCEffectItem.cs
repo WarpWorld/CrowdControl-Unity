@@ -7,10 +7,10 @@ namespace WarpWorld.CrowdControl
 {
     public abstract class CCEffectItem : CCEffectBase
     {
-        public CCEffectItem(string name, uint identifier)
+        public CCEffectItem(string name, string effectKey)
         {
             displayName = name;
-            identifier = this.identifier;
+            effectKey = this.effectKey;
         }
 
         protected internal sealed override EffectResult OnTriggerEffect(CCEffectInstance effectInstance)

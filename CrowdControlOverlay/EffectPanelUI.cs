@@ -8,8 +8,8 @@ namespace WarpWorld.CrowdControl.Overlay {
     [AddComponentMenu("Crowd Control/Effect UI Panel")]
     public class EffectPanelUI : MonoBehaviour 
     {
-        private Dictionary<uint, EffectUINode> activeEffects = new Dictionary<uint, EffectUINode>();
-        private Dictionary<uint, Queue<EffectUINode>> nodePool = new Dictionary<uint, Queue<EffectUINode>>();
+        private Dictionary<string, EffectUINode> activeEffects = new Dictionary<string, EffectUINode>();
+        private Dictionary<string, Queue<EffectUINode>> nodePool = new Dictionary<string, Queue<EffectUINode>>();
 
         public enum UIType
         {
@@ -25,7 +25,7 @@ namespace WarpWorld.CrowdControl.Overlay {
         internal EffectUINode Setup<T>(T source, CCEffectInstance effectInstance, DisplayFlags displayFlags) where T : EffectUINode {
             T node;
 
-            uint id = effectInstance.effectID;
+            string id = effectInstance.effectKey;
 
             if (nodePool.ContainsKey(id) && nodePool[id].Count > 0)
             {
@@ -44,14 +44,14 @@ namespace WarpWorld.CrowdControl.Overlay {
             node.transform.SetAsFirstSibling();
             node.effectInstance = effectInstance;
 
-            activeEffects.Add(m_uiType != UIType.Log ? effectInstance.effectID : effectInstance.id, node);
+            activeEffects.Add(m_uiType != UIType.Log ? effectInstance.effectKey : effectInstance.id.ToString(), node);
 
             return node;
         }
 
         internal void Add<T>(T source, CCEffectInstance effectInstance, DisplayFlags displayFlags) where T : EffectUINode
         {
-            uint id = effectInstance.effect.identifier;
+            string id = effectInstance.effect.effectKey;
 
             if (!activeEffects.ContainsKey(id))
             {
@@ -63,7 +63,7 @@ namespace WarpWorld.CrowdControl.Overlay {
             effectNode.Add(effectInstance);
         }
 
-        internal void Remove(uint effectID)
+        internal void Remove(string effectID)
         {
             if (!activeEffects.ContainsKey(effectID))
                 return;
@@ -73,7 +73,7 @@ namespace WarpWorld.CrowdControl.Overlay {
             if (!node.Remove())
                 return;
 
-            uint id = node.effectInstance.effectID;
+            string id = node.effectInstance.effectKey;
 
             if (!nodePool.ContainsKey(id))
                 nodePool.Add(id, new Queue<EffectUINode>());

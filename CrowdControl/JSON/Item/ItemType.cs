@@ -8,7 +8,7 @@ namespace WarpWorld.CrowdControl
     {
         /// <summary> The item identifier. </summary>
         [JsonProperty(PropertyName = "id")]
-        private uint? ID;
+        private string ID;
 
         /// <summary> The type name. </summary>
         [JsonProperty(PropertyName = "name")]

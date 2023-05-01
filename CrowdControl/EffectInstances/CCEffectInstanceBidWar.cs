@@ -7,7 +7,7 @@ namespace WarpWorld.CrowdControl
         /// <summary>
         /// The key of the Bid War.
         /// </summary>
-        public uint BidKey { get { return Convert.ToUInt32(Parameters[0]); } }
+        public string BidKey { get { return Parameters[0]; } }
 
         /// <summary>
         /// The total amount of coins bid towards this Bid War.

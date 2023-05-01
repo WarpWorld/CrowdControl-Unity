@@ -37,7 +37,7 @@
         public bool isTest = false;
 
         /// <summary>The id for the effect that's being used</summary>
-        public uint effectID { get { return effect.identifier; } }
+        public string effectKey { get { return effect.effectKey; } }
 
         protected string[] Parameters;
     }

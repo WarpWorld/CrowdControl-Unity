@@ -1,16 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Text.RegularExpressions;
 
 namespace WarpWorld.CrowdControl {
     /// <summary>A database of every Crowd Control Effect that can be used on this game. </summary>
     public class CCEffectEntries : MonoBehaviour {
-        /// <summary>An array of every effect.</summary>
-        [SerializeField]
-        private CCEffectEntry[] effectArray;
-
         [HideInInspector]
-        public Dictionary<uint, CCEffectEntry> EffectDictionary = new Dictionary<uint, CCEffectEntry>();
+        public Dictionary<string, CCEffectEntry> EffectDictionary = new Dictionary<string, CCEffectEntry>();
          
         private void Awake() {
             PrivateResetDictionary();
@@ -18,41 +15,32 @@ namespace WarpWorld.CrowdControl {
         }
 
         public void PrivatePopulateDictionary() {
-            for (int i = 0; i < effectArray.Length; i++) {
-                if (string.IsNullOrEmpty(effectArray[i].ClassName)) {
-                    continue;
-                }
-
-                EffectDictionary.Add(Utils.ComputeMd5Hash(effectArray[i].ClassName), effectArray[i]);
+            foreach (CCEffectBase effect in FindObjectsOfType<CCEffectBase>()) {
+                string effectKey = effect.SetIdentifier();
+                EffectDictionary.Add(effectKey, new CCEffectEntry(effectKey));
             }
         }
 
         public void PrivateResetDictionary() {
-            EffectDictionary = new Dictionary<uint, CCEffectEntry>();
+            EffectDictionary = new Dictionary<string, CCEffectEntry>();
         }
 
         public bool PrivateAddEffect(CCEffectBase effect) {
-            for (int i = 0; i < effectArray.Length; i++) {
-                if (Equals(effect.GetType().ToString(), effectArray[i].ClassName)) {
-                    if (EffectDictionary.ContainsKey(effect.identifier)) {
-                        return false;
-                    }
-
-                    EffectDictionary.Add(effect.identifier, effectArray[i]);
-                    return true;
-                }; 
+            if (EffectDictionary.ContainsKey(effect.effectKey)) {
+                return false;
             }
 
-            return false;
+            EffectDictionary.Add(effect.effectKey, new CCEffectEntry(effect.effectKey));
+            return true;
         }
 
         /// <summary>Retrieve an effect based on it's ID.</summary>
-        public CCEffectEntry this[uint i] { get { return EffectDictionary[i]; } }
+        public CCEffectEntry this[string i] { get { return EffectDictionary[i]; } }
         /// <summary>How many effects does the game have?</summary>
         public int Count { get { return EffectDictionary.Count; } }
 
-        public void AddParameter(uint key, string paramName, uint parentID, ItemKind type) {
-            EffectDictionary.Add(key, new CCEffectEntry(key, type.ToString(), parentID));
+        public void AddParameter(string key, string paramName, string parentID) {
+            EffectDictionary.Add(key, new CCEffectEntry(key, parentID));
         }
     }
 }

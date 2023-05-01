@@ -79,10 +79,10 @@ namespace WarpWorld.CrowdControl
         [JsonIgnore]
         public bool Parameter = false;
 
-        public EffectDescription(uint key, CCEffectBase effect, string parent = "")
+        public EffectDescription(string key, CCEffectBase effect, string parent = "")
         {
             Name = effect.displayName;
-            SafeName = effect.identifier.ToString();
+            SafeName = effect.effectKey;
 
             if (effect is CCEffectTimed) {
                 int time = System.Convert.ToInt32((effect as CCEffectTimed).duration);
@@ -114,9 +114,8 @@ namespace WarpWorld.CrowdControl
             CCEffectParameters effectParameters = effect as CCEffectParameters;
             ParamTypes = new List<string>();
 
-            foreach (uint paramKey in effectParameters.ParameterEntries.Keys)
-            {
-                ParamTypes.Add(paramKey.ToString());
+            foreach (string paramKey in effectParameters.ParameterEntries.Keys) {
+                ParamTypes.Add(paramKey);
             }
         }
 
@@ -133,7 +132,7 @@ namespace WarpWorld.CrowdControl
             Name = entry.Name;
             SafeName = entry.ID.ToString();
             Kind = kind;
-            Parent = parent.identifier.ToString();
+            Parent = parent.effectKey.ToString();
         }
 
         public EffectDescription(ParameterOption option)

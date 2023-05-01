@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <PackageReference Include="ILMerge" Version="3.0.29" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFrameworks>net35;net45;netstandard2.0</TargetFrameworks>
 	<DefineConstants Condition="'$(TargetFramework)' == 'net35'">NET35</DefineConstants>
@@ -65,5 +61,13 @@
     <PackageReference Include="TaskParallelLibrary" Version="1.0.2856" />
     <PackageReference Include="AsyncBridge" Version="0.3.1" />
 	<PackageReference Include="ValueTupleBridge" Version="0.1.5" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+	<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
 </Project>

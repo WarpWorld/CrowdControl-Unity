@@ -1,12 +1,9 @@
 ﻿using System;
 using Newtonsoft.JsonCC;
-using System.Runtime.Serialization;
 using System.Collections.Generic;
 
-namespace WarpWorld.CrowdControl
-{
-    public enum MessageType
-    {
+namespace WarpWorld.CrowdControl {
+    public enum MessageType {
         Generic = 0xD0,
         Version = 0xF0,
         TokenAquisition = 0xF1,
@@ -61,7 +58,6 @@ namespace WarpWorld.CrowdControl
 
         protected void WriteChecksumByte()
         {
-
             uint sum = 0;
 
             for (int i = 0; i < byteStream.Length; i++)
@@ -144,7 +140,7 @@ namespace WarpWorld.CrowdControl
     public class CCMessageVersion : CCRequest // 0xF0
     {
         private uint version;
-        private uint gameID;
+        private string gameKey;
         private uint config;
         private ulong fingerPrint;
 
@@ -152,13 +148,13 @@ namespace WarpWorld.CrowdControl
 
         protected override void CreateByteArray()
         {
-            InitBuffer(0x1C);
+            InitBuffer((ushort)(0x1a + gameKey.Length * 2));
             WriteMessageType(MessageType.Version, ref offset);
 
             Protocol.Write(byteStream, ref offset, blockID);
             Protocol.Write(byteStream, ref offset, version);
             Protocol.Write(byteStream, ref offset, config);
-            Protocol.Write(byteStream, ref offset, gameID);
+            Protocol.Write(byteStream, ref offset, gameKey);
             Protocol.Write(byteStream, ref offset, fingerPrint);
 
             WriteChecksumByte();
@@ -173,12 +169,12 @@ namespace WarpWorld.CrowdControl
             response = (ResponseType)responseByte;
         }
 
-        public CCMessageVersion(uint blockID, uint version, uint gameID, ulong fingerPrint)
+        public CCMessageVersion(uint blockID, uint version, string gameKey, ulong fingerPrint)
         {
             this.blockID = blockID;
             this.version = version;
             config = 0; // Temp
-            this.gameID = gameID;
+            this.gameKey = gameKey;
 
             this.fingerPrint = fingerPrint;
             CreateByteArray();
@@ -277,150 +273,56 @@ namespace WarpWorld.CrowdControl
 
     public class CCJsonBlock : CCRequest // 0xFA
     {
-        public List<string> jsonStrings = new List<string>();
+        public string jsonString;
 
-        public void CreateByteArray(uint blockID, int index)
+        public void CreateByteArray(uint blockID)
         {
             this.blockID = blockID;
             offset = 0;
 
-            InitBuffer(Convert.ToUInt16(jsonStrings[index].Length * 2 + 10));
+            InitBuffer((ushort)(10 + jsonString.Length * 2));
             WriteMessageType(MessageType.JsonBlock, ref offset);
             Protocol.Write(byteStream, ref offset, blockID);
-            Protocol.Write(byteStream, ref offset, jsonStrings[index]);
+            Protocol.Write(byteStream, ref offset, jsonString);
             WriteChecksumByte();
         }
 
-        public CCJsonBlock(string gameName, Dictionary<uint, CCEffectBase> effectList, CCEffectEntries ccEffectEntries) {
-            const int PADDING = 0;
-            const int BLOCK_OVERHEAD = 10;
-            const int MAX_LENGTH = (0x10000 - (BLOCK_OVERHEAD + PADDING)) / 2; //we take half because it's UTF16
-
-            Queue<string> segments = new Queue<string>();
-
-            List<ItemType> itemTypes = new List<ItemType>();
-
-            foreach (uint key in effectList.Keys) {
-                CCEffectBase effect = effectList[key];
-
-                if (!ccEffectEntries.EffectDictionary.ContainsKey(effect.identifier)) {
-                    continue;
-                }
-
-                if (effect is CCEffectParameters) {
-                    foreach (ParameterEntry entry in (effect as CCEffectParameters).ParameterEntries.Values) {
-                        itemTypes.Add(new ItemType(entry));
-                    }
-                }
-            }
-
-            MenuData append = new MenuData() { LoadType = MenuData.MenuLoadType.Append };
-            Queue<EffectDescription> remaining = new Queue<EffectDescription>();
+        private string JSONString(string objectName, object obj) {
             JsonSerializerSettings settings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
+            string JSONContent = JsonConvert.SerializeObject(obj, settings);
 
-            string json = JsonConvert.SerializeObject(new MenuData {
-                GameName = gameName,
-                ItemTypes = itemTypes,
-                LoadType = MenuData.MenuLoadType.Overwrite
-            }, settings);
+            return $"\"{objectName}\": {JSONContent}";
+        }
 
-            segments.Enqueue(json);
+        public CCJsonBlock(string gameName, Dictionary<string, CCEffectBase> effectList, CCEffectEntries ccEffectEntries) {
+            string effectString = "";
 
-            Dictionary<string, string> folderHierarchy = new Dictionary<string, string>();
+            var jsonBlock = new {
+                meta = new MetaData {
+                    Name = gameName
+                },
 
-            foreach (uint key in effectList.Keys) {
+                effect = new {
+                    game = new { }
+                }
+            };
+
+            int index = 0;
+
+            foreach (string key in effectList.Keys)  {
                 CCEffectBase effect = effectList[key];
+                EffectJSON effectJSON = new EffectJSON(effect);
 
-                if (!ccEffectEntries.EffectDictionary.ContainsKey(effect.identifier)) {
-                    continue;
-                }
+                effectString += JSONString(key.ToString(), effectJSON);
+                index++;
 
-                string folderParent = string.Empty;
-
-                if (!string.IsNullOrEmpty(effect.folderPath)) {
-                    string[] folders = new string[1] { effect.folderPath };
-
-                    if (effect.folderPath.Contains("/")) {
-                        folders = effect.folderPath.Split('/');
-                    }
-
-                    for (int i = 0; i < folders.Length; i++) {
-                        string folderKey = Utils.ComputeMd5Hash(folders[i] + folderParent).ToString();
-
-                        if (!folderHierarchy.ContainsKey(folderKey)) {
-                            folderHierarchy.Add(folderKey, folderParent);
-                            EffectDescription folderDesc = new EffectDescription(folders[i], ItemKind.Folder, folderKey, folderParent);
-                            remaining.Enqueue(folderDesc);
-                        }
-
-                        folderParent = folderKey;
-                    }
-                }
-
-                EffectDescription effectDesc = new EffectDescription(key, effect, folderParent);
-                remaining.Enqueue(effectDesc);
-
-                if (effect is CCEffectBidWar) {
-                    foreach (BidWarEntry entry in (effect as CCEffectBidWar).BidWarEntries.Values) {
-                        remaining.Enqueue(new EffectDescription(entry, effect, ItemKind.BidWarValue));
-                    }
-
-                    continue;
-                }
-
-                if (effect is CCEffectParameters) {
-                    foreach (ParameterEntry entry in (effect as CCEffectParameters).ParameterEntries.Values) {
-                        remaining.Enqueue(new EffectDescription(entry, effect, ItemKind.Usable));
-
-                        entry.InitOptions();
-
-                        foreach (ParameterOption option in entry.Options) {
-                            remaining.Enqueue(new EffectDescription(option));
-                        }
-                    }
-                }
+                if (index < effectList.Keys.Count) 
+                    effectString += ",";
             }
 
-            while (remaining.Count > 0) {
-                EffectDescription currentDescription = remaining.Dequeue();
-
-                if (currentDescription.Kind == ItemKind.Usable && !currentDescription.Parameter) {
-                    continue;
-                }
-
-                append.Items.Add(currentDescription);
-                json = JsonConvert.SerializeObject(append, settings);
-
-                
-
-
-                /*if (json.Length > MAX_LENGTH) {
-                    if (append.Items.Count <= 1) {
-                        if (string.IsNullOrEmpty(currentDescription.Description?.Trim())) {
-                            throw new SerializationException("Cannot auto-serialize this menu into 64k blocks.");
-                        }
-
-                        currentDescription.EraseDescription();
-                    }
-
-                    append.Items.Remove(currentDescription);
-                    remaining.Enqueue(currentDescription);
-
-                    json = JsonConvert.SerializeObject(append, settings);
-                    append.Items.Clear();
-
-                    segments.Enqueue(json);
-                }*/
-            }
-
-            if (append.Items.Count > 0) {
-                json = JsonConvert.SerializeObject(append, settings);
-                segments.Enqueue(json);
-            }
-
-            while (segments.Count > 0) {
-                jsonStrings.Add(segments.Dequeue());
-            }
+            JsonSerializerSettings settings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
+            string serializedJSON = JsonConvert.SerializeObject(jsonBlock, settings);
+            jsonString = serializedJSON.Insert(serializedJSON.IndexOf("\"game\"") + 8, effectString);
         }
     }
 
@@ -512,11 +414,11 @@ namespace WarpWorld.CrowdControl
             public static implicit operator Viewer(string displayName) => new Viewer(displayName, string.Empty);
         }
 
-        public uint effectID;
+        public string effectID;
         public Viewer[] viewers;
         public string parameters;
-
-        public int viewerCount = 0;
+         
+        public int viewerCount = 0;   
         public int durationTime = 0;
 
         public CCMessageEffectRequest(byte[] buffer)
@@ -572,7 +474,7 @@ namespace WarpWorld.CrowdControl
 
     public class CCMessageEffectUpdate : CCRequest // 0x01
     {
-        public CCMessageEffectUpdate(uint blockID, uint effectID, Protocol.EffectState status, ushort payload)
+        public CCMessageEffectUpdate(uint blockID, string effectID, Protocol.EffectState status, ushort payload)
         {
             this.blockID = blockID;
             InitBuffer(Convert.ToUInt16(0x0D + (payload > 0 ? 1 : 0)));

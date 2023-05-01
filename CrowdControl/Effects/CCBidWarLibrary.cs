@@ -6,15 +6,15 @@ namespace WarpWorld.CrowdControl
     /// <summary>Keeps information of all of the bids for a bid war effect. </summary>
     class CCBidWarLibrary 
     {
-        private Dictionary<uint, uint> bids = new Dictionary<uint, uint>();
+        private Dictionary<string, uint> bids = new Dictionary<string, uint>();
 
         /// <summary>Who's the current winner of this effect?</summary>
-        public uint CurrentWinner { get; private set; } = 0;
+        public string CurrentWinner { get; private set; } = string.Empty;
         /// <summary>How many coins were spent on the winner? </summary>
         public uint HighestBid { get; private set; } = 0;
 
         /// <summary>Place a bid for an option. Returns true if the item sent in ends up being the highest and a different ID. </summary>
-        public bool PlaceBid(uint id, uint amount)
+        public bool PlaceBid(string id, uint amount)
         {
             if (amount == 0)
             {

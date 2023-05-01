@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections;
+using System.Text.RegularExpressions;
 
 namespace WarpWorld.CrowdControl
 {
@@ -11,6 +12,18 @@ namespace WarpWorld.CrowdControl
 #pragma warning disable 1591
 #pragma warning disable 1587
         [Tooltip("Image to display in the CrowdControl Twitch extension and in the onscreen overlay.")]
+        /// <summary>Disables pooling for this effect.</summary>
+        [HideInInspector] public bool noPooling = false;
+
+        /// <summary>If true, the effect will be inaccessible to everyone but Warp World staff.</summary>
+        [HideInInspector] public bool disabled = false;
+
+        // <summary>Denotes whether this effect intends to help the player, hurt the player, or act as neutral.</summary>
+        [HideInInspector] public Morality morality;
+
+        /// <summary>Whether this effect is available to the streamer by default or not.</summary>
+        [HideInInspector] public bool inactive = false;
+
         /// <summary>Image to display in the CrowdControl Twitch extension and in the onscreen overlay. </summary>
         [HideInInspector] public Sprite icon;
 
@@ -20,7 +33,7 @@ namespace WarpWorld.CrowdControl
 
         /// <summary>Unique identifier of the effect. </summary>
         [HideInInspector]
-        public uint identifier;
+        public string effectKey;
 
         [Tooltip("Name of the effect displayed to the users.")]
         /// <summary>Name of the effect displayed to the users. </summary>
@@ -61,8 +74,20 @@ namespace WarpWorld.CrowdControl
         /// <summary>The name of this effect.</summary>
         [HideInInspector] public virtual string Name { get { return displayName; } }
 
-        /// <summary>Folder this effect belongs to</summary>
-        [HideInInspector] public string folderPath;
+        /// <summary>Categories for this effect.</summary>
+        [HideInInspector] public string [] Categories;
+
+        /// <summary>If true, the effect will be unavailable to the streamer by default.</summary>
+        [HideInInspector] public virtual bool Inactive { get { return inactive; } }
+
+        /// <summary>Disables pooling for this effect.</summary>
+        [HideInInspector] public bool NoPooling { get { return noPooling; } }
+
+        // <summary>Denotes whether this effect intends to help the player, hurt the player, or act as neutral.</summary>
+        [HideInInspector] public Morality Morality { get { return morality; } }
+
+        /// <summary>If true, the effect will be inaccessible to everyone but Warp World staff.</summary>
+        [HideInInspector] public virtual bool Disabled { get { return disabled; } }
 
         /// <summary>The color tint of this effect's icon</summary>
         [HideInInspector] public virtual Color IconColor { get { return iconColor; } }
@@ -73,13 +98,13 @@ namespace WarpWorld.CrowdControl
         /// <summary>Toggles whether this effect can currently be sold during this session.</summary>
         public void ToggleSellable(bool sellable)
         {
-            CrowdControl.instance.ToggleEffectSellable(identifier, sellable);
+            CrowdControl.instance.ToggleEffectSellable(effectKey, sellable);
         }
 
         /// <summary>Toggles whether this effect is visible in the menu during this session.</summary>
         public void ToggleVisible(bool visible)
         {
-            CrowdControl.instance.ToggleEffectVisible(identifier, visible);
+            CrowdControl.instance.ToggleEffectVisible(effectKey, visible);
         }
 
         /// <summary>Determines whether this effect can be ran right now or not. Overridable</summary>
@@ -89,7 +114,7 @@ namespace WarpWorld.CrowdControl
         public virtual void RegisterParameters(CCEffectEntries effectEntries) { }
 
         /// <summary>Returns true if this bid war is the parent of the parameter ID. Overridable</summary>
-        public virtual bool HasParameterID(uint id) { return false; }
+        public virtual bool HasParameterID(string id) { return false; }
 
         /// <summary>
         /// Called when an effect instance is scheduled for execution. The returned value is communicated back to the server.
@@ -107,8 +132,11 @@ namespace WarpWorld.CrowdControl
         }
 
         /// <summary>Sets the internal ID of this effect.</summary>
-        public void SetIdentifier() {
-            identifier = Utils.ComputeMd5Hash(Name + "-" + GetType().ToString());
+        public string SetIdentifier() {
+            Regex rgx = new Regex("[^a-z0-9-]");
+            effectKey = Name.ToLower();
+            effectKey = rgx.Replace(effectKey, "");
+            return effectKey;
         }
 
         // Register the effect

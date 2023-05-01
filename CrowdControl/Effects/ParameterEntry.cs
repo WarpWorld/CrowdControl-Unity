@@ -28,13 +28,13 @@ namespace WarpWorld.CrowdControl
         [SerializeField] private uint m_min;
         [SerializeField] private uint m_max;
 
-        public ParameterEntry(uint id, string paramName) : base(id, paramName)
+        public ParameterEntry(string id, string paramName) : base(id, paramName)
         {
             ID = id;
             m_paramKind = Kind.Item;
         }
 
-        public ParameterEntry(uint id, string paramName, uint min, uint max) : base(id, paramName)
+        public ParameterEntry(string id, string paramName, uint min, uint max) : base(id, paramName)
         {
             ID = id;
             m_paramKind = Kind.Quantity;

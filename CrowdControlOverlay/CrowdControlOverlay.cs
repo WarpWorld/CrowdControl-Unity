@@ -104,7 +104,7 @@ namespace WarpWorld.CrowdControl.Overlay
         class LogEntry
         {
             public DateTime endTime;
-            public uint effectID;
+            public string effectID;
         }
 
         Queue<LogEntry> logEntries;
@@ -190,7 +190,7 @@ namespace WarpWorld.CrowdControl.Overlay
                 return;
 
             LogEntry logEntry = new LogEntry();
-            logEntry.effectID = effectInstance.id;
+            logEntry.effectID = effectInstance.id.ToString();
             logEntry.endTime = DateTime.Now.AddSeconds(logDisplayTime);
 
             if (logEntries.Count == (maxLogEntries - 1))
@@ -207,7 +207,7 @@ namespace WarpWorld.CrowdControl.Overlay
         }
 
         void OnEffectQueue(CCEffectInstance effectInstance) => queuePanel.Add(queue, effectInstance, _displayFlags);
-        void OnEffectDequeue(uint id, EffectResult result) => queuePanel.Remove(id);
+        void OnEffectDequeue(string id, EffectResult result) => queuePanel.Remove(id);
 
         void OnEffectStart(CCEffectInstanceTimed effectInstance)
         {
@@ -215,7 +215,7 @@ namespace WarpWorld.CrowdControl.Overlay
             buffPanel.Add(buff, effectInstance, _displayFlags);
         }
 
-        void OnEffectStop(CCEffectInstanceTimed effectInstance) => buffPanel.Remove(effectInstance.effectID);
+        void OnEffectStop(CCEffectInstanceTimed effectInstance) => buffPanel.Remove(effectInstance.effectKey);
 
         #endregion
     }

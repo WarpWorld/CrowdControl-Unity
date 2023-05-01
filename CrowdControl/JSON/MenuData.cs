@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.JsonCC; 
 
-namespace WarpWorld.CrowdControl   
-{
+namespace WarpWorld.CrowdControl {
     [Serializable]
     public class MenuData
     {

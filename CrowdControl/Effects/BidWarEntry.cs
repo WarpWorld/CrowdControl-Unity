@@ -6,7 +6,7 @@ namespace WarpWorld.CrowdControl
     public class BidWarEntry
     {
         /// <summary>The Bid War's ID.</summary>
-        public uint ID { get; protected set; }
+        public string ID { get; protected set; }
         /// <summary>The name of the Bid War.</summary>
         public string Name { get { return m_name; } }
         /// <summary>The sprite associated with this Bid War.</summary>
@@ -18,14 +18,14 @@ namespace WarpWorld.CrowdControl
         [SerializeField] private Sprite m_sprite;
         [SerializeField] private Color m_tint = Color.white;
 
-        public BidWarEntry(uint key, string paramName, Sprite sprite = null)
+        public BidWarEntry(string key, string paramName, Sprite sprite = null)
         {
             ID = key;
             m_name = paramName;
             m_sprite = sprite;
         }
 
-        public BidWarEntry(uint key, string paramName, Color tint, Sprite sprite = null)
+        public BidWarEntry(string key, string paramName, Color tint, Sprite sprite = null)
         {
             ID = key;
             m_name = paramName;
@@ -33,7 +33,7 @@ namespace WarpWorld.CrowdControl
             m_tint = tint;
         }
 
-        public void SetID(uint id)
+        public void SetID(string id)
         {
             ID = id;
         }
