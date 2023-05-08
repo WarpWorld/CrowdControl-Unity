@@ -1,12 +1,10 @@
-﻿namespace WarpWorld.CrowdControl
-{
+﻿namespace WarpWorld.CrowdControl {
     /// <summary>
     /// State of a Crowd Control effect.
     /// <para>The instance is only valid from the time the effect is requested up to
     /// the time the effect is successfully triggered or failed.</para>
     /// </summary>
-    public class CCEffectInstance
-    {
+    public class CCEffectInstance {
         /// <summary>Target effect behaviour containing the logic.</summary>
         public CCEffectBase effect { get; internal set; }
 

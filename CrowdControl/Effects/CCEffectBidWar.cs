@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
 
-namespace WarpWorld.CrowdControl
-{
+namespace WarpWorld.CrowdControl {
     /// <summary> Base effect for bid war effects. </summary>
-    public abstract class CCEffectBidWar : CCEffectBase
-    {
+    public abstract class CCEffectBidWar : CCEffectBase {
         /// <summary>A list of Bid War entries that viewers can choose from. </summary>
         [HideInInspector] public Dictionary<string, BidWarEntry> BidWarEntries { get; private set; } = new Dictionary<string, BidWarEntry>();
 
         [SerializeField]
         [HideInInspector]
-        [Tooltip("A list of bid names for this bid war")]
         private List<BidWarEntry> m_bidWarEntries = new List<BidWarEntry>();
         private CCBidWarLibrary m_bidWarLibrary = new CCBidWarLibrary();
         private BidWarEntry m_winnerEntry = null;
@@ -22,9 +19,7 @@ namespace WarpWorld.CrowdControl
         public override string Name {
             get {
                 if (m_winnerEntry == null)
-                {
                     return displayName;
-                }
 
                 return string.Format("{0}: {1}", displayName, m_winnerEntry.Name);
             }
@@ -74,26 +69,21 @@ namespace WarpWorld.CrowdControl
         }
 
         /// <summary>Place a bid towards one of the bid war entries. Returns true if this causes a new winner.</summary>
-        public bool PlaceBid(string bidID, uint amount)
-        {
+        public bool PlaceBid(string bidID, uint amount) {
             bool newWinner = m_bidWarLibrary.PlaceBid(bidID, amount);
 
             if (newWinner)
-            {
                 m_winnerEntry = BidWarEntries[bidID];
-            }
 
             return newWinner;
         }
 
         /// <summary>Returns true if any of the Bid War Entries contains an internal ID.</summary>
-        public override bool HasParameterID(string id)
-        {
+        public override bool HasParameterID(string id) {
             return BidWarEntries.ContainsKey(id);
         }
 
-        protected internal sealed override EffectResult OnTriggerEffect(CCEffectInstance effectInstance)
-        {
+        protected internal sealed override EffectResult OnTriggerEffect(CCEffectInstance effectInstance) {
             return OnTriggerEffect(effectInstance as CCEffectInstanceBidWar);
         }
 

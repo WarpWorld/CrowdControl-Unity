@@ -5,14 +5,12 @@ namespace WarpWorld.CrowdControl {
     public abstract class CCEffectTimed : CCEffectBase {
 #pragma warning disable 1591
         /// <summary>Options of how this timer displays time left. </summary>
-        public enum DisplayType
-        {
+        public enum DisplayType {
             Fill,
             Timer
         }
 
         [Range(1, 600)]
-        [Tooltip("Duration in seconds before the effect is automatically ended.")]
         /// <summary>Duration in seconds before the effect is automatically ended. </summary>
         [HideInInspector] public float duration = 60;
 
@@ -62,42 +60,36 @@ namespace WarpWorld.CrowdControl {
         protected internal abstract void OnResetEffect();
 
         /// <summary> Checks if the effect should be running or not, then applies the paused state based on it. </summary>
-        public bool ShouldBeRunning()
-        {
+        public bool ShouldBeRunning() {
             return RunningCondition();
         }
 
         /// <summary> Invoked when the behaviour is paused. </summary>
-        protected internal void Pause(CCEffectInstance effectInstance)
-        {
+        protected internal void Pause(CCEffectInstance effectInstance) {
             paused = true;
         }
 
         /// <summary> Invoked when the behaviour is resumed. </summary>
-        protected internal void Resume(CCEffectInstance effectInstance)
-        {
+        protected internal void Resume(CCEffectInstance effectInstance) {
             CCEffectInstanceTimed effectInstanceTimed = effectInstance as CCEffectInstanceTimed;
             effectInstanceTimed.unscaledTimeLeft += Time.unscaledDeltaTime;
             paused = false;
         }
 
         /// <summary> Invoked when the behaviour is Reset. </summary>
-        protected internal void Reset(CCEffectInstance effectInstance)
-        {
+        protected internal void Reset(CCEffectInstance effectInstance) {
             CCEffectInstanceTimed effectInstanceTimed = effectInstance as CCEffectInstanceTimed;
             effectInstanceTimed.unscaledTimeLeft = duration;
             paused = false;
         }
 
         /// <summary> Conditions to be ran. </summary>
-        protected virtual bool RunningCondition()
-        {
+        protected virtual bool RunningCondition() {
             return paused;
         }
 
         /// <summary> Set the duration of this Timed Effect </summary>
-        public void SetDuration(int durationTime)
-        {
+        public void SetDuration(int durationTime) {
             duration = (durationTime / 1000.0f);
         }
     }

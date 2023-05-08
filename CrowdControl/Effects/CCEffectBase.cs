@@ -1,25 +1,21 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Text.RegularExpressions;
 
-namespace WarpWorld.CrowdControl
-{
+namespace WarpWorld.CrowdControl {
     /// <summary> Basic Crowd Control effect properties. </summary>
     [System.Serializable]
-    public abstract class CCEffectBase : MonoBehaviour
-    {
+    public abstract class CCEffectBase : MonoBehaviour {
 #pragma warning disable 1591
 #pragma warning disable 1587
-        [Tooltip("Image to display in the CrowdControl Twitch extension and in the onscreen overlay.")]
-        /// <summary>Disables pooling for this effect.</summary>
+        /// <summary>Disables pooling for this effect</summary>
         [HideInInspector] public bool noPooling = false;
 
         /// <summary>If true, the effect will be inaccessible to everyone but Warp World staff.</summary>
         [HideInInspector] public bool disabled = false;
 
         // <summary>Denotes whether this effect intends to help the player, hurt the player, or act as neutral.</summary>
-        [HideInInspector] public Morality morality;
+        [HideInInspector] public Morality morality = Morality.Neutral; 
 
         /// <summary>Whether this effect is available to the streamer by default or not.</summary>
         [HideInInspector] public bool inactive = false;
@@ -27,7 +23,6 @@ namespace WarpWorld.CrowdControl
         /// <summary>Image to display in the CrowdControl Twitch extension and in the onscreen overlay. </summary>
         [HideInInspector] public Sprite icon;
 
-        [Tooltip("Color used to tint the effect's icon.")]
         /// <summary>Color used to tint the effect's icon. </summary>
         [HideInInspector] public Color iconColor = Color.white;
 
@@ -35,37 +30,30 @@ namespace WarpWorld.CrowdControl
         [HideInInspector]
         public string effectKey;
 
-        [Tooltip("Name of the effect displayed to the users.")]
         /// <summary>Name of the effect displayed to the users. </summary>
         [HideInInspector] public string displayName;
 
-        [TextArea]
-        [Tooltip("Information about the effect, displayed in the extension.")]
         /// <summary>Information about the effect, displayed in the extension. </summary>
         [HideInInspector] public string description;
 
-        [Tooltip("The price it costs to activate this effect")]
         /// <summary>Information about the effect, displayed in the extension. </summary>
         [HideInInspector] public uint price = 10;
 
         [Range(0, 60)]
-        [Tooltip("Number of retries before the effect instance fails.")]
         /// <summary>Number of retries before the effect instance fails. </summary>
         [HideInInspector] public int maxRetries = 3;
 
         [Range(0, 10)]
-        [Tooltip("Delay in seconds before retrying to trigger an effect instance.")]
         /// <summary>Delay in seconds before retrying to trigger an effect instance. </summary>
         [HideInInspector] public float retryDelay = 5;
 
         [Range(0, 10)]
-        [Tooltip("Delay in seconds to wait before triggering the next effect instance.")]
         /// <summary>Delay in seconds to wait before triggering the next effect instance. </summary>
         [HideInInspector] public float pendingDelay = .5f;
 #pragma warning restore 1587
 #pragma warning restore 1591
 
-        // Wait until this time before triggering the next effect instance. Used by CrowdControl.TryStart.
+        /// <summary>Wait until this time before triggering the next effect instance. Used by CrowdControl.TryStart. </summary>
         internal float delayUntilUnscaledTime = 0.0f;
 
         /// <summary>The effect's icon.</summary>
@@ -96,14 +84,12 @@ namespace WarpWorld.CrowdControl
         public virtual string Params() { return string.Empty; }
 
         /// <summary>Toggles whether this effect can currently be sold during this session.</summary>
-        public void ToggleSellable(bool sellable)
-        {
+        public void ToggleSellable(bool sellable) {
             CrowdControl.instance.ToggleEffectSellable(effectKey, sellable);
         }
 
         /// <summary>Toggles whether this effect is visible in the menu during this session.</summary>
-        public void ToggleVisible(bool visible)
-        {
+        public void ToggleVisible(bool visible)  {
             CrowdControl.instance.ToggleEffectVisible(effectKey, visible);
         }
 
@@ -123,8 +109,7 @@ namespace WarpWorld.CrowdControl
         /// </summary>
         protected internal abstract EffectResult OnTriggerEffect(CCEffectInstance effectInstance);
 
-        protected IEnumerator RegisterEffect()
-        {
+        protected IEnumerator RegisterEffect() {
             while (CrowdControl.instance == null)
                 yield return new WaitForSeconds(1.0f);
 
@@ -139,13 +124,11 @@ namespace WarpWorld.CrowdControl
             return effectKey;
         }
 
-        // Register the effect
         private void Awake() {
             SetIdentifier();
 
-            if (CrowdControl.instance != null && CrowdControl.instance.EffectIsRegistered(this)) {
+            if (CrowdControl.instance != null && CrowdControl.instance.EffectIsRegistered(this)) 
                 return;
-            }
 
             StartCoroutine(RegisterEffect());
         }

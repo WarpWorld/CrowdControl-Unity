@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace WarpWorld.CrowdControl
-{
+namespace WarpWorld.CrowdControl {
     /// <summary>Keeps information of all of the bids for a bid war effect. </summary>
-    class CCBidWarLibrary 
-    {
+    class CCBidWarLibrary  {
         private Dictionary<string, uint> bids = new Dictionary<string, uint>();
 
         /// <summary>Who's the current winner of this effect?</summary>
@@ -14,12 +11,9 @@ namespace WarpWorld.CrowdControl
         public uint HighestBid { get; private set; } = 0;
 
         /// <summary>Place a bid for an option. Returns true if the item sent in ends up being the highest and a different ID. </summary>
-        public bool PlaceBid(string id, uint amount)
-        {
+        public bool PlaceBid(string id, uint amount) {
             if (amount == 0)
-            {
                 return false;
-            }
 
             if (!bids.ContainsKey(id))
                 bids.Add(id, amount);

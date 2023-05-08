@@ -26,39 +26,31 @@ namespace WarpWorld.CrowdControl {
             AddProperty(ValueType._string, "description", "", 0.0f, 290.0f, 100.0f);
             SetNextOffset(112.5f, true);
 
-            AddEnumField("morality", "Morality Type", 200.0f);
-
-
-            // AddProperty(ValueType._string, "folderPath", "Folder Path", 80.0f, 130.0f);
-            //SetNextOffset(-10.0f, true);
             AddPropertyWithSlider(ValueType._int, "maxRetries", "Max Retries", 220.0f, 210.0f, 0, 60);
+            AddEnumField("morality", "Morality Type", 210.0f);
             
             NewRow();
             AddPropertyWithSlider(ValueType._float, "retryDelay", "Retry Delay", 220.0f, 210.0f, 0, 10);
             AddPropertyWithSlider(ValueType._float, "pendingDelay", "Pending Delay", 220.0f, 210.0f, 0, 10);
-
-            
 
             SetNextOffset(50.5f, true);
 
             SerializedProperty CategoryList = serializedObject.FindProperty("Categories");
             AddProperty(ValueType._bool, "inactive", "Inactive", 300.0f, 75.0f);
             AddProperty(ValueType._bool, "disabled", "Disabled", 300.0f, 75.0f);
-            AddProperty(ValueType._bool, "noPooling", "Non-Poolable", 300.0f, 130.0f);
+            AddProperty(ValueType._bool, "noPooling", "Non-Poolable", 300.0f, 100.0f);
             AddArraySizeProperty(CategoryList, 75.0f, "Categories", 100.0f, 99, 17.5f);
             //IncreasePosition(100.0f);
 
             GUILayout.Space(45.0f);
             SetNextOffset(45.0f, true);
 
-            if (CategoryList.arraySize == 0) {
+            if (CategoryList.arraySize == 0) 
                 GUILayout.Space(25.0f);
-            }
-
 
             for (int i = 0; i < CategoryList.arraySize; i++) {
                 SerializedProperty property = CategoryList.GetArrayElementAtIndex(i);
-                AddProperty(ValueType._string, property, string.Empty, 0.0f, 150.0f);
+                AddProperty(ValueType._string, property, string.Empty, 0.0f, 140.0f);
 
                 if (i % 3 == 0)
                     GUILayout.Space(25.0f);

@@ -1,12 +1,9 @@
 ﻿using UnityEngine;
 
-namespace WarpWorld.CrowdControl
-{
+namespace WarpWorld.CrowdControl {
     [System.Serializable]
-    public class ParameterEntry : BidWarEntry
-    {
-        public enum Kind
-        {
+    public class ParameterEntry : BidWarEntry {
+        public enum Kind {
             Item,
             Quantity
         }
@@ -28,14 +25,12 @@ namespace WarpWorld.CrowdControl
         [SerializeField] private uint m_min;
         [SerializeField] private uint m_max;
 
-        public ParameterEntry(string id, string paramName) : base(id, paramName)
-        {
+        public ParameterEntry(string id, string paramName) : base(id, paramName) {
             ID = id;
             m_paramKind = Kind.Item;
         }
 
-        public ParameterEntry(string id, string paramName, uint min, uint max) : base(id, paramName)
-        {
+        public ParameterEntry(string id, string paramName, uint min, uint max) : base(id, paramName) {
             ID = id;
             m_paramKind = Kind.Quantity;
             m_min = min;
@@ -44,17 +39,13 @@ namespace WarpWorld.CrowdControl
             InitOptions();
         }
 
-        public void InitOptions()
-        {
+        public void InitOptions() {
             if (Options != null)
-            {
                 return;
-            }
 
             Options = new ParameterOption[m_options.Length];
 
-            for (int i = 0; i < m_options.Length; i++)
-            {
+            for (int i = 0; i < m_options.Length; i++) {
                 Options[i] = new ParameterOption(m_options[i], ID);
             }
         }

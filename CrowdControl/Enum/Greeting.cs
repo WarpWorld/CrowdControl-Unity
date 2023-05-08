@@ -1,5 +1,4 @@
-﻿public enum Greeting
-{
+﻿public enum Greeting {
     Success = 0x10,
 
     FailUnsupportedVersion = 0x20,

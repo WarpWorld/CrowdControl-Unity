@@ -9,10 +9,8 @@ using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 
-namespace WarpWorld.CrowdControl
-{
-    public class SocketProvider : IDisposable
-    {
+namespace WarpWorld.CrowdControl {
+    public class SocketProvider : IDisposable {
         public TcpClient _socket;
         public Stream _stream;
 
@@ -30,14 +28,12 @@ namespace WarpWorld.CrowdControl
 
         ~SocketProvider() => Dispose(true);
 
-        public void Dispose()
-        {
+        public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        protected void Dispose(bool disposing)
-        {
+        protected void Dispose(bool disposing) {
             CrowdControl.LogWarning("Dispose Stream");
             _quitting.Cancel();
             _ready.Set();
@@ -49,15 +45,12 @@ namespace WarpWorld.CrowdControl
 
         public SocketProvider() => Task.Factory.StartNew(ReadLoop, TaskCreationOptions.LongRunning);
 
-        private async Task ReadLoop()
-        {
+        private async Task ReadLoop() {
             byte[] buf = new byte[4096];
 
             List<byte> msg = new List<byte>();
-            while (!_quitting.IsCancellationRequested)
-            {
-                try
-                {
+            while (!_quitting.IsCancellationRequested) {
+                try {
                     _ready.Wait();
 #if (NET35 || NET40) 
                     int bytesRead = await Task.Factory.StartNew(() => _stream.Read(buf, 0, buf.Length), _quitting.Token);
@@ -69,30 +62,24 @@ namespace WarpWorld.CrowdControl
                     msg.AddRange(buf.Take(bytesRead));
 
                     if (msg.Count < 2)
-                    {
                         continue;
-                    }
 
                     ushort len = (ushort)((msg[0] << 8) | (msg[1]));
 
-                    if (msg.Count >= len)
-                    {
+                    if (msg.Count >= len) {
                         byte[] nextMsg = msg.Take(len).ToArray();
                         msg.RemoveRange(0, len);
-                        try
-                        {
+                        try {
                             OnMessageReceived?.Invoke(nextMsg);
                         }
-                        catch (Exception e)
-                        {
+                        catch (Exception e) {
                             CrowdControl.LogException(e);
                         }
 
                         msg.Clear();
                     }
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     try { OnError?.Invoke(e, e.Message); }
                     catch (Exception ex) { CrowdControl.LogException(ex); }
                     CloseImpl();
@@ -100,13 +87,11 @@ namespace WarpWorld.CrowdControl
             }
         }
 
-        private static bool ValidateCert(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-        {
+        private static bool ValidateCert(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
             return true; // Allow untrusted certificates. (TEMP)
         }
 
-        public async Task<bool> Connect(string host, ushort port, bool secure = true)
-        {
+        public async Task<bool> Connect(string host, ushort port, bool secure = true) {
             using (
 #if (NET35 || NET40)
                 await _ws_lock.UseWaitAsync()
@@ -119,21 +104,18 @@ namespace WarpWorld.CrowdControl
                 _socket = new TcpClient();
                 _is_secure = secure;
 
-                try
-                {
+                try {
 #if (NET35 || NET40)
                     await Task.Factory.StartNew(() => _socket.Connect(host, port), _quitting.Token);
 #else
                     await _socket.ConnectAsync(host, port);
 #endif
-                    if (secure)
-                    {
+                    if (secure) {
                         SslStream s;
                         _stream = s = new SslStream(_socket.GetStream(), false, new RemoteCertificateValidationCallback(ValidateCert));
                         s.AuthenticateAsClient(host);
                     }
-                    else
-                    {
+                    else {
                         _stream = _socket.GetStream();
                     }
 
@@ -143,8 +125,7 @@ namespace WarpWorld.CrowdControl
                     try { OnConnected?.Invoke(); }
                     catch { }
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     _ready.Reset();
                     CrowdControl.LogException(e);
                     CrowdControl.LogError("Failed to connect to server socket.");
@@ -154,8 +135,7 @@ namespace WarpWorld.CrowdControl
             return true;
         }
 
-        public async Task<bool> Close()
-        {
+        public async Task<bool> Close() {
 #if (NET35 || NET40)
             using (await _ws_lock.UseWaitAsync()) { return CloseImpl(); }
 #else
@@ -163,33 +143,27 @@ namespace WarpWorld.CrowdControl
 #endif
         }
 
-        private bool CloseImpl()
-        {
+        private bool CloseImpl() {
             _ready.Reset();
-            try
-            {
+            try {
                 _socket?.Close();
                 return true;
             }
             catch { return false; }
-            finally
-            {
+            finally {
                 try { OnDisconnected?.Invoke(); }
                 catch { }
             }
         }
 
-        public bool QuickSend(byte[] message)
-        {
-            if (message[0] == 0 && message[1] == 0)
-            {
+        public bool QuickSend(byte[] message) {
+            if (message[0] == 0 && message[1] == 0) {
                 CrowdControl.LogError("CANNOT SEND STREAM OF SIZE 0!");
                 return false;
             }
 
             if (!Connected) { return false; }
-            try
-            {
+            try {
 
 #if (NET35 || NET40)
                 Task.Factory.StartNew(() => _stream.Write(message, 0, message.Length), _quitting.Token);
@@ -198,18 +172,15 @@ namespace WarpWorld.CrowdControl
 #endif
                 PlayloadPrint(message, message.Length, "Sent");
             }
-            catch
-            {
+            catch {
                 return false;
             }
 
             return true;
         }
 
-        public async Task<bool> Send(byte[] message)
-        {
-            if (message[0] == 0 && message[1] == 0)
-            {
+        public async Task<bool> Send(byte[] message) {
+            if (message[0] == 0 && message[1] == 0) {
                 CrowdControl.LogError("CANNOT SEND STREAM OF SIZE 0!");
                 return false;
             }
@@ -241,8 +212,7 @@ namespace WarpWorld.CrowdControl
             }
         }
 
-        private void PlayloadPrint(byte [] bytes, int length, string verb)
-        {
+        private void PlayloadPrint(byte [] bytes, int length, string verb) {
             string outputString = "";
 
             for (int i = 0; i < bytes.Length; i++)

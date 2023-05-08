@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 
-namespace WarpWorld.CrowdControl 
-{
+namespace WarpWorld.CrowdControl  {
     [System.Serializable]
-    public class BidWarEntry
-    {
+    public class BidWarEntry {
         /// <summary>The Bid War's ID.</summary>
         public string ID { get; protected set; }
         /// <summary>The name of the Bid War.</summary>
@@ -18,23 +16,20 @@ namespace WarpWorld.CrowdControl
         [SerializeField] private Sprite m_sprite;
         [SerializeField] private Color m_tint = Color.white;
 
-        public BidWarEntry(string key, string paramName, Sprite sprite = null)
-        {
+        public BidWarEntry(string key, string paramName, Sprite sprite = null) {
             ID = key;
             m_name = paramName;
             m_sprite = sprite;
         }
 
-        public BidWarEntry(string key, string paramName, Color tint, Sprite sprite = null)
-        {
+        public BidWarEntry(string key, string paramName, Color tint, Sprite sprite = null) {
             ID = key;
             m_name = paramName;
             m_sprite = sprite;
             m_tint = tint;
         }
 
-        public void SetID(string id)
-        {
+        public void SetID(string id) {
             ID = id;
         }
     }

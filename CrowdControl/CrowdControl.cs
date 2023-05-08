@@ -8,32 +8,23 @@ using UnityEngine.Assertions;
 
 namespace WarpWorld.CrowdControl  
 {
-    /// <summary>
-    /// The Crowd Control client instance. Handles communications with the server and triggering effects.
-    /// </summary>
+    /// <summary> The Crowd Control client instance. Handles communications with the server and triggering effects. </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("Crowd Control/Crowd Control Manager")]
     [RequireComponent(typeof(CCEffectEntries))]
-    public sealed class CrowdControl : MonoBehaviour
-    {
+    public sealed class CrowdControl : MonoBehaviour {
         #region Configuration
 
-        [Tooltip("Name of the game")]
         [SerializeField] string _gameName = "Unity Demo";
-        [Tooltip("Unique game key provided by Warp World.")]
         [SerializeField] string _gameKey;
-        [Tooltip("Whether to use the Staging Server or production server.")]
         [SerializeField] bool _staging = false;
-        [Tooltip("Don't destroy this game object when changing scenes.")]
         [SerializeField] private bool _dontDestroyOnLoad = true;
         [SerializeField] public CCEffectEntries ccEffectEntries;
         [SerializeField] private BroadcasterType _broadcasterType;
 
         [Space]
 
-        [Tooltip("How many times to attempt reconnecting? (-1 for unlimited)")]
         [SerializeField] private short _reconnectRetryCount = -1;
-        [Tooltip("How many seconds to wait until trying to automatically reconnect again")]
         [SerializeField] private float _reconnectRetryDelay = 5;
 
         [Header("Visuals")]
@@ -44,18 +35,13 @@ namespace WarpWorld.CrowdControl
         [SerializeField] private Sprite _crowdUserIcon;
 
 #pragma warning disable 0169
-        [Tooltip("User icon displayed for profiles which failed to load.")] // Not done yet
         [SerializeField] private Sprite _errorUserIcon;
         [SerializeField] private Sprite _loadingIcon; // TODO used here? 
 #pragma warning restore 0169
 
-        [Tooltip("Background color for temporary user icons.")]
         [SerializeField] private Color _tempUserColor = new Color(0, 0, 0, .6f);
-        [Tooltip("Background color for crowd user icons.")]
         [SerializeField] private Color _crowdUserColor = new Color(.094117f, .466666f, .937254f);
-        [Tooltip("Background color for error user icons.")]
         [SerializeField] private Color _errorUserColor = new Color(.77647f, 0, 0);
-        [Tooltip("Time to wait after triggering an effect before attempting to trigger another.")]
         [Range(0, 10)] public float delayBetweenEffects = .5f;
 
         [Header("Debug Outputs")]
@@ -180,8 +166,7 @@ namespace WarpWorld.CrowdControl
 
         void Awake()
         {
-            if (instance != null)
-            {
+            if (instance != null) {
                 _duplicatedInstance = true;
                 Destroy(gameObject);
                 return;
@@ -191,8 +176,7 @@ namespace WarpWorld.CrowdControl
 
             ccEffectEntries = gameObject.GetComponent<CCEffectEntries>();
 
-            crowdUser = new TwitchUser
-            {
+            crowdUser = new TwitchUser {
                 id = 1,
                 name = "the_crowd",
                 displayName = "The Crowd",
@@ -200,8 +184,7 @@ namespace WarpWorld.CrowdControl
                 profileIconColor = _crowdUserColor
             };
 
-            anonymousUser = new TwitchUser
-            {
+            anonymousUser = new TwitchUser {
                 id = 2,
                 name = "anonymous",
                 displayName = "User",
@@ -220,23 +203,17 @@ namespace WarpWorld.CrowdControl
             jsonStopwatch = new System.Diagnostics.Stopwatch();
         }
 
-        void OnEnable()
-        {
+        void OnEnable() {
             if (!_disconnectedFromDisable || isConnecting)
-            {
                 return;
-            }
 
             Connect();
             _disconnectedFromDisable = false;
         }
 
-        void OnDisable()
-        {
+        void OnDisable() {
             if (_duplicatedInstance)
-            {
                 return;
-            }
 
             StopAllCoroutines();
             StopAllEffects();
@@ -244,17 +221,13 @@ namespace WarpWorld.CrowdControl
             _disconnectedFromDisable = true;
         }
 
-        void OnDestroy()
-        {
+        void OnDestroy() {
             if (_duplicatedInstance)
-            {
                 return;
-            }
 
             //Disconnect();
 
-            if (_socketProvider != null)
-            {
+            if (_socketProvider != null) {
                 CCMessageDisconnect cCMessageDisconnect = new CCMessageDisconnect(_blockID++);
                 _socketProvider.QuickSend(cCMessageDisconnect.ByteStream);
                 _socketProvider.Dispose();
@@ -274,35 +247,28 @@ namespace WarpWorld.CrowdControl
             effectsByID.Clear();
         }
 
-        void OnApplicationPause(bool paused)
-        {
+        void OnApplicationPause(bool paused) {
             _paused = paused;
 
             if (paused)
-            {
                 _adjustPauseTime = true;
-            }
         }
 
-        void Update()
-        {
+        void Update() {
             // Handle connection timeout and reconnects.
             float now = Time.unscaledTime;
 
-            if (_adjustPauseTime)
-            {
+            if (_adjustPauseTime) {
                 UpdateTimerEffectsFromIdle();
 
-                if (!_paused)
-                {
+                if (!_paused) {
                     timeToNextPing = now + Protocol.PING_INTERVAL;
                     timeToTimeout = now + Protocol.PING_INTERVAL * 2;
                     _adjustPauseTime = false;
                 }
             }
 
-            if (_disconnectFromTimeout)
-            {
+            if (_disconnectFromTimeout) {
                 _disconnectFromTimeout = false;
                 StartCoroutine(DisplayMessageWithIcon("The Crowd Control connection has timed out."));
                 Disconnect(false);
@@ -318,10 +284,8 @@ namespace WarpWorld.CrowdControl
             }
 
             // Receive messages from the server.
-            else if (isConnected)
-            {
-                try
-                {
+            else if (isConnected) {
+                try {
                     var received = 0;
 
                     if (received > 0)
@@ -329,8 +293,7 @@ namespace WarpWorld.CrowdControl
 
                     }
                 }
-                catch (SocketException e)
-                {
+                catch (SocketException e) {
                     LogException(e);
                     Disconnect(true);
                 }
@@ -350,15 +313,11 @@ namespace WarpWorld.CrowdControl
             }
 
             // Send messages to the server.
-            if (isConnected)
-            {
+            if (isConnected) {
                 if (_pendingMessages.Count > 0)
-                {
                     ProcessMsg(_pendingMessages.Dequeue());
-                }
 
-                if (timeToNextPing <= now)
-                {
+                if (timeToNextPing <= now)  {
                     Assert.IsFalse(isConnecting);
                     Send(new CCMessagePing(_blockID++));
                     timeToNextPing = now + Protocol.PING_INTERVAL;

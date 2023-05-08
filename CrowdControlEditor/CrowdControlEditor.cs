@@ -17,8 +17,7 @@ namespace WarpWorld.CrowdControl {
             Rect rt = GUILayoutUtility.GetRect(new GUIContent("some button"), GUIStyle.none);
             InitCoords(rt.y);
 
-            if (!Application.isPlaying) 
-            {
+            if (!Application.isPlaying) {
                 AddProperty(ValueType._string, "_gameKey", "Game Key", 87.5f, 100.0f);
                 AddProperty(ValueType._string, "_gameName", "Game Name", 87.5f, 200.0f);
                 NewRow();
@@ -29,7 +28,7 @@ namespace WarpWorld.CrowdControl {
 
             NewRow();
             AddPropertyWithSlider(ValueType._float, "delayBetweenEffects", "Delay Between Effects", 200.0f, 35.0f, 0, 10);
-            AddEnumField("_broadcasterType", "Broadcaster Type", 200.0f);
+            //AddEnumField("_broadcasterType", "Broadcaster Type", 200.0f);
 
             NewRow();
             AddLabel("Icons", 100.0f, 1.2f, FontStyle.Bold);
@@ -94,8 +93,7 @@ namespace WarpWorld.CrowdControl {
                 GUI.enabled = cc.HasRunningEffects();
                 if (GUILayout.Button("Stop All Effects"))
                     cc.StopAllEffects();
-            } else
-            {
+            } else {
                 if (GUILayout.Button("Effect JSON")) GenerateServerData();
             }
 

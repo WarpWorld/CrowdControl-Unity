@@ -21,9 +21,7 @@ namespace WarpWorld.CrowdControl {
             CrowdControl.instance.RegisterGeneric(this);
         }
 
-        /// <summary>
-        /// Ran when new generic information is assigned.
-        /// </summary>
+        /// <summary> Ran when new generic information is assigned. </summary>
         protected internal abstract void OnTrigger(KeyValuePair<string, string> [] param);
 
         private void Awake() {
@@ -31,9 +29,7 @@ namespace WarpWorld.CrowdControl {
             values = new string[keys.Length];
         }
 
-        /// <summary>
-        /// Applies the received generic message to the generic's keys and values
-        /// </summary>
+        /// <summary> Applies the received generic message to the generic's keys and values </summary>
         public void Apply(CCMessageGeneric messageGeneric) {
             foreach (KeyValuePair<string, string> keyValue in messageGeneric.parameters) {
                 bool applied = false;
@@ -57,9 +53,7 @@ namespace WarpWorld.CrowdControl {
             OnTrigger(messageGeneric.parameters.ToArray());
         }
 
-        /// <summary>
-        /// List of all data as key / value pairs
-        /// </summary>
+        /// <summary> List of all data as key / value pairs </summary>
         public KeyValuePair<string, string> [] Data() {
             KeyValuePair<string, string>[] keyValues = new KeyValuePair<string, string>[keys.Length];
 

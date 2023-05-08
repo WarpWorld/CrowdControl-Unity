@@ -1,12 +1,9 @@
 ﻿using System;
 using Newtonsoft.JsonCC;
 
-namespace WarpWorld.CrowdControl 
-{
-    public class NullStringConverter : JsonConverter<string>
-    {
-        public override string ReadJson(JsonReader reader, Type objectType, string existingValue, bool hasExistingValue, JsonSerializer serializer)
-        {
+namespace WarpWorld.CrowdControl {
+    public class NullStringConverter : JsonConverter<string> {
+        public override string ReadJson(JsonReader reader, Type objectType, string existingValue, bool hasExistingValue, JsonSerializer serializer) {
 
             if (reader.Value == null) { return null; }
             string text = reader.Value.ToString();

@@ -2,11 +2,9 @@
 using UnityEngine;
 using System.Text.RegularExpressions;
 
-namespace WarpWorld.CrowdControl
-{
+namespace WarpWorld.CrowdControl {
     /// <summary>A Crowd Control effect that handles parameters. </summary>
-    public abstract class CCEffectParameters : CCEffectBase
-    {
+    public abstract class CCEffectParameters : CCEffectBase {
         /// <summary>List of entries for this parameter effect</summary>
         [HideInInspector] public Dictionary<string, ParameterEntry> ParameterEntries { get; private set; } = new Dictionary<string, ParameterEntry>();
 
@@ -16,8 +14,7 @@ namespace WarpWorld.CrowdControl
         private List<ParameterEntry> m_parameterEntries = new List<ParameterEntry>();
         private List<string> m_parameterStrings = new List<string>();
 
-        protected internal sealed override EffectResult OnTriggerEffect(CCEffectInstance effectInstance)
-        {
+        protected internal sealed override EffectResult OnTriggerEffect(CCEffectInstance effectInstance)  {
             return OnTriggerEffect(effectInstance as CCEffectInstanceParameters);
         }
 
@@ -41,21 +38,18 @@ namespace WarpWorld.CrowdControl
         }
 
         /// <summary>Clearing the established parameter list. </summary>
-        public void ClearParameters()
-        {
+        public void ClearParameters() {
             ParameterEntries = new Dictionary<string, ParameterEntry>();
             m_parameterEntries = new List<ParameterEntry>();
         }
 
         /// <summary>All Parameters for this effect as a string.</summary>
-        public override string Params()
-        {
+        public override string Params() {
             return string.Join(",", m_parameterStrings.ToArray());
         }
 
         /// <summary>Used for processing the newly received parameter array. Can be overridden by a derived class.</summary>
-        public virtual void AssignParameters(string[] prms)
-        {
+        public virtual void AssignParameters(string[] prms) {
 
         }
 

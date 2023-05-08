@@ -1,8 +1,6 @@
-﻿namespace WarpWorld.CrowdControl
-{
+﻿namespace WarpWorld.CrowdControl {
     /// <summary>Result of trying to trigger an effect. Determines the reply sent back to the server.</summary>
-    public enum EffectResult
-    {
+    public enum EffectResult {
         /// <summary>The effect executed successfully.</summary>
         Success = Protocol.ResultType.Success,
         /// <summary>The effect failed to trigger, but is still available for use. Viewer(s) will be refunded.</summary>

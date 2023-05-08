@@ -60,9 +60,15 @@
               "target": "Package",
               "version": "[0.3.1, )"
             },
-            "ILMerge": {
+            "Microsoft.CSharp": {
               "target": "Package",
-              "version": "[3.0.29, )"
+              "version": "[4.7.0, )"
+            },
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.2, )",
+              "autoReferenced": true
             },
             "TaskParallelLibrary": {
               "target": "Package",
@@ -78,9 +84,9 @@
         "net45": {
           "targetAlias": "net45",
           "dependencies": {
-            "ILMerge": {
+            "Microsoft.CSharp": {
               "target": "Package",
-              "version": "[3.0.29, )"
+              "version": "[4.7.0, )"
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
@@ -88,9 +94,9 @@
         "netstandard2.0": {
           "targetAlias": "netstandard2.0",
           "dependencies": {
-            "ILMerge": {
+            "Microsoft.CSharp": {
               "target": "Package",
-              "version": "[3.0.29, )"
+              "version": "[4.7.0, )"
             },
             "NETStandard.Library": {
               "suppressParent": "All",

@@ -1,12 +1,6 @@
 ﻿using Newtonsoft.JsonCC;
 using System;
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text.RegularExpressions;
-
 namespace WarpWorld.CrowdControl {
     [Serializable]
     public class EffectJSON {
@@ -30,10 +24,6 @@ namespace WarpWorld.CrowdControl {
             public DurationProperties(float length) {
                 Value = (long?)length;
             }
-        }
-
-        public class ParameterProperties {
-
         }
 
         [JsonProperty(PropertyName = "inactive")]
@@ -87,6 +77,10 @@ namespace WarpWorld.CrowdControl {
             Price = effect.price;
             NoPooling = effect.NoPooling;
             Morality = (int)effect.Morality;
+
+            if (Morality == 2)
+                Morality = -1;
+
             ViewerCooldown = TimeSpan.FromSeconds((double)(new decimal(effect.pendingDelay)));
 
             if (effect is CCEffectTimed) {

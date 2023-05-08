@@ -85,7 +85,7 @@ namespace WarpWorld.CrowdControl
                 case ValueType._bool:
                     y += 5.0f;
                     SetNextRowOffset(propertyWidth + 15.0f + height);
-                    rect = GetRect(x, y + 30.0f, propertyWidth, propertyWidth);
+                    rect = GetRect(x, y + 30.0f, propertyWidth, 12.5f);
                     property.boolValue = EditorGUI.Toggle(rect, property.boolValue);
                     break;
             }
@@ -104,9 +104,8 @@ namespace WarpWorld.CrowdControl
         protected void AddProperty(ValueType valueType, string key, string name, float labelWidth, float entryWidth, float height = 20.0f) {
             AddProperty(valueType, key, name, m_coords.x, m_coords.y, labelWidth, entryWidth, height);
 
-            if (valueType == ValueType._bool) {
+            if (valueType == ValueType._bool) 
                 labelWidth = 0.0f;
-            }
 
             IncreasePosition(labelWidth + entryWidth);
         }

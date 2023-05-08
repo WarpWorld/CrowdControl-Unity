@@ -1,10 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace WarpWorld.CrowdControl
-{
+namespace WarpWorld.CrowdControl {
     [System.Serializable]
-    public class ParameterOption
-    {
+    public class ParameterOption {
         public string ID { get; private set; }
         public string Name { get; private set; }
         public string ParentID { get; private set; }

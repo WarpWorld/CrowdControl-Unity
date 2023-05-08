@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Text;
 
-namespace WarpWorld.CrowdControl
-{
-    public static class Protocol
-    {
-        // byte msgType
-        // ushort size
+namespace WarpWorld.CrowdControl {
+    public static class Protocol {
         public const int FRAME_SIZE = 3;
-
         public const byte VERSION = 4;
-
         public const int PING_INTERVAL = 10;
 
-        public enum EffectState : byte
-        {
+        public enum EffectState : byte {
             Success = 0x10,
             DelayedSuccess = 0x11,
             FinalSuccess = 0x12,
@@ -45,8 +38,7 @@ namespace WarpWorld.CrowdControl
         // $40 - $7F Server to Client
         // $80 - $FF Protocol
 
-        public enum ResultType : byte
-        {
+        public enum ResultType : byte {
             Success = 0,
             Failure = 1,
             Unavailable = 2,
@@ -55,45 +47,18 @@ namespace WarpWorld.CrowdControl
             Running = 5
         }
 
-        public enum Status : byte
-        {
-            Success = 0x00,
-
-            // Common failures
-            InvalidKey = 0x10,
-
-            // Game Session failures
-            GameActive = 0x20,
-            GameInactive = 0x21,
-            MissingEffectList = 0x22,
-            InvalidEffectId = 0x23,
-
-            // Authentication failures
-            InvalidUser = 0xA0,
-            Authenticated = 0xA1,
-            Unauthenticated = 0xA2,
-
-            // Server failures
-            InternalError = 0xC0,
-
-            // Protocol failures
-            InvalidSize = 0xFE,
-            InvalidVersion = 0xFF
-        }
-
-        public static void Read(byte[] buffer, ref int offset, out byte value)
-        {
+        public static void Read(byte[] buffer, ref int offset, out byte value) {
             value = buffer[offset++];
         }
-        public static void Read(byte[] buffer, ref int offset, out ushort value)
-        {
+
+        public static void Read(byte[] buffer, ref int offset, out ushort value) {
             value = unchecked((ushort)(
                 buffer[offset + 0] << 8 |
                 buffer[offset + 1]));
             offset += 2;
         }
-        public static void Read(byte[] buffer, ref int offset, out uint value)
-        {
+
+        public static void Read(byte[] buffer, ref int offset, out uint value) {
             value = unchecked((uint)(
                 buffer[offset + 0] << 24 |
                 buffer[offset + 1] << 16 |
@@ -101,8 +66,8 @@ namespace WarpWorld.CrowdControl
                 buffer[offset + 3]));
             offset += 4;
         }
-        public static void Read(byte[] buffer, ref int offset, out int value)
-        {
+
+        public static void Read(byte[] buffer, ref int offset, out int value) {
             value = unchecked((int)(
                 buffer[offset + 0] << 24 |
                 buffer[offset + 1] << 16 |
@@ -110,8 +75,8 @@ namespace WarpWorld.CrowdControl
                 buffer[offset + 3]));
             offset += 4;
         }
-        public static void Read(byte[] buffer, ref int offset, out ulong value)
-        {
+
+        public static void Read(byte[] buffer, ref int offset, out ulong value) {
             value = unchecked((ulong)(
                 buffer[offset + 0] << 56 |
                 buffer[offset + 1] << 48 |
@@ -123,20 +88,18 @@ namespace WarpWorld.CrowdControl
                 buffer[offset + 7]));
             offset += 8;
         }
-        public static string Read(byte[] buffer, ref int offset)
-        {
+
+        public static string Read(byte[] buffer, ref int offset) {
             var size = buffer[offset];
             var str = Encoding.UTF8.GetString(buffer, offset + 1, size);
             offset += size + 1;
             return str;
         }
 
-        public static void Read(byte[] buffer, ref int offset, out string content)
-        {
+        public static void Read(byte[] buffer, ref int offset, out string content) {
             content = string.Empty;
 
-            while (offset < buffer.Length - 1)
-            {
+            while (offset < buffer.Length - 1) {
                 Read(buffer, ref offset, out ushort value);
 
                 if (value == 0)
@@ -146,10 +109,8 @@ namespace WarpWorld.CrowdControl
             }
         }
 
-        public static void Write(byte[] buffer, ref ushort offset, string value)
-        {
-            for (int i = 0; i < value.Length; i++)
-            {
+        public static void Write(byte[] buffer, ref ushort offset, string value) {
+            for (int i = 0; i < value.Length; i++) {
                 Write(buffer, ref offset, Convert.ToUInt16(value[i]));
             }
 
@@ -157,20 +118,17 @@ namespace WarpWorld.CrowdControl
             Write(buffer, ref offset, 0x00);
         }
 
-        public static void Write(byte[] buffer, ref ushort offset, byte value)
-        {
+        public static void Write(byte[] buffer, ref ushort offset, byte value) {
             buffer[offset++] = value;
         }
 
-        public static void Write(byte[] buffer, ref ushort offset, ushort value)
-        {
+        public static void Write(byte[] buffer, ref ushort offset, ushort value) {
             buffer[offset + 0] = unchecked((byte)(value >> 8));
             buffer[offset + 1] = unchecked((byte)value);
             offset += 2;
         }
 
-        public static void Write(byte[] buffer, ref ushort offset, uint value)
-        {
+        public static void Write(byte[] buffer, ref ushort offset, uint value) {
             buffer[offset + 0] = unchecked((byte)(value >> 24));
             buffer[offset + 1] = unchecked((byte)(value >> 16));
             buffer[offset + 2] = unchecked((byte)(value >> 8));
@@ -178,8 +136,7 @@ namespace WarpWorld.CrowdControl
             offset += 4;
         }
 
-        public static void Write(byte[] buffer, ref ushort offset, ulong value)
-        {
+        public static void Write(byte[] buffer, ref ushort offset, ulong value) {
             buffer[offset + 0] = unchecked((byte)(value >> 56));
             buffer[offset + 1] = unchecked((byte)(value >> 48));
             buffer[offset + 2] = unchecked((byte)(value >> 40));
@@ -191,8 +148,7 @@ namespace WarpWorld.CrowdControl
             offset += 8;
         }
 
-        public static void Write(byte[] buffer, ref ushort offset, UUID value)
-        {
+        public static void Write(byte[] buffer, ref ushort offset, UUID value) {
             Write(buffer, ref offset, value.a);
             Write(buffer, ref offset, value.b);
             Write(buffer, ref offset, value.c);
@@ -206,14 +162,12 @@ namespace WarpWorld.CrowdControl
             Write(buffer, ref offset, value.k);
         }
 
-        public static void Write(byte[] buffer, ref ushort offset, byte[] values)
-        {
+        public static void Write(byte[] buffer, ref ushort offset, byte[] values) {
             foreach (Byte b in values)
                 Write(buffer, ref offset, b);
         }
 
-        public static void Write(byte[] buffer, ref ushort offset, string value, int byteLength)
-        {
+        public static void Write(byte[] buffer, ref ushort offset, string value, int byteLength) {
             buffer[offset] = unchecked((byte)byteLength);
 
             var length = Encoding.UTF8.GetBytes(value, 0, value.Length, buffer, offset);
@@ -222,8 +176,7 @@ namespace WarpWorld.CrowdControl
             offset += Convert.ToByte(length);
         }
 
-        public static byte[] SplitByteArray(byte[] buffer, int offset, int size)
-        {
+        public static byte[] SplitByteArray(byte[] buffer, int offset, int size) {
             byte[] bufferSection = new byte[size];
 
             Array.Copy(buffer, offset, bufferSection, 0, size);
@@ -235,16 +188,14 @@ namespace WarpWorld.CrowdControl
 #pragma warning disable 1591
     // Replacement for <see cref="Guid"/> with improvements for better memory usage.
     [Serializable]
-    public struct UUID : IEquatable<UUID>
-    {
+    public struct UUID : IEquatable<UUID> {
         public const int SIZE = 16;
 
         public uint a;
         public ushort b, c;
         public byte d, e, f, g, h, i, j, k;
 
-        public UUID(uint a, ushort b, ushort c, byte d, byte e, byte f, byte g, byte h, byte i, byte j, byte k)
-        {
+        public UUID(uint a, ushort b, ushort c, byte d, byte e, byte f, byte g, byte h, byte i, byte j, byte k) {
             this.a = a;
             this.b = b;
             this.c = c;
@@ -258,21 +209,7 @@ namespace WarpWorld.CrowdControl
             this.k = k;
         }
 
-        public bool isValid =>
-            a != 0 &&
-            b != 0 &&
-            c != 0 &&
-            d != 0 &&
-            e != 0 &&
-            f != 0 &&
-            g != 0 &&
-            h != 0 &&
-            i != 0 &&
-            j != 0 &&
-            k != 0;
-
-        bool IEquatable<UUID>.Equals(UUID o)
-        {
+        bool IEquatable<UUID>.Equals(UUID o) {
             return a == o.a
                 && b == o.b
                 && c == o.c
@@ -286,8 +223,7 @@ namespace WarpWorld.CrowdControl
                 && k == o.k;
         }
 
-        public void Read(byte[] buffer, ref int offset)
-        {
+        public void Read(byte[] buffer, ref int offset) {
             Protocol.Read(buffer, ref offset, out a);
             Protocol.Read(buffer, ref offset, out b);
             Protocol.Read(buffer, ref offset, out c);
@@ -304,8 +240,7 @@ namespace WarpWorld.CrowdControl
             offset += 8;
         }
 
-        public void Write(byte[] buffer, ref ushort offset)
-        {
+        public void Write(byte[] buffer, ref ushort offset) {
             Protocol.Write(buffer, ref offset, a);
             Protocol.Write(buffer, ref offset, b);
             Protocol.Write(buffer, ref offset, c);
@@ -324,8 +259,7 @@ namespace WarpWorld.CrowdControl
 
         public override string ToString() => $"{a:x8}-{b:x4}-{c:x4}-{d:x2}{e:x2}-{f:x2}{g:x2}{h:x2}{i:x2}{j:x2}{k:x2}";
 
-        public void FromString(string value)
-        {
+        public void FromString(string value) {
             if (value.Length != 36 || value[8] != '-' || value[13] != '-' || value[18] != '-' || value[23] != '-')
                 throw new ArgumentException();
 
@@ -378,8 +312,7 @@ namespace WarpWorld.CrowdControl
                 (ParseChar(value[35]) << 0)));
         }
 
-        static int ParseChar(char c)
-        {
+        static int ParseChar(char c) {
             if (c >= '0' && c <= '9') return c - '0';
 
             var n = c | 0x20;

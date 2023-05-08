@@ -1,8 +1,6 @@
-﻿namespace WarpWorld.CrowdControl
-{
+﻿namespace WarpWorld.CrowdControl {
     /// <summary>State of a Time-Based Crowd Control effect. The instance is valid from the time the effect is requested and lives until the effect is successfully stopped or failed.</summary>
-    public class CCEffectInstanceTimed : CCEffectInstance
-    {
+    public class CCEffectInstanceTimed : CCEffectInstance {
         /// <summary>Reference to the target timed effect, <see langword="null"/> if <see cref="effect"/> is not timed.</summary>
         new public CCEffectTimed effect { get; internal set; }
 
