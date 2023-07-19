@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
+using WebSocket4Net;
 
 namespace WarpWorld.CrowdControl {
     public class SocketProvider : IDisposable {
@@ -19,12 +20,11 @@ namespace WarpWorld.CrowdControl {
         private readonly SemaphoreSlim _ws_lock = new SemaphoreSlim(1);
         private readonly ManualResetEventSlim _ready = new ManualResetEventSlim(false);
 
-        public event Action<byte[]> OnMessageReceived;
+        public event Action<string> OnMessageReceived;
         public event Action<Exception, string> OnError;
         public event Action OnDisconnected;
-        public event Action OnConnected;
 
-        public bool Connected => _socket != null && _socket.Connected;
+        public bool Connected => webSocket != null && webSocket.State == WebSocketState.Open;
 
         ~SocketProvider() => Dispose(true);
 
@@ -37,13 +37,11 @@ namespace WarpWorld.CrowdControl {
             CrowdControl.LogWarning("Dispose Stream");
             _quitting.Cancel();
             _ready.Set();
-            try { _socket?.Close(); }
-            catch { }
-            try { _stream?.Dispose(); }
+            try { webSocket?.Close(); }
             catch { }
         }
 
-        public SocketProvider() => Task.Factory.StartNew(ReadLoop, TaskCreationOptions.LongRunning);
+        //public SocketProvider() => Task.Factory.StartNew(ReadLoop, TaskCreationOptions.LongRunning);
 
         private async Task ReadLoop() {
             byte[] buf = new byte[4096];
@@ -70,7 +68,7 @@ namespace WarpWorld.CrowdControl {
                         byte[] nextMsg = msg.Take(len).ToArray();
                         msg.RemoveRange(0, len);
                         try {
-                            OnMessageReceived?.Invoke(nextMsg);
+                           // OnMessageReceived?.Invoke(nextMsg);
                         }
                         catch (Exception e) {
                             CrowdControl.LogException(e);
@@ -91,7 +89,9 @@ namespace WarpWorld.CrowdControl {
             return true; // Allow untrusted certificates. (TEMP)
         }
 
-        public async Task<bool> Connect(string host, ushort port, bool secure = true) {
+        WebSocket webSocket;
+
+        public async Task<bool> Connect(string host, ushort port, bool secure = false) {
             using (
 #if (NET35 || NET40)
                 await _ws_lock.UseWaitAsync()
@@ -101,28 +101,29 @@ namespace WarpWorld.CrowdControl {
                 )
             {
                 if (Connected) { CloseImpl(); }
-                _socket = new TcpClient();
-                _is_secure = secure;
 
                 try {
-#if (NET35 || NET40)
-                    await Task.Factory.StartNew(() => _socket.Connect(host, port), _quitting.Token);
-#else
-                    await _socket.ConnectAsync(host, port);
-#endif
-                    if (secure) {
-                        SslStream s;
-                        _stream = s = new SslStream(_socket.GetStream(), false, new RemoteCertificateValidationCallback(ValidateCert));
-                        s.AuthenticateAsClient(host);
-                    }
-                    else {
-                        _stream = _socket.GetStream();
-                    }
+                    webSocket = new WebSocket(host);
+                    
+                    webSocket.Opened += (sender, e) => {
+                        CrowdControl.Log("Connected to server socket.");
+                        _ready.Set();
+                        CrowdControl.instance.RunConnectedAction();
+                    };
 
-                    CrowdControl.Log("Connected to server socket.");
+                    webSocket.MessageReceived += (sender, e) => {
+                        CrowdControl.jsonQueue.Enqueue(e.Message);
+                    };
+
+                    webSocket.Closed += (sender, e) => {
+                        CrowdControl.Log("Closed server socket.");
+                    };
+
+                    webSocket.Open();
+
                     if (!Connected) { return false; }
-                    _ready.Set();
-                    try { OnConnected?.Invoke(); }
+                    
+                    try {  }
                     catch { }
                 }
                 catch (Exception e) {
@@ -136,17 +137,14 @@ namespace WarpWorld.CrowdControl {
         }
 
         public async Task<bool> Close() {
-#if (NET35 || NET40)
-            using (await _ws_lock.UseWaitAsync()) { return CloseImpl(); }
-#else
-            using (await _ws_lock.UseWaitAsync(new CancellationToken())) { return CloseImpl(); }
-#endif
+            webSocket?.Close();
+            return true;
         }
 
         private bool CloseImpl() {
             _ready.Reset();
             try {
-                _socket?.Close();
+                webSocket?.Close();
                 return true;
             }
             catch { return false; }
@@ -180,11 +178,6 @@ namespace WarpWorld.CrowdControl {
         }
 
         public async Task<bool> Send(byte[] message) {
-            if (message[0] == 0 && message[1] == 0) {
-                CrowdControl.LogError("CANNOT SEND STREAM OF SIZE 0!");
-                return false;
-            }
-
             using (
 #if (NET35 || NET40)
                 await _ws_lock.UseWaitAsync()
@@ -210,6 +203,13 @@ namespace WarpWorld.CrowdControl {
 
                 return true;
             }
+        }
+
+        public async Task<bool> Send(string json)
+        {
+            CrowdControl.Log("SENT: " + json);
+            webSocket.Send(json);
+            return true;
         }
 
         private void PlayloadPrint(byte [] bytes, int length, string verb) {

@@ -203,7 +203,7 @@ namespace WarpWorld.CrowdControl {
             CCEffectTimed effectTimed = effect as CCEffectTimed;
 
             AddPropertyWithSlider(ValueType._float, "duration", "Duration", 220.0f, 210.0f, 0, 600);
-            AddEnumField("displayType", "Dispaly Type", 200.0f);
+            AddEnumField("displayType", "Display Type", 200.0f);
 
             GUILayout.Space(40);
 

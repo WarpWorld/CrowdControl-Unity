@@ -49,8 +49,10 @@ namespace WarpWorld.CrowdControl {
         }
 
         /// <summary>Used for processing the newly received parameter array. Can be overridden by a derived class.</summary>
-        public virtual void AssignParameters(string[] prms) {
-
+        public virtual void AssignParameters(string key, string value) {
+            foreach (ParameterEntry parameterEntry in ParameterEntries.Values) {
+                
+            }
         }
 
         /// <summary> Takes the list of this effect's parameters and adds them to the effect list. </summary>

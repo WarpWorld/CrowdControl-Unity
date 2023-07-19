@@ -48,6 +48,7 @@ namespace WarpWorld.CrowdControl.Overlay
         [SerializeField] EffectQueueUI queue;
         [SerializeField] MessageUI messages;
         [SerializeField] TokenUI token;
+        [SerializeField] LoginUI login;
 
         [Space]
         [SerializeField] EffectPanelUI logPanel;
@@ -160,6 +161,7 @@ namespace WarpWorld.CrowdControl.Overlay
             cc.OnEffectDequeue += OnEffectDequeue;
             cc.OnDisplayMessage += OnDisplayMessage;
 
+            login.Init();
             token.Init();
         }
 

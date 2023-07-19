@@ -275,7 +275,7 @@ namespace WarpWorld.CrowdControl {
                     Name = gameName
                 },
 
-                effect = new {
+                effects = new {
                     game = new { }
                 }
             };

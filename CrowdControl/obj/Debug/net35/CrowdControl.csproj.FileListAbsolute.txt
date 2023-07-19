@@ -19,3 +19,5 @@ C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_35\Assets\WarpWorld\
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.csproj.CopyComplete
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.dll
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.pdb
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net35\Interop.WinHttp.dll
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.csproj.ResolveComReference.cache

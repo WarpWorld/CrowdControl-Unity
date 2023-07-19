@@ -13,13 +13,13 @@
         /// <para>This is set to the special <see cref="CrowdControl.crowdUser"/> value for pooled effects.</para>
         /// <para>For local test effect instances, this is set to the special <see cref="CrowdControl.testUser"/> value.</para>
         /// </summary>
-        public TwitchUser user { get; internal set; }
+        public StreamViewer user { get; internal set; }
 
         /// <summary>
         /// Unique identifier of this instance, shared with the server. ID value are never reused.
         /// <para>If the effect is tested locally, this ID will be negative.</para>
         /// </summary>
-        public uint id { get; internal set; }
+        public string id { get; internal set; }
 
         /// <summary>
         /// How many times has the effect returned <see cref="EffectResult.Retry"/> when trying to start the instance.

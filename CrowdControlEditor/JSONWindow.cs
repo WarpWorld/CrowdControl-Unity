@@ -1,7 +1,7 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿#if !UNITY_STANDALONE_WIN
 
-#if !UNITY_STANDALONE_WIN
+using UnityEditor;
+using UnityEngine;
 
 namespace WarpWorld.CrowdControl {
     class JSONWindow : EditorWindow {

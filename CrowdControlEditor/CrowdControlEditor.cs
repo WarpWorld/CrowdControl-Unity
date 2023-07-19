@@ -40,7 +40,9 @@ namespace WarpWorld.CrowdControl {
 
             NewRow();
             AddProperty(ValueType._bool, "_staging", "Staging", 100.0f, 50.0f);
-            AddProperty(ValueType._bool, "_dontDestroyOnLoad", "Don't Destroy on Load", 300.0f, 50.0f);
+            AddProperty(ValueType._bool, "_dontDestroyOnLoad", "Don't Destroy on Load", 300.0f, 125.0f);
+            AddProperty(ValueType._bool, "_startSessionAuto", "Start Session Automatically", 300.0f, 150.0f);
+            
 
             SetNextOffset(45.0f, true);
             AddLabel("Debug Output", 150.0f, 1.2f, FontStyle.Bold, true);
@@ -77,9 +79,14 @@ namespace WarpWorld.CrowdControl {
                 }
 
                 if (AddButton("Clear Saved Tokens", 150.0f)) {
-                    uint gameKey = (uint)serializedObject.FindProperty("_gameKey").intValue;
+                    string gameKey = serializedObject.FindProperty("_gameKey").stringValue;
                     PlayerPrefs.SetString($"CCToken{gameKey}False", string.Empty);
                     PlayerPrefs.SetString($"CCToken{gameKey}True", string.Empty);
+                    PlayerPrefs.SetString($"CCStreamer{gameKey}False", string.Empty);
+                    PlayerPrefs.SetString($"CCStreamer{gameKey}True", string.Empty);
+                    PlayerPrefs.SetString($"CCUserHash{gameKey}False", string.Empty);
+                    PlayerPrefs.SetString($"CCUserHash{gameKey}True", string.Empty);
+
                     Debug.Log("[CC] Cleared Saved Tokens");
                 }
             }
