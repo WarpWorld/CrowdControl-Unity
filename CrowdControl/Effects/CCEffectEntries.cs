@@ -8,10 +8,13 @@ namespace WarpWorld.CrowdControl {
     public class CCEffectEntries : MonoBehaviour {
         [HideInInspector]
         public Dictionary<string, CCEffectEntry> EffectDictionary = new Dictionary<string, CCEffectEntry>();
-         
+
         private void Awake() {
             PrivateResetDictionary();
-            PrivatePopulateDictionary();
+        }
+
+        public void PrivateResetDictionary() {
+            EffectDictionary = new Dictionary<string, CCEffectEntry>();
         }
 
         public void PrivatePopulateDictionary() {
@@ -21,12 +24,9 @@ namespace WarpWorld.CrowdControl {
             }
         }
 
-        public void PrivateResetDictionary() {
-            EffectDictionary = new Dictionary<string, CCEffectEntry>();
-        }
-
         public bool PrivateAddEffect(CCEffectBase effect) {
             if (EffectDictionary.ContainsKey(effect.effectKey)) {
+                CrowdControl.Log(effect.effectKey + " shares a keyname with another effect.");
                 return false;
             }
 

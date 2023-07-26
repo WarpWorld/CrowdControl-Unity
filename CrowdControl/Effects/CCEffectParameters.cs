@@ -66,7 +66,7 @@ namespace WarpWorld.CrowdControl {
                 ParameterEntries.Add(entryKey, entry);
 
                 effectEntries.AddParameter(entryKey, entry.Name, effectKey);
-                CrowdControl.instance?.Log("Registered Paramter {0} for {1} with key {2}", entry.Name, displayName, entryKey);
+                CrowdControl.instance?.LogFormat("Registered Paramter {0} for {1} with key {2}", entry.Name, displayName, entryKey);
 
                 if (entry.ParamKind != ParameterEntry.Kind.Item)
                     continue;
@@ -75,7 +75,7 @@ namespace WarpWorld.CrowdControl {
 
                 foreach (ParameterOption option in entry.Options) {
                     effectEntries.AddParameter(option.ID, option.Name, option.ParentID);
-                    CrowdControl.instance?.Log("Registered Paramter Options {0} for {1} with key {2}", option.Name, entry.Name, option.ID);
+                    CrowdControl.instance?.LogFormat("Registered Paramter Options {0} for {1} with key {2}", option.Name, entry.Name, option.ID);
                 }
             }
         }

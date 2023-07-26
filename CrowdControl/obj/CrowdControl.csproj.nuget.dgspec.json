@@ -66,9 +66,9 @@
               "version": "[1.0.2, )",
               "autoReferenced": true
             },
-            "SuperSocket": {
+            "System.Net.Http": {
               "target": "Package",
-              "version": "[1.6.6.1, )"
+              "version": "[2.0.20710, )"
             },
             "TaskParallelLibrary": {
               "target": "Package",
@@ -81,10 +81,6 @@
             "WebSocket4Net": {
               "target": "Package",
               "version": "[0.15.2, )"
-            },
-            "WebSocketSharp": {
-              "target": "Package",
-              "version": "[1.0.3-rc11, )"
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
@@ -96,17 +92,13 @@
               "target": "Package",
               "version": "[4.7.0, )"
             },
-            "SuperSocket": {
+            "System.Net.Http": {
               "target": "Package",
-              "version": "[1.6.6.1, )"
+              "version": "[2.0.20710, )"
             },
             "WebSocket4Net": {
               "target": "Package",
               "version": "[0.15.2, )"
-            },
-            "WebSocketSharp": {
-              "target": "Package",
-              "version": "[1.0.3-rc11, )"
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
@@ -124,9 +116,9 @@
               "version": "[2.0.3, )",
               "autoReferenced": true
             },
-            "SuperSocket": {
+            "System.Net.Http": {
               "target": "Package",
-              "version": "[1.6.6.1, )"
+              "version": "[2.0.20710, )"
             },
             "System.Net.WebSockets": {
               "target": "Package",
@@ -135,10 +127,6 @@
             "WebSocket4Net": {
               "target": "Package",
               "version": "[0.15.2, )"
-            },
-            "WebSocketSharp": {
-              "target": "Package",
-              "version": "[1.0.3-rc11, )"
             }
           },
           "imports": [

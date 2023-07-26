@@ -13,7 +13,7 @@
         /// <para>This is set to the special <see cref="CrowdControl.crowdUser"/> value for pooled effects.</para>
         /// <para>For local test effect instances, this is set to the special <see cref="CrowdControl.testUser"/> value.</para>
         /// </summary>
-        public StreamViewer user { get; internal set; }
+        public StreamUser user { get; internal set; }
 
         /// <summary>
         /// Unique identifier of this instance, shared with the server. ID value are never reused.
@@ -36,6 +36,10 @@
 
         /// <summary>The id for the effect that's being used</summary>
         public string effectKey { get { return effect.effectKey; } }
+
+        public void SetUser(StreamUser streamUser) {
+            user = streamUser;
+        }
 
         protected string[] Parameters;
     }

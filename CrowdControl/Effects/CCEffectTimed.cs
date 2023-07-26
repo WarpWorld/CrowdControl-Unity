@@ -17,9 +17,6 @@ namespace WarpWorld.CrowdControl {
         /// <summary>Is the timer paused?</summary>
         public bool paused { get; internal set; }
 
-        /// <summary> Whether the timer displays text or a fill graphic. </summary>
-        [HideInInspector] public DisplayType displayType;
-
 #pragma warning disable 1591
         /// <summary>Ran when the effect is enabled. Can be overridden by a derived class.</summary>
         protected virtual void OnEnable () => CrowdControl.EnableEffect (this);
@@ -61,7 +58,7 @@ namespace WarpWorld.CrowdControl {
 
         /// <summary> Checks if the effect should be running or not, then applies the paused state based on it. </summary>
         public bool ShouldBeRunning() {
-            return RunningCondition();
+            return !paused && RunningCondition();
         }
 
         /// <summary> Invoked when the behaviour is paused. </summary>

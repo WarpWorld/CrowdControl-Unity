@@ -56,19 +56,12 @@ namespace WarpWorld.CrowdControl {
         public string DecodeToken() {
             string[] segments = m_token.Split('.');
 
-            /*while (segments[1].Length % 4 > 0) {
+            while (segments[1].Length % 4 > 0) {
                 segments[1] += "=";
-            }*/
-
-
-            CrowdControl.Log(segments[1].Length.ToString());
+            }
 
             byte[] data = Convert.FromBase64String(segments[1]);
-
-            
-
             m_decodedToken = Encoding.UTF8.GetString(data);
-
             return m_decodedToken;
         }
     }
@@ -279,9 +272,14 @@ namespace WarpWorld.CrowdControl {
         }
     }
 
+    public class JSONRequestUser {
+        [JsonProperty(PropertyName = "token")]
+        public string m_token = "";
+    }
+
     public class JSONRequestEffect {
         [JsonProperty(PropertyName = "gameSessionID")]
-        public string m_gameSessionID = "";
+        public string m_gameSessionID;
 
         [JsonProperty(PropertyName = "isTestEffect")]
         public bool m_isTestEffect = true;
@@ -290,7 +288,7 @@ namespace WarpWorld.CrowdControl {
         public string m_effectType = "game";
 
         [JsonProperty(PropertyName = "effectID")]
-        public string m_effectID = "";
+        public string m_effectID;
 
         [JsonProperty(PropertyName = "parameters")]
         Dictionary<string, string> parameters = new Dictionary<string, string>();
@@ -300,9 +298,82 @@ namespace WarpWorld.CrowdControl {
             m_effectID = effectID;
 
             for (int i = 0; i < paramterList.Length; i += 2) {
-                CrowdControl.Log(paramterList[i]);
                 parameters.Add(paramterList[i], paramterList[i + 1]);
             }
+        }
+    }
+
+    public class JSONUserInfo {
+        [JsonProperty(PropertyName = "profile")]
+        public JSONUserInfoProfile m_profile;
+
+        public class JSONUserInfoProfile {
+            [JsonProperty(PropertyName = "createdAt")]
+            public string m_createdAt;
+
+            [JsonProperty(PropertyName = "name")]
+            public string m_name;
+
+            [JsonProperty(PropertyName = "originID")]
+            public string m_originID;
+
+            [JsonProperty(PropertyName = "image")]
+            public string m_image;
+
+            [JsonProperty(PropertyName = "ccUID")]
+            public string m_ccUID;
+
+            [JsonProperty(PropertyName = "originData")]
+            public JSONUserOriginData m_originData;
+
+            public class JSONUserOriginData {
+                [JsonProperty(PropertyName = "_type")]
+                public string m_type;
+
+                [JsonProperty(PropertyName = "user")]
+                public JSONUserOriginUserData m_user;
+
+                public class JSONUserOriginUserData {
+                    [JsonProperty(PropertyName = "offline_image_url")]
+                    public string m_offline_image_url;
+
+                    [JsonProperty(PropertyName = "description")]
+                    public string m_description;
+
+                    [JsonProperty(PropertyName = "created_at")]
+                    public string m_createdAt;
+
+                    [JsonProperty(PropertyName = "profile_image_url")]
+                    public string m_profile_image_url;
+
+                    [JsonProperty(PropertyName = "id")]
+                    public string m_id;
+
+                    [JsonProperty(PropertyName = "login")]
+                    public string m_login;
+
+                    [JsonProperty(PropertyName = "display_name")]
+                    public string m_display_name;
+
+                    [JsonProperty(PropertyName = "type")]
+                    public string m_type;
+
+                    [JsonProperty(PropertyName = "view_count")]
+                    public int m_view_count;
+
+                    [JsonProperty(PropertyName = "email")]
+                    public string m_email;
+                }
+            }
+
+            [JsonProperty(PropertyName = "type")]
+            public string m_type;
+
+            [JsonProperty(PropertyName = "roles")]
+            public string[] m_roles;
+
+            [JsonProperty(PropertyName = "subscriptions")]
+            public string[] m_subscriptions;
         }
     }
 
@@ -356,6 +427,8 @@ namespace WarpWorld.CrowdControl {
                 }
             }
         }
+
+        
 
         public JSONRpc(string token, CCEffectInstance effectInstance, string status) {
             m_token = token;

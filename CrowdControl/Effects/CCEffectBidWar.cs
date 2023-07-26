@@ -65,12 +65,12 @@ namespace WarpWorld.CrowdControl {
             string entryKey = entry.Name.ToLower();
             entryKey = rgx.Replace(entryKey, "");
             BidWarEntries.Add($"{effectKey}_{entryKey}", entry);
-            CrowdControl.instance?.Log("Registered Paramter {0} for {1} index {2}", entry.Name, displayName, entry.ID);
+            CrowdControl.instance?.LogFormat("Registered Paramter {0} for {1} index {2}", entry.Name, displayName, entry.ID);
         }
 
         /// <summary>Place a bid towards one of the bid war entries. Returns true if this causes a new winner.</summary>
         public bool PlaceBid(string bidID, uint amount) {
-            bool newWinner = m_bidWarLibrary.PlaceBid(bidID, amount);
+            bool newWinner = m_bidWarLibrary. PlaceBid(bidID, amount);
 
             if (newWinner)
                 m_winnerEntry = BidWarEntries[bidID];
