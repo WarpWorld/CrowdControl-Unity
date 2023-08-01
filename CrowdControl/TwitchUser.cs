@@ -22,6 +22,7 @@ namespace WarpWorld.CrowdControl {
         public string displayName;
         public string originSite = "";
         public string email = "";
+        public string originID = "";
 
         public StreamUser(JSONUserInfo.JSONUserInfoProfile user) {
             originSite = user.m_type;
@@ -31,6 +32,7 @@ namespace WarpWorld.CrowdControl {
             profileIconUrl = user.m_image;
             roles = user.m_roles;
             subscriptions = user.m_subscriptions;
+            originID = user.m_originID;
         }
 
         public StreamUser(JSONEffectRequest.JSONUser user) {
