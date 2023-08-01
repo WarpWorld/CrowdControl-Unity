@@ -74,6 +74,21 @@ namespace WarpWorld.CrowdControl {
                 DrawBidWar();
             }
 
+            if (Application.isPlaying) {
+                if (GUILayout.Button("Trigger Locally")) TestEffectLocally();
+
+                if (!string.IsNullOrEmpty(CrowdControl.instance.GameSessionID)) {
+                    if (GUILayout.Button("Trigger Remotely")) TestEffectRemotely();
+                    GUILayout.Space(10.0f); 
+                    if (GUILayout.Button("Adjust Menu Price")) CrowdControl.instance?.AdjustMenuPrice(effect.effectKey, effect.price);
+                    GUILayout.Space(10.0f);
+                    if (GUILayout.Button("Effect Available")) CrowdControl.instance?.EffectAvailable(effect);
+                    if (GUILayout.Button("Effect Unavailable")) CrowdControl.instance?.EffectUnavailable(effect);
+                    if (GUILayout.Button("Effect Visible")) CrowdControl.instance?.EffectVisible(effect);
+                    if (GUILayout.Button("Effect Hidden")) CrowdControl.instance?.EffectHidden(effect);
+                }
+            }
+
             EditorGUI.BeginChangeCheck();
             serializedObject.ApplyModifiedProperties();
 
@@ -140,16 +155,13 @@ namespace WarpWorld.CrowdControl {
                 NewRowWithSpace();
 
                 if (!m_paramFoldout[i])
-                {
                     continue;
-                }
 
                 AddProperty(ValueType._string, property.FindPropertyRelative("m_name"), "Name", 50.0f, 225.0f);
                 NewRow();
                 AddSpriteWithTint(property.FindPropertyRelative("m_sprite"), property.FindPropertyRelative("m_tint"), "Icon", 90.0f, 100.0f);
 
-                if (property.FindPropertyRelative("m_paramKind").intValue == 1) // Quantity
-                {
+                if (property.FindPropertyRelative("m_paramKind").intValue == 1) { // Quantity
                     GUILayout.Space(150);
                     AddEnumField(property.FindPropertyRelative("m_paramKind"), "Param Type", 160.0f);
                     SetNextOffset(45.0f, true);
@@ -161,31 +173,30 @@ namespace WarpWorld.CrowdControl {
                     SetNextOffset(30.0f, true);
                     NewRow();
                 }
-                else
-                {
+                else {
                     GUILayout.Space(150);
                     AddEnumField(property.FindPropertyRelative("m_paramKind"), "Param Type", 100.0f);
-                    SetNextOffset(45.0f);
+                    SetNextOffset(45.0f); 
 
                     SerializedProperty options = property.FindPropertyRelative("m_options");
 
                     AddArraySizeProperty(options, 50.0f, 99, 35.5f);
                     NewRow();
 
-                    for (int j = 0; j < options.arraySize; j++)
-                    {
+                    for (int j = 0; j < options.arraySize; j++) {
                         IncreasePosition(110.0f);
+
                         AddProperty(ValueType._string, options.GetArrayElementAtIndex(j), string.Empty, 0.0f, 160.0f);
                         NewRow();
 
-                        if (j > 2)
-                        {
+                        if (j > 2) 
                             GUILayout.Space(25);
-                        }
                     }
 
-                    if (options.arraySize <= 3)
-                    {
+                    //AddEnumField(property.FindPropertyRelative("m_options"), "Test Param", 160.0f);
+                    NewRow();
+
+                    if (options.arraySize <= 3) {
                         NewRow(Convert.ToUInt32(3 - options.arraySize));
                     }
 
@@ -196,14 +207,12 @@ namespace WarpWorld.CrowdControl {
             GUILayout.Space(30);
         }
 
-        private void DrawTimedEffect()
-        {
+        private void DrawTimedEffect() {
             NewRow();
 
             CCEffectTimed effectTimed = effect as CCEffectTimed;
 
             AddPropertyWithSlider(ValueType._float, "duration", "Duration", 220.0f, 210.0f, 0, 600);
-            AddEnumField("displayType", "Display Type", 200.0f);
 
             GUILayout.Space(40);
 
@@ -221,15 +230,15 @@ namespace WarpWorld.CrowdControl {
                 }
 
                 if (!paused && running) {
-                    if (AddButton("Pause", 100.0f)) { CrowdControl.DisableEffect(effectTimed); }
+                    if (AddButton("Pause", 100.0f)) { CrowdControl.PauseEffect(effectTimed, true); }
                 }
 
                 if (paused) {
-                    if (AddButton("Resume", 100.0f)) { CrowdControl.EnableEffect(effectTimed); }
+                    if (AddButton("Resume", 100.0f)) { CrowdControl.ResumeEffect(effectTimed, true); }
                 }
 
                 if (running) {
-                    if (AddButton("Reset", 100.0f)) { CrowdControl.ResetEffect(effectTimed); }
+                    if (AddButton("Reset", 100.0f)) { CrowdControl.ResetEffect(effectTimed, true); }
                 }
 
                 GUILayout.Space(65);
@@ -246,13 +255,18 @@ namespace WarpWorld.CrowdControl {
 
         /// <summary>Override to customize the effect test buttons displayed in play mode.</summary>
         protected virtual void OnInvokeGUI() {
-            if (GUILayout.Button("Trigger Locally")) TestEffectLocally();
+            
             //if (GUILayout.Button("Trigger Remotely")) TestEffectRemotely();
         }
 
         /// <summary>Triggers a test instance of the effect. Only works in play mode.</summary>
         protected void TestEffectLocally() => CrowdControl.instance?.TestEffect(effect);
-        //protected void TestEffectRemotely() => CrowdControl.instance?.SendCCEffectThroughServer(effect, "Test");
+
+        protected void TestEffectParams(string key, string value) {
+            CrowdControl.instance?.TestEffect(effect);
+        }
+
+        protected void TestEffectRemotely() => CrowdControl.instance?.TestEffectServer(effect);
     }
 }
 #endif

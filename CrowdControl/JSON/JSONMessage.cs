@@ -241,8 +241,10 @@ namespace WarpWorld.CrowdControl {
 
         public JSONSubscribe(string session, string hash) {
             token = hash;
-            topics = new string[1];
+            topics = new string[3];
             topics[0] = "session/self";
+            topics[1] = "prv/self";
+            topics[2] = "pub/self"; 
         }
     }
 
@@ -260,6 +262,104 @@ namespace WarpWorld.CrowdControl {
         public JSONStartSession(string gamePackID, params string [] effetReportArgs) {
             m_gamePackID = gamePackID;
             m_effectReportArgs = effetReportArgs;
+        }
+    }
+
+    /*
+     * 
+     * 
+     {
+          "gamePackID": "string",
+          "effectOverrides": [
+            {
+              
+            }
+          ]
+        }
+         
+         */
+
+    public class JSONEffectChangePrice {
+        [JsonProperty(PropertyName = "gamePackID")]
+        public string m_gamePackID = CrowdControl.GameKey;
+
+        [JsonProperty(PropertyName = "effectOverrides")]
+        public JSONEffectOverrideEntry [] m_effectOverrides;
+
+        public class JSONEffectOverrideEntry {
+            public class JSONEffectOverrideEntryTwitch {
+                public class JSONEffectOverrideEntryTwitchChannelPoints {
+                    [JsonProperty(PropertyName = "name")]
+                    public string m_name = "";
+
+                    [JsonProperty(PropertyName = "price")]
+                    public uint m_price = 0;
+
+                    [JsonProperty(PropertyName = "userLimit")]
+                    public uint m_userLimit = 0;
+
+                    [JsonProperty(PropertyName = "streamLimit")]
+                    public uint m_streamLimit = 0;
+
+                    [JsonProperty(PropertyName = "cooldown")]
+                    public uint m_cooldown = 0;
+
+                    [JsonProperty(PropertyName = "color")]
+                    public string m_color = "#FFFFFF";
+
+                    public JSONEffectOverrideEntryTwitchChannelPoints(CCEffectBase ccEffectBase) {
+                        m_name = ccEffectBase.displayName;
+                    }
+                }
+
+                [JsonProperty(PropertyName = "channelPoints")]
+                JSONEffectOverrideEntryTwitchChannelPoints channelPoints;
+
+                public JSONEffectOverrideEntryTwitch(CCEffectBase ccEffectBase) {
+                    channelPoints = new JSONEffectOverrideEntryTwitchChannelPoints(ccEffectBase);
+                }
+            }
+
+            /*[JsonProperty(PropertyName = "inactive")]
+            public bool m_inactive = false;*/
+
+            [JsonProperty(PropertyName = "price")]
+            public uint m_price = 0;
+
+            /*[JsonProperty(PropertyName = "unpoolable")]
+            public bool m_unpoolable = false;
+
+            [JsonProperty(PropertyName = "sessionCooldown")]
+            public int m_sessionCooldown = 120;
+
+            [JsonProperty(PropertyName = "userCooldown")]
+            public int m_userCooldown = 120;
+
+            [JsonProperty(PropertyName = "queueWarningLimit")]
+            public int m_queueWarningLimit = 1;
+
+            [JsonProperty(PropertyName = "sessionMax")]
+            public int m_sessionMax = 1;
+
+            [JsonProperty(PropertyName = "twitch")]
+            public JSONEffectOverrideEntryTwitch m_twitch;*/
+
+            [JsonProperty(PropertyName = "effectID")]
+            public string m_effectID = "";
+
+            [JsonProperty(PropertyName = "type")]
+            public string m_type = "game";
+
+            public JSONEffectOverrideEntry(string effectKey, uint price) {
+                m_effectID = effectKey;
+                m_price = price;
+                //m_twitch = new JSONEffectOverrideEntryTwitch(ccEffectBase);
+            }
+        }
+
+        public JSONEffectChangePrice(string effectKey, uint price) {
+            m_effectOverrides = new JSONEffectOverrideEntry[1];
+            m_effectOverrides[0] = new JSONEffectOverrideEntry(effectKey, price);
         }
     }
 
@@ -281,8 +381,13 @@ namespace WarpWorld.CrowdControl {
         [JsonProperty(PropertyName = "gameSessionID")]
         public string m_gameSessionID;
 
-        [JsonProperty(PropertyName = "isTestEffect")]
-        public bool m_isTestEffect = true;
+        [JsonProperty(PropertyName = "sourceDetails")]
+        public JSONRequestSourceDetails m_sourceDetails;
+
+        public class JSONRequestSourceDetails {
+            [JsonProperty(PropertyName = "type")]
+            public string m_type = "crowd-control-test";
+        }
 
         [JsonProperty(PropertyName = "effectType")]
         public string m_effectType = "game";
@@ -290,16 +395,74 @@ namespace WarpWorld.CrowdControl {
         [JsonProperty(PropertyName = "effectID")]
         public string m_effectID;
 
-        [JsonProperty(PropertyName = "parameters")]
-        Dictionary<string, string> parameters = new Dictionary<string, string>();
+        /*[JsonProperty(PropertyName = "parameters")]
+        Dictionary<string, string> parameters = new Dictionary<string, string>();*/
 
         public JSONRequestEffect(string gameSessionID, string effectID, params string [] paramterList) {
-            m_gameSessionID = gameSessionID;
+            m_gameSessionID = "game_session-" + gameSessionID;
             m_effectID = effectID;
 
+            m_sourceDetails = new JSONRequestSourceDetails();
+
             for (int i = 0; i < paramterList.Length; i += 2) {
-                parameters.Add(paramterList[i], paramterList[i + 1]);
+                //parameters.Add(paramterList[i], paramterList[i + 1]);
             }
+        }
+    }
+
+    public class JSONEffectReport {
+        public class JSONEffectReportArgs {
+            [JsonProperty(PropertyName = "id")]
+            public string m_id = "";
+
+            [JsonProperty(PropertyName = "status")]
+            public string m_status;
+
+            [JsonProperty(PropertyName = "stamp")]
+            public long m_stamp = 1;
+
+            [JsonProperty(PropertyName = "ids")]
+            public string[] m_ids;
+
+            [JsonProperty(PropertyName = "effectType")]
+            public string m_effectType = "game";
+
+            [JsonProperty(PropertyName = "identifierType")]
+            public string m_identifierType = "effect";
+
+            public JSONEffectReportArgs(string status, params string[] ids) {
+                m_status = status;
+                m_ids = ids; 
+                m_id = Utils.GenerateRandomString(26);
+
+                DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                m_stamp = (long)(DateTime.UtcNow - epoch).TotalSeconds;
+            }
+        }
+
+        [JsonProperty(PropertyName = "token")]
+        public string m_token = "";
+
+        [JsonProperty(PropertyName = "call")]
+        public JSONReportCall m_call = new JSONReportCall();
+
+        public class JSONReportCall {
+            [JsonProperty(PropertyName = "method")]
+            public string m_method = "effectReport";
+
+            [JsonProperty(PropertyName = "args")]
+            public JSONEffectReportArgs[] m_args = new JSONEffectReportArgs[1];
+
+            [JsonProperty(PropertyName = "id")]
+            public string m_id = "string";
+
+            [JsonProperty(PropertyName = "type")]
+            public string m_type = "call";
+        }
+
+        public JSONEffectReport(string token, CCEffectBase effect, string status) {
+            m_token = token;
+            m_call.m_args[0] = new JSONEffectReportArgs(status, effect.effectKey);
         }
     }
 
@@ -421,14 +584,16 @@ namespace WarpWorld.CrowdControl {
             public JSONRpcArgs(CCEffectInstance effectInstance, string status) {
                 m_status = status;
                 m_request = effectInstance.id;
+                m_id = Utils.GenerateRandomString(26); 
 
                 if (effectInstance is CCEffectInstanceTimed) {
                     m_timeRemaining = (effectInstance as CCEffectInstanceTimed).unscaledTimeLeft;
                 }
+
+                DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                m_stamp = (long)(DateTime.UtcNow - epoch).TotalSeconds;
             }
         }
-
-        
 
         public JSONRpc(string token, CCEffectInstance effectInstance, string status) {
             m_token = token;

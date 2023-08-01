@@ -41,6 +41,6 @@
             user = streamUser;
         }
 
-        protected string[] Parameters;
+        //protected string[] Parameters;
     }
 }

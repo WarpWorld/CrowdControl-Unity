@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Linq;
 
 namespace WarpWorld.CrowdControl {
     [System.Serializable]
@@ -48,6 +49,10 @@ namespace WarpWorld.CrowdControl {
             for (int i = 0; i < m_options.Length; i++) {
                 Options[i] = new ParameterOption(m_options[i], ID);
             }
+        }
+
+        public string GetOptionName(string key) {
+            return Options.FirstOrDefault(option => string.Equals(key, option.ID)).Name;
         }
     }
 }

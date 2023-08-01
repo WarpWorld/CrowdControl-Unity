@@ -38,7 +38,7 @@ namespace WarpWorld.CrowdControl.Overlay {
                 node.SetVisibility(displayFlags);
             }
 
-            node.group.alpha = 1;
+            node.gameObject.SetActive(true);
 
             node.Setup(effectInstance);
             node.transform.SetAsFirstSibling();
@@ -79,8 +79,9 @@ namespace WarpWorld.CrowdControl.Overlay {
                 nodePool.Add(id, new Queue<EffectUINode>());
 
             nodePool[id].Enqueue(node);
-            node.group.alpha = 0;
+            
             node.transform.SetAsLastSibling();
+            node.gameObject.SetActive(false);
             activeEffects.Remove(effectID);
         }
         #endregion

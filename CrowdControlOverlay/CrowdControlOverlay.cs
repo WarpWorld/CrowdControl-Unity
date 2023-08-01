@@ -43,7 +43,7 @@ namespace WarpWorld.CrowdControl.Overlay
 
 #pragma warning disable CS0649
         [Header("Scene References")]
-        [SerializeField] EffectLogUI log;
+        [SerializeField] EffectUINode log;
         [SerializeField] EffectBuffUI buff;
         [SerializeField] EffectQueueUI queue;
         [SerializeField] MessageUI messages;

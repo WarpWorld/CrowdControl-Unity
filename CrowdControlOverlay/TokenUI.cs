@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using TMPro;
 
 namespace WarpWorld.CrowdControl.Overlay {
     [Serializable]
@@ -29,8 +30,8 @@ namespace WarpWorld.CrowdControl.Overlay {
         [SerializeField] private TokenUIView _disconnectedView;
         [SerializeField] private TokenUIView _needTokenView;
         [SerializeField] private TokenUIView _connectedView;
-        [SerializeField] private Text _tokenInputField;
-        [SerializeField] private Text _tokenInstructions;
+        [SerializeField] private TMP_Text _tokenInputField;
+        [SerializeField] private TMP_Text _tokenInstructions;
 
         public Action<string> onSubmit;
 
@@ -69,14 +70,6 @@ namespace WarpWorld.CrowdControl.Overlay {
 
             foreach (View v in _viewDictionary.Keys) {
                 _viewDictionary[v]._view.gameObject.SetActive(_view == v);
-            }
-
-            if (view == View.InputToken) {
-                if (CrowdControl.instance.StagingServer) {
-                    _tokenInstructions.text = "Please retrieve a temporary token from:\nhttps://staging.crowdcontrol.live/activate";
-                } else {
-                    _tokenInstructions.text = "Please retrieve a temporary token from:\nhttps://crowdcontrol.live/activate";
-                }
             }
         }
 

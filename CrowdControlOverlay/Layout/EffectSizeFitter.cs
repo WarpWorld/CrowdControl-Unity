@@ -13,7 +13,8 @@ namespace WarpWorld.CrowdControl.Overlay {
 
         protected DrivenRectTransformTracker tracker;
 
-        public Action OnAdjusted; 
+        public Action OnAdjusted;
+        public CanvasGroup m_viewCanvas;
 
         protected new void OnEnable() {
             tracker.Add(this, rectTransform, DrivenTransformProperties.SizeDeltaX);
@@ -33,10 +34,16 @@ namespace WarpWorld.CrowdControl.Overlay {
             StartCoroutine(SetLayout());
         }
 
-        private IEnumerator SetLayout()
-        {
+        private IEnumerator SetLayout() {
+            if (Application.isPlaying && m_viewCanvas != null)
+                m_viewCanvas.alpha = 0;
+
             yield return new WaitForEndOfFrame();
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, GetWidth());
+
+            if (m_viewCanvas != null)
+                m_viewCanvas.alpha = 1;
+
             OnAdjusted?.Invoke();
         }
 

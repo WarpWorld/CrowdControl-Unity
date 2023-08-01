@@ -17,11 +17,14 @@ namespace WarpWorld.CrowdControl {
         /// <summary>Is the timer paused?</summary>
         public bool paused { get; internal set; }
 
+        /// <summary>Is the timer paused?</summary>
+        public bool pausedFromMenu { get; internal set; }
+
 #pragma warning disable 1591
         /// <summary>Ran when the effect is enabled. Can be overridden by a derived class.</summary>
-        protected virtual void OnEnable () => CrowdControl.EnableEffect (this);
+        protected virtual void OnEnable () => CrowdControl.ResumeEffect (this);
         /// <summary>Ran when the effect is disabled. Can be overridden by a derived class.</summary>
-        protected virtual void OnDisable() => CrowdControl.DisableEffect(this);
+        protected virtual void OnDisable() => CrowdControl.PauseEffect(this);
 #pragma warning restore 1591
         /// <summary> Handles starting the timed effect. Override <see cref="OnStartEffect(EffectInstance)"/> instead. </summary>
         protected internal sealed override EffectResult OnTriggerEffect(CCEffectInstance effectInstance) {
@@ -58,7 +61,7 @@ namespace WarpWorld.CrowdControl {
 
         /// <summary> Checks if the effect should be running or not, then applies the paused state based on it. </summary>
         public bool ShouldBeRunning() {
-            return !paused && RunningCondition();
+            return RunningCondition() && !pausedFromMenu;
         }
 
         /// <summary> Invoked when the behaviour is paused. </summary>
@@ -66,11 +69,27 @@ namespace WarpWorld.CrowdControl {
             paused = true;
         }
 
+        protected internal void PauseFromMenu(CCEffectInstance effectInstance) {
+            pausedFromMenu = true;
+        }
+
         /// <summary> Invoked when the behaviour is resumed. </summary>
         protected internal void Resume(CCEffectInstance effectInstance) {
             CCEffectInstanceTimed effectInstanceTimed = effectInstance as CCEffectInstanceTimed;
             effectInstanceTimed.unscaledTimeLeft += Time.unscaledDeltaTime;
             paused = false;
+        }
+
+        protected internal void ResumeFromMenu(CCEffectInstance effectInstance) {
+            CCEffectInstanceTimed effectInstanceTimed = effectInstance as CCEffectInstanceTimed;
+            effectInstanceTimed.unscaledTimeLeft += Time.unscaledDeltaTime;
+            pausedFromMenu = false;
+        }
+
+        protected internal void ResetFromMenu(CCEffectInstance effectInstance) {
+            CCEffectInstanceTimed effectInstanceTimed = effectInstance as CCEffectInstanceTimed;
+            effectInstanceTimed.unscaledTimeLeft = duration;
+            pausedFromMenu = false;
         }
 
         /// <summary> Invoked when the behaviour is Reset. </summary>

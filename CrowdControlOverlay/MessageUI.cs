@@ -1,21 +1,18 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using TMPro;
 
-namespace WarpWorld.CrowdControl.Overlay
-{
+namespace WarpWorld.CrowdControl.Overlay {
     [AddComponentMenu("Crowd Control/Message UI")]
     [RequireComponent(typeof(RectTransform), typeof(CanvasGroup))]
-    public class MessageUI : MonoBehaviour
-    {
-        private class MessageEntry
-        {
+    public class MessageUI : MonoBehaviour {
+        public class MessageEntry {
             public string text;
             public Sprite sprite;
             public float lifeSpan;
 
-            public MessageEntry(string text, Sprite sprite, float lifeSpan)
-            {
+            public MessageEntry(string text, Sprite sprite, float lifeSpan) {
                 this.text = text;
                 this.sprite = sprite;
                 this.lifeSpan = lifeSpan;
@@ -23,7 +20,7 @@ namespace WarpWorld.CrowdControl.Overlay
         }
 
         [SerializeField] private Image icon;
-        [SerializeField] private Text content;
+        [SerializeField] private TMP_Text content;
         [SerializeField] private GameObject container;
         [SerializeField] private GameObject iconContainer;
         [SerializeField] private CanvasGroup canvasGroup;
@@ -33,18 +30,15 @@ namespace WarpWorld.CrowdControl.Overlay
         private Queue<MessageEntry> messageEntries = new Queue<MessageEntry>();
         private MessageEntry activeMessageEntry;
 
-        void Awake()
-        {
+        void Awake() {
             canvasGroup.alpha = 0;
         }
 
-        public void SetVisibility(DisplayFlags displayFlags)
-        {
+        public void SetVisibility(DisplayFlags displayFlags) {
             canvasGroup.alpha = (displayFlags & DisplayFlags.Messages) != 0 ? 1 : 0;
         }
 
-        public void Add(string message, Sprite sprite, float time)
-        {
+        public void Add(string message, Sprite sprite, float time) {
             MessageEntry newMessageEntry = new MessageEntry(message, sprite, time);
 
             if (activeMessageEntry == null)
@@ -53,15 +47,13 @@ namespace WarpWorld.CrowdControl.Overlay
                 messageEntries.Enqueue(newMessageEntry);
         }
 
-        public void Update()
-        {
+        public void Update() {
             if (timeRemaining <= 0.0f)
                 return;
 
             timeRemaining -= Time.deltaTime;
 
-            if (timeRemaining <= 0.0f)
-            {
+            if (timeRemaining <= 0.0f) {
                 if (messageEntries.Count > 0)
                     SetupMessage(messageEntries.Dequeue());
                 else
@@ -69,8 +61,7 @@ namespace WarpWorld.CrowdControl.Overlay
             }
         }
 
-        private void SetupMessage(MessageEntry messageEntry)
-        {
+        public virtual void SetupMessage(MessageEntry messageEntry) {
             activeMessageEntry = messageEntry;
             timeRemaining = messageEntry.lifeSpan;
             content.text = messageEntry.text;
@@ -80,11 +71,10 @@ namespace WarpWorld.CrowdControl.Overlay
             if (hasIcon)
                 icon.sprite = messageEntry.sprite;
 
-            iconContainer.gameObject.SetActive(hasIcon);
+            //iconContainer.gameObject.SetActive(hasIcon);
         }
 
-        private void ClearMessage()
-        {
+        private void ClearMessage() {
             activeMessageEntry = null;
             canvasGroup.alpha = 0;
         }

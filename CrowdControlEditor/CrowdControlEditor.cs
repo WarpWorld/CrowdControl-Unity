@@ -39,7 +39,7 @@ namespace WarpWorld.CrowdControl {
             AddSpriteWithTint("_errorUserIcon", "_errorUserColor", "Error User Icon", 125.0f, 100.0f); 
 
             NewRow();
-            AddProperty(ValueType._bool, "_staging", "Staging", 100.0f, 50.0f);
+            //AddProperty(ValueType._bool, "_staging", "Staging", 100.0f, 50.0f);
             AddProperty(ValueType._bool, "_dontDestroyOnLoad", "Don't Destroy on Load", 300.0f, 125.0f);
             AddProperty(ValueType._bool, "_startSessionAuto", "Start Session Automatically", 300.0f, 150.0f);
             
@@ -79,15 +79,8 @@ namespace WarpWorld.CrowdControl {
                 }
 
                 if (AddButton("Clear Saved Tokens", 150.0f)) {
-                    string gameKey = serializedObject.FindProperty("_gameKey").stringValue;
-                    PlayerPrefs.SetString($"CCToken{gameKey}False", string.Empty);
-                    PlayerPrefs.SetString($"CCToken{gameKey}True", string.Empty);
-                    PlayerPrefs.SetString($"CCStreamer{gameKey}False", string.Empty);
-                    PlayerPrefs.SetString($"CCStreamer{gameKey}True", string.Empty);
-                    PlayerPrefs.SetString($"CCUserHash{gameKey}False", string.Empty);
-                    PlayerPrefs.SetString($"CCUserHash{gameKey}True", string.Empty);
-
-                    Debug.Log("[CC] Cleared Saved Tokens");
+                    Server server = (Server)serializedObject.FindProperty("server").intValue;
+                    cc.ClearSavedTokensFromServer(cc.server);
                 }
             }
 
@@ -106,11 +99,6 @@ namespace WarpWorld.CrowdControl {
 
             EditorGUI.BeginChangeCheck();
             serializedObject.ApplyModifiedProperties();
-
-            if (queueMenuRefresh) {
-                cc.ReRegisterEffects();
-                queueMenuRefresh = false;
-            }
         }
 
         void GenerateServerData() {
@@ -119,7 +107,7 @@ namespace WarpWorld.CrowdControl {
             CCEffectEntries effectEntries = cc.gameObject.GetComponent<CCEffectEntries>();
             Dictionary<string, CCEffectBase> effectsByID = new Dictionary<string, CCEffectBase>();
 
-            effectEntries.PrivateResetDictionary();
+            effectEntries.PrivateResetDictionary(); 
             effectEntries.PrivatePopulateDictionary();
 
             CCEffectBase [] effectBases = FindObjectsOfType<CCEffectBase>();

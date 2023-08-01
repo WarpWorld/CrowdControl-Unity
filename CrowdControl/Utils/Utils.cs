@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace WarpWorld.CrowdControl {
     public static class Utils {
@@ -21,6 +19,18 @@ namespace WarpWorld.CrowdControl {
                 value += 0x8000000000000000;
 
             return value;
+        }
+
+        private static Random random = new Random();
+
+        public static string GenerateRandomString(int length) {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var stringChars = new char[length];
+
+            for (int i = 0; i < length; i++)
+                stringChars[i] = chars[random.Next(chars.Length)];
+
+            return new String(stringChars);
         }
     }
 }

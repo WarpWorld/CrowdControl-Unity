@@ -172,16 +172,6 @@ namespace WarpWorld.CrowdControl {
         }
     }
 
-    public class CCMessageDisconnect : CCRequest { // 0xFF
-        public CCMessageDisconnect(uint blockID) {
-            this.blockID = blockID;
-            InitBuffer(0x08);
-            WriteMessageType(MessageType.Disconnect, ref offset);
-            Protocol.Write(byteStream, ref offset, blockID);
-            WriteChecksumByte();
-        }
-    }
-
     public class CCMessageEffectUpdate : CCRequest { // 0x01
         public CCMessageEffectUpdate(uint blockID, string effectID, Protocol.EffectState status, ushort payload) {
             this.blockID = blockID;

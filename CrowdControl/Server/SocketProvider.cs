@@ -71,7 +71,7 @@ namespace WarpWorld.CrowdControl {
 
         private void SocketMessageReceived(object sender, MessageReceivedEventArgs e) {
             ThreadPool.QueueUserWorkItem(_ => {
-                CrowdControl.jsonQueue.Enqueue(e.Message);
+                CrowdControl.instance.AddToJsonQueue(e.Message);
             });
         }
 

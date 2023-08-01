@@ -27,8 +27,7 @@ namespace WarpWorld.CrowdControl {
         [HideInInspector] public Color iconColor = Color.white;
 
         /// <summary>Unique identifier of the effect. </summary>
-        [HideInInspector]
-        public string effectKey;
+        [HideInInspector] public string effectKey;
 
         /// <summary>Name of the effect displayed to the users. </summary>
         [HideInInspector] public string displayName;
@@ -85,12 +84,28 @@ namespace WarpWorld.CrowdControl {
 
         /// <summary>Toggles whether this effect can currently be sold during this session.</summary>
         public void ToggleSellable(bool sellable) {
-            CrowdControl.instance.ToggleEffectSellable(effectKey, sellable);
+            if (sellable) {
+                CrowdControl.instance.EffectAvailable(this);
+                return;
+            }
+
+            CrowdControl.instance.EffectUnavailable(this);
         }
 
         /// <summary>Toggles whether this effect is visible in the menu during this session.</summary>
         public void ToggleVisible(bool visible)  {
-            CrowdControl.instance.ToggleEffectVisible(effectKey, visible);
+            if (visible) {
+                CrowdControl.instance.EffectVisible(this);
+                return;
+            }
+
+            CrowdControl.instance.EffectHidden(this);
+        }
+
+        /// <summary>Updates the price on the effect menu during runtime.</summary>
+        public void UpdatePrice(uint newPrice) {
+            price = newPrice;
+            CrowdControl.instance.AdjustMenuPrice(effectKey, newPrice);
         }
 
         /// <summary>Determines whether this effect can be ran right now or not. Overridable</summary>

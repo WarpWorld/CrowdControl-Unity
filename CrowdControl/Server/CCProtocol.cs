@@ -5,7 +5,7 @@ namespace WarpWorld.CrowdControl {
     public static class Protocol {
         public const int FRAME_SIZE = 3;
         public const byte VERSION = 4;
-        public const int PING_INTERVAL = 10;
+        public const int PING_INTERVAL = 300;
 
         public enum EffectState : byte {
             Success = 0x10,
