@@ -40,6 +40,13 @@ namespace WarpWorld.CrowdControl {
 
 #pragma warning disable 0169
         [SerializeField] private Sprite _errorUserIcon;
+
+        [SerializeField] private Color _tempUserColor;
+        [SerializeField] private Color _crowdUserColor;
+        [SerializeField] private Color _errorUserColor;
+
+
+
         [SerializeField] private Sprite _loadingIcon; // TODO used here? 
 #pragma warning restore 0169
         [Range(0, 10)] [SerializeField] private float delayBetweenEffects = .5f;
@@ -110,7 +117,7 @@ namespace WarpWorld.CrowdControl {
         private List<string> effectInstanceIDs = new List<string>();
 
         private Server server = Server.Production; 
-        private StreamUser _streamer = null;
+        public StreamUser Streamer { get; private set; } = null;
 
         private string WebSocketServer {
             get {
@@ -397,8 +404,8 @@ namespace WarpWorld.CrowdControl {
 
             // Send messages to the server.
             if (isConnected) {
-                if (_streamer != null && !streamUsers.ContainsKey(_streamer.name)) {
-                    StartCoroutine(InstantiateViewer(_streamer, _streamer.name));
+                if (Streamer != null && !streamUsers.ContainsKey(Streamer.name)) {
+                    StartCoroutine(InstantiateViewer(Streamer, Streamer.name));
                 }
 
                 if (timeToNextPing <= now)  {
@@ -590,8 +597,8 @@ namespace WarpWorld.CrowdControl {
 
         private IEnumerator DisplayMessageWithIcon(string message, float displayTime = 5.0f) {
             yield return new WaitUntil(() => Application.isPlaying);
-            yield return new WaitUntil(() => _streamer != null && _streamer.profileIcon != null);
-            OnDisplayMessage?.Invoke(message, displayTime, _streamer.profileIcon);
+            yield return new WaitUntil(() => Streamer != null && Streamer.profileIcon != null);
+            OnDisplayMessage?.Invoke(message, displayTime, Streamer.profileIcon);
         }
 
         private void LoginPlatform(string platform) {
@@ -786,7 +793,7 @@ namespace WarpWorld.CrowdControl {
                     break;
                 case "user/profile":
                     JSONUserInfo userInfo = JsonConvert.DeserializeObject<JSONUserInfo>(serializedPayload);
-                    _streamer = new StreamUser(userInfo.m_profile);
+                    Streamer = new StreamUser(userInfo.m_profile);
                     break;
             }
         }

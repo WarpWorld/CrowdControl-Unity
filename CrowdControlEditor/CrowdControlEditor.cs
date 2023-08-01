@@ -80,7 +80,7 @@ namespace WarpWorld.CrowdControl {
 
                 if (AddButton("Clear Saved Tokens", 150.0f)) {
                     Server server = (Server)serializedObject.FindProperty("server").intValue;
-                    cc.ClearSavedTokensFromServer(cc.server);
+                    cc.ClearSavedTokens();
                 }
             }
 
