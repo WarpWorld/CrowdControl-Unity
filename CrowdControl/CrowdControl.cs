@@ -5,9 +5,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Newtonsoft.JsonCC;
-using System.Net;
-using System.IO;
-using System.Text;
 
 namespace WarpWorld.CrowdControl {
     /// <summary> The Crowd Control client instance. Handles communications with the server and triggering effects. </summary>
@@ -18,12 +15,10 @@ namespace WarpWorld.CrowdControl {
         #region Configuration
 
         [SerializeField] private string _gameName = "Unity Demo";
-        [SerializeField] private string _gameKey;
+        [SerializeField] private string _gameKey = "UnityDemo";
         [SerializeField] private bool _dontDestroyOnLoad = true;
-
         [SerializeField] private bool _startSessionAuto = true;
-        
-        [SerializeField] private BroadcasterType _broadcasterType;
+       
         private CCEffectEntries ccEffectEntries;
 
         [Space]
@@ -33,34 +28,27 @@ namespace WarpWorld.CrowdControl {
 
         [Header("Visuals")]
 #pragma warning disable 0649, 1591
-        [Tooltip("User icon displayed while fetching the Twitch profile.")]
-        [SerializeField] private Sprite _tempUserIcon;
-        [Tooltip("User icon displayed for effects pooled by the crowd.")]
-        [SerializeField] private Sprite _crowdUserIcon;
+
 
 #pragma warning disable 0169
+        [SerializeField] private Sprite _tempUserIcon;
+        [SerializeField] private Sprite _crowdUserIcon;
         [SerializeField] private Sprite _errorUserIcon;
 
         [SerializeField] private Color _tempUserColor;
         [SerializeField] private Color _crowdUserColor;
         [SerializeField] private Color _errorUserColor;
-
-
-
-        [SerializeField] private Sprite _loadingIcon; // TODO used here? 
 #pragma warning restore 0169
         [Range(0, 10)] [SerializeField] private float delayBetweenEffects = .5f;
 
         [Header("Debug Outputs")]
-        [SerializeField] private bool _debugLog = true;
+        [SerializeField] private bool _debugLog = true; 
         [SerializeField] private bool _debugWarning = true;
         [SerializeField] private bool _debugError = true;
         [SerializeField] private bool _debugExceptions = true;
 
         private SocketProvider _socketProvider;
         private ushort _port = 443;
-        private ulong _deviceFingerprint;
-        private uint _blockID = 1;
         private string _token = "";
         private string _streamerID = "";
         private string _userHash = "";
@@ -94,7 +82,7 @@ namespace WarpWorld.CrowdControl {
         public static bool StartSessionAutomatically { get; private set; }
 
         /// <summary>ID of the current game session.</summary>
-        public string GameSessionID { get; private set; }
+        private string _gameSessionID;
 
         private Queue<CCEffectInstance> pendingQueue;
         private Dictionary<string, Queue<CCEffectInstanceTimed>> haltedTimers;
@@ -113,15 +101,17 @@ namespace WarpWorld.CrowdControl {
         private bool _paused = false;
         private bool _adjustPauseTime = false;
         private bool _disconnectFromTimeout = false;
-        private bool activeSession = false;
+        public bool ActiveSession { get; private set; } = false;
         private List<string> effectInstanceIDs = new List<string>();
 
-        private Server server = Server.Production; 
+        internal static Server CCServer { get; private set; } = Server.Production;
         public StreamUser Streamer { get; private set; } = null;
+
+        internal static Queue<KeyValuePair<Action<string>, string>> PostGetResponses = new Queue<KeyValuePair<Action<string>, string>>();
 
         private string WebSocketServer {
             get {
-                switch (server) {
+                switch (CCServer) {
                     case Server.Dev:
                         return "wss://dyk8kg1mr3.execute-api.us-east-1.amazonaws.com/dev/";
                     case Server.Production:
@@ -134,24 +124,9 @@ namespace WarpWorld.CrowdControl {
             }
         }
 
-        private string OpenApiURL {
-            get {
-                switch (server) {
-                    case Server.Dev:
-                        return "https://dev-openapi.crowdcontrol.live/";
-                    case Server.Production:
-                        return "https://openapi.crowdcontrol.live/";
-                    case Server.Staging:
-                        return "https://staging-openapi.crowdcontrol.live/";
-                }
-
-                return string.Empty;
-            }
-        }
-
         private string AuthURL {
             get {
-                switch (server) {
+                switch (CCServer) {
                     case Server.Dev:
                         return "https://dev-auth.crowdcontrol.live";
                     case Server.Production:
@@ -164,14 +139,14 @@ namespace WarpWorld.CrowdControl {
             }
         }
 
-        public string CurrentToken {
+        internal string CurrentToken {
             get {
                 if (string.IsNullOrEmpty(_token))
-                    _token = PlayerPrefs.GetString($"CCToken{_gameKey}{server}", string.Empty);
+                    _token = PlayerPrefs.GetString($"CCToken{_gameKey}{CCServer}", string.Empty);
 
                 return _token;
             } set {
-                PlayerPrefs.SetString($"CCToken{_gameKey}{server}", value);
+                PlayerPrefs.SetString($"CCToken{_gameKey}{CCServer}", value);
                 _token = value;
             }
         }
@@ -179,32 +154,32 @@ namespace WarpWorld.CrowdControl {
         private string CurrentStreamer {
             get {
                 if (string.IsNullOrEmpty(_streamerID))
-                    _streamerID = PlayerPrefs.GetString($"CCStreamer{_gameKey}{server}", string.Empty);
+                    _streamerID = PlayerPrefs.GetString($"CCStreamer{_gameKey}{CCServer}", string.Empty);
 
                 return _streamerID;
             }
             set {
-                PlayerPrefs.SetString($"CCStreamer{_gameKey}{server}", value);
+                PlayerPrefs.SetString($"CCStreamer{_gameKey}{CCServer}", value);
                 _streamerID = value;
             }
         }
 
-        private string CurrentUserHash {
+        internal string CurrentUserHash {
             get {
                 if (string.IsNullOrEmpty(_userHash))
-                    _userHash = PlayerPrefs.GetString($"CCUserHash{_gameKey}{server}", string.Empty);
+                    _userHash = PlayerPrefs.GetString($"CCUserHash{_gameKey}{CCServer}", string.Empty);
 
                 return _userHash;
             }
-            set {
-                PlayerPrefs.SetString($"CCUserHash{_gameKey}{server}", value);
+            private set {
+                PlayerPrefs.SetString($"CCUserHash{_gameKey}{CCServer}", value);
                 _userHash = value;
             }
         }
 
         /// <summary>Clears all saved tokens from a previous session.</summary>
         public void ClearSavedTokens() {
-            ClearSavedTokensFromServer(server);
+            ClearSavedTokensFromServer(CCServer);
         }
 
         private void ClearSavedTokensFromServer(Server targetServer) {
@@ -213,9 +188,6 @@ namespace WarpWorld.CrowdControl {
             PlayerPrefs.SetString($"CCUserHash{_gameKey}{targetServer}", string.Empty);
             Debug.Log("[CC] Cleared Saved Tokens on " + targetServer);
         }
-
-        /// <summary>Did we start a session?</summary>
-        public bool isAuthenticated { get; private set; }
 
         /// <summary>Whether the connection to the server is currently initializing.</summary>
         public bool isConnecting { get; private set; }
@@ -242,7 +214,7 @@ namespace WarpWorld.CrowdControl {
         /// <summary>Invoked when disconnected from the Crowd Control server.</summary>
         public event Action OnDisconnected;
 
-        public void RunConnectedAction() {
+        internal void RunConnectedAction() {
             OnConnected?.Invoke();
         }
 
@@ -252,10 +224,8 @@ namespace WarpWorld.CrowdControl {
         public event Action<string, EffectResult> OnEffectDequeue;
         /// <summary>Invoked when an important message needs to be displayed.</summary>
         public event Action<string, float, Sprite> OnDisplayMessage;
-        /// <summary>Invoked when you submit your temporary token.</summary>
-        public event Action OnSubmitTempToken;
-        /// <summary>Invoked when you attempt to connect with an incorrect temporary token.</summary>
-        public event Action OnTempTokenFailure;
+        /// <summary>Invoked when you fail to login.</summary>
+        public event Action OnLoginFailure;
 
         /// <summary>Invoked when an <see cref="CCEffectBase"/> is successfully triggered.</summary>
         public event Action<CCEffectInstance> OnEffectTrigger;
@@ -263,7 +233,6 @@ namespace WarpWorld.CrowdControl {
         public event Action<CCEffectInstanceTimed> OnEffectStart;
         /// <summary>Invoked when a <see cref="CCEffectTimed"/> is successfully stopped.</summary>
         public event Action<CCEffectInstanceTimed> OnEffectStop;
-
         /// <summary>Invoked on effect instances when the associated <see cref="CCEffectTimed"/> is disabled.</summary>
         public event Action<CCEffectInstanceTimed> OnEffectPause;
         /// <summary>Invoked on effect instances when the associated <see cref="CCEffectTimed"/> is enabled.</summary>
@@ -272,13 +241,20 @@ namespace WarpWorld.CrowdControl {
         public event Action<CCEffectInstanceTimed> OnEffectReset;
         #endregion
 
+        /// <summary>Invoked when you log out.</summary>
         public event Action OnLoggedOut;
+        /// <summary>Invoked when you log in.</summary>
         public event Action OnLoggedIn;
+        /// <summary>Invoked when you subscribe to the server.</summary>
         public event Action OnSubscribed;
+        /// <summary>Invoked when you fail to subscribe to the server.</summary>
         public event Action OnSubscribeFail;
+        /// <summary>Invoked when the session starts.</summary>
         public event Action OnGameSessionStart;
+        /// <summary>Invoked when the session stops.</summary>
         public event Action OnGameSessionStop;
-        public event Action OnEffectRequest;
+        /// <summary>Invoked when an effect is requested.</summary>
+        public event Action<CCEffectBase> OnEffectRequest;
 
         #region Unity Component Life Cycle
 
@@ -307,7 +283,7 @@ namespace WarpWorld.CrowdControl {
             pendingQueue = new Queue<CCEffectInstance>();
             jsonQueue = new Queue<string>();
             haltedTimers = new Dictionary<string, Queue<CCEffectInstanceTimed>>();
-            OnConnected += WhoAmI;
+            OnConnected += () => SendJSON(new JSONMessageSend("whoami"));
         }
 
         void OnEnable() {
@@ -332,7 +308,7 @@ namespace WarpWorld.CrowdControl {
             if (_duplicatedInstance)
                 return;
 
-            if (activeSession)
+            if (ActiveSession)
                 StopGameSession();
 
             if (_socketProvider != null) 
@@ -397,7 +373,12 @@ namespace WarpWorld.CrowdControl {
 
             if (jsonQueue.Count > 0 && timeUntilProcessJSON <= 0.0f) {
                 ProcessMessage(jsonQueue.Dequeue());
-                timeUntilProcessJSON = 0.5f;
+                timeUntilProcessJSON = 0.1f;
+            } else if (PostGetResponses.Count > 0) {
+                KeyValuePair<Action<string>, string> responseData = PostGetResponses.Dequeue();
+                Log("RECEIVED: " + responseData.Value);
+                timeUntilProcessJSON = 0.1f;
+                responseData.Key?.Invoke(responseData.Value);
             }
 
             HandlePending();
@@ -410,7 +391,7 @@ namespace WarpWorld.CrowdControl {
 
                 if (timeToNextPing <= now)  {
                     Assert.IsFalse(isConnecting);
-                    SendJSON(JsonConvert.SerializeObject(new JSONData("ping")));
+                    SendJSON(new JSONData("ping"));
                     timeToNextPing = now + Protocol.PING_INTERVAL;
                     timeToTimeout = Time.unscaledTime + Protocol.PING_INTERVAL * 2;
                 }
@@ -481,11 +462,11 @@ namespace WarpWorld.CrowdControl {
             isConnecting = false;
         }
 
-        private void SendJSON(string jsonContent) {
-            Task.Factory.StartNew(() => _socketProvider.Send(jsonContent));
+        internal void SendJSON(object jsonContent) {
+            Task.Factory.StartNew(() => _socketProvider.Send(JsonConvert.SerializeObject(jsonContent)));
         }
 
-        /// <summary> Gets the JSON Manifest of your effect pack. </summary>
+        /// <summary> Gets the JSON Manifest of your effect pack. (Not working yet) </summary>
         public string GetJSONManifest() {
             CCJsonBlock jsonBlock = new CCJsonBlock(_gameName, effectsByID, ccEffectEntries);
             return jsonBlock.jsonString;
@@ -502,18 +483,13 @@ namespace WarpWorld.CrowdControl {
 
             _currentRetryCount = 0;
             timeToNextPing = float.MaxValue;
-            _token = PlayerPrefs.GetString($"CCToken{_gameKey}{server}", string.Empty);
+            _token = PlayerPrefs.GetString($"CCToken{_gameKey}{CCServer}", string.Empty);
 
             ConnectSocket();
         }
 
         private void DisconnectedSocket() {
             _disconnectFromTimeout = true;
-        }
-
-        private void WhoAmI() {
-            JSONMessageSend whoamI = new JSONMessageSend("whoami");
-            SendJSON(JsonConvert.SerializeObject(whoamI));
         }
 
         private async void ConnectSocket() {
@@ -527,14 +503,12 @@ namespace WarpWorld.CrowdControl {
 
             timeToNextPing = Time.unscaledTime + Protocol.PING_INTERVAL;
             timeToTimeout = timeToNextPing + Protocol.PING_INTERVAL;
-
-            _deviceFingerprint = Utils.Randomulong();
         }
 
         /// <summary> Disconnects from the Crowd Control server. </summary>
         public void Disconnect() => Disconnect(false);
 
-        public void ConnectError(Exception e) {
+        internal void ConnectError(Exception e) {
             OnConnectionError?.Invoke(e);
         }
 
@@ -557,7 +531,6 @@ namespace WarpWorld.CrowdControl {
             timeToTimeout = float.MaxValue;
             isConnecting = false;
             OnDisconnected?.Invoke();
-            isAuthenticated = false;
             disconnectedFromError = fromError;
         }
 
@@ -565,34 +538,27 @@ namespace WarpWorld.CrowdControl {
             return effectsByID.ContainsKey(effectID) && (effectsByID[effectID] is CCEffectBidWar);
         }
 
-        private void EffectSuccess(CCEffectInstance instance, byte delay = 0) {
-            SendRPC(instance, "success");
-        }
-
-        private void EffectFailure(CCEffectInstance instance) {
-            SendRPC(instance, "failTemporary");
-        }
-
         /// <summary> Check if the effect is registered already or not. </summary>
         public bool EffectIsRegistered(CCEffectBase effectBase) {
-            return effectsByID.ContainsKey(effectBase.effectKey);
+            return effectsByID.ContainsKey(effectBase.Key);
         }
 
+        /// <summary> Register a Generic (Not Implemented Yet). </summary>
         public void RegisterGeneric(CCGeneric generic) {
             generics.Add(generic.Name, generic);
         }
 
         /// <summary> Registers this effect during runtime. </summary>
-        public void RegisterEffect(CCEffectBase effectBase, bool silent = false) {
+        internal void RegisterEffect(CCEffectBase effectBase, bool silent = false) {
             ccEffectEntries.PrivateAddEffect(effectBase);
 
-            if (!effectsByID.ContainsKey(effectBase.effectKey)) {
-                effectsByID.Add(effectBase.effectKey, effectBase);
+            if (!effectsByID.ContainsKey(effectBase.Key)) {
+                effectsByID.Add(effectBase.Key, effectBase);
                 effectBase.RegisterParameters(ccEffectEntries);
             }
 
             if (!silent) 
-                Log("Registered Effect ID " + effectBase.effectKey);
+                Log("Registered Effect ID " + effectBase.Key);
         }
 
         private IEnumerator DisplayMessageWithIcon(string message, float displayTime = 5.0f) {
@@ -606,196 +572,66 @@ namespace WarpWorld.CrowdControl {
             Application.OpenURL(url);
         }
 
-        /// <summary>Updates the price on the effect menu during runtime.</summary>
-        public void AdjustMenuPrice(string effectKey, uint price) {
-            SendPost("menu/effects", new JSONEffectChangePrice(effectKey, price), false);
-        }
-
+        /// <summary>Attempt to login with Twitch.</summary>
         public void LoginTwitch() {
             LoginPlatform("twitch");
         }
 
+        /// <summary>Attempt to login with Youtube.</summary>
         public void LoginYoutube() {
             LoginPlatform("youtube");
         }
 
+        /// <summary>Attempt to login with Discord.</summary>
         public void LoginDiscord() {
             LoginPlatform("discord");
         }
 
-        private void SendGet(string getType) {
-            string url = string.Format("{0}/{1}", OpenApiURL, getType);
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.Method = "GET";
-            request.Headers.Add("Authorization", "cc-auth-token " + CurrentUserHash);
-
-            request.BeginGetResponse(new AsyncCallback((IAsyncResult asynchronousResult) =>  {
-                HttpWebRequest responseRequest = (HttpWebRequest)asynchronousResult.AsyncState;
-
-                try {
-                    using (HttpWebResponse callbackResponse = (HttpWebResponse)responseRequest.EndGetResponse(asynchronousResult)) {
-                        if (callbackResponse.StatusCode == HttpStatusCode.OK) {
-                            using (Stream responseStream = callbackResponse.GetResponseStream()) {
-                                StreamReader reader = new StreamReader(responseStream);
-                                ProgessGetMessage(getType, reader.ReadToEnd()); // Note: You may want to modify this line to pass appropriate parameter
-                            }
-                        }
-                        else {
-                            LogError("Request failed with status code: " + callbackResponse.StatusCode);
-                        }
-                    }
-                }
-                catch (WebException ex) {
-                    if (ex.Response != null) {
-                        using (Stream errorResponseStream = ex.Response.GetResponseStream()) {
-                            StreamReader errorReader = new StreamReader(errorResponseStream);
-                            string errorResponseText = errorReader.ReadToEnd();
-                            Log("Error response: " + errorResponseText);
-                        }
-                    }
-                    else {
-                        Log("Error: " + ex.Message);
-                    }
-                }
-            }
-            ), request);
-        }
-
-        private void GetResponseAsync(WebRequest request) {
-            request.BeginGetResponse(new AsyncCallback((IAsyncResult asyncResult) => {
-                try {
-                    HttpWebRequest httpRequest = (HttpWebRequest)asyncResult.AsyncState;
-                    using (WebResponse response = httpRequest.EndGetResponse(asyncResult)) {
-                        if (((HttpWebResponse)response).StatusCode == HttpStatusCode.OK) {
-                            using (Stream responseStream = response.GetResponseStream()) {
-                                StreamReader reader = new StreamReader(responseStream);
-                                ProgessGetMessage(reader.ReadToEnd());
-                            }
-                        }
-                        else {
-                            LogError("Request failed with status code: " + ((HttpWebResponse)response).StatusCode);
-                        }
-                    }
-                }
-                catch (WebException ex) {
-                    HttpWebResponse errorResponse = ex.Response as HttpWebResponse;
-                    if (errorResponse != null) {
-                        LogError("Request failed with status code: " + errorResponse.StatusCode);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogError("An error occurred: " + ex.Message);
-                }
-            }), request);
-        }
-
-        private void SendPost(string postType, object json = null, bool gameSession = true) {
-            string url = gameSession ? string.Format("{0}game-session/{1}", OpenApiURL, postType) : string.Format("{0}/{1}", OpenApiURL, postType);
-            string jsonString = json != null ? JsonConvert.SerializeObject(json) : string.Empty;
-
-            WebRequest request = WebRequest.Create(url);
-            request.Method = "POST";
-            request.Headers.Add("Authorization", "cc-auth-token " + CurrentUserHash);
-
-            byte[] jsonBytes = Encoding.UTF8.GetBytes(jsonString);
-
-            request.ContentType = "application/json";
-            request.ContentLength = jsonBytes.Length;
-
-            using (Stream requestStream = request.GetRequestStream()) {
-                requestStream.Write(jsonBytes, 0, jsonBytes.Length);
-            }
-
-            Log("SENT: " + jsonString);
-
-            GetResponseAsync(request);
-        }
-
         /// <summary>Begins the game session.</summary>
         public void StartGameSession() {
-            SendPost("start", new JSONStartSession(_gameKey));
+            ServerMessages.SendPost("start", StartGameSessionProcess, new JSONStartSession(_gameKey));
         }
 
         /// <summary>Ends the game session.</summary>
         public void StopGameSession() {
-            SendPost("stop", new JSONStopSession(GameSessionID));
-        }
-
-        public void RequestEffect(CCEffectBase effect) {
-            SendPost("effect-request", new JSONRequestEffect(GameSessionID, effect.effectKey));
+            ServerMessages.SendPost("stop", StopGameSessionProcess, new JSONStopSession(_gameSessionID));
         }
 
         public void RequestUser() {
-            SendGet("user/profile");
+            ServerMessages.RequestGet("user/profile", StreamerProfileProcess);
         }
 
-        /// <summary>Allows an effect to be sellable during runtime.</summary>
-        public void EffectAvailable(CCEffectBase effect) {
-            UpdateEffect(effect, "menuAvailable");
-        }
+        private void StartGameSessionProcess(string serializedPayload) {
+            JSONGameSession gameSessionStart = JsonConvert.DeserializeObject<JSONGameSession>(serializedPayload);
 
-        /// <summary>Allows an effect to be unsellable during runtime.</summary>
-        public void EffectUnavailable(CCEffectBase effect) {
-            UpdateEffect(effect, "menuUnavailable");
-        }
-
-        /// <summary>Sets an effect to be visible during runtime.</summary>
-        public void EffectVisible(CCEffectBase effect) {
-            UpdateEffect(effect, "menuVisible");
-        }
-
-        /// <summary>Sets an effect to be invisible during runtime.</summary>
-        public void EffectHidden(CCEffectBase effect) {
-            UpdateEffect(effect, "menuHidden");
-        }
-
-        private void UpdateEffect(CCEffectBase effect, string status) {
-            JSONEffectReport effectReport = new JSONEffectReport(instance.CurrentUserHash, effect, status);
-            SendJSON(JsonConvert.SerializeObject(new JSONData("rpc", JsonConvert.SerializeObject(effectReport))));
-        }
-
-        private void StartGameSessionProcess(JSONGameSession gameSessionStart) {
-            GameSessionID = gameSessionStart.m_gameSessionID.Split('-')[1];
+            _gameSessionID = gameSessionStart.m_gameSessionID.Split('-')[1];
             OnGameSessionStart?.Invoke();
-            activeSession = true;
+            ActiveSession = true;
 
             StartCoroutine(DisplayMessageWithIcon("Began the Crowd Control session!"));
         }
 
-        private void StopGameSessionProcess() {
-            if (!activeSession)
+        private void StopGameSessionProcess(string serializedPayload) {
+            if (!ActiveSession)
                 return;
 
             OnGameSessionStop?.Invoke();
-            activeSession = false;
+            ActiveSession = false;
 
             if (isActiveAndEnabled)
                 StartCoroutine(DisplayMessageWithIcon("Stopped the Crowd Control session!"));
         }
 
-        private void ProgessGetMessage(string type, string serializedPayload = "") {
-            Log("RECEIVED: " + type + " " + serializedPayload);
-             
-            switch (type) {
-                case "start":
-                    StartGameSessionProcess(JsonConvert.DeserializeObject<JSONGameSession>(serializedPayload));
-                    break;
-                case "stop":
-                    StopGameSessionProcess();
-                    break;
-                case "effect-request":
-                    JSONEffectRequest effectRequest = JsonConvert.DeserializeObject<JSONEffectRequest>(serializedPayload);
-                    CCEffectBase effect = effectsByID[effectRequest.m_effectRequest.m_effect.m_effectID];
-                    QueueEffect(effect, effectRequest.m_effectRequest.m_requester, effectRequest.m_effectRequest.m_requestID, effectRequest.m_effectRequest.m_isTest, effectRequest.m_effectRequest.m_parameters);
-                    OnEffectRequest?.Invoke();
-                    break;
-                case "user/profile":
-                    JSONUserInfo userInfo = JsonConvert.DeserializeObject<JSONUserInfo>(serializedPayload);
-                    Streamer = new StreamUser(userInfo.m_profile);
-                    break;
-            }
+        private void EffectRequestProcess(string serializedPayload) {
+            JSONEffectRequest effectRequest = JsonConvert.DeserializeObject<JSONEffectRequest>(serializedPayload);
+            CCEffectBase effect = effectsByID[effectRequest.m_effectRequest.m_effect.m_effectID];
+            QueueEffect(effect, effectRequest.m_effectRequest.m_requester, effectRequest.m_effectRequest.m_requestID, effectRequest.m_effectRequest.m_isTest, effectRequest.m_effectRequest.m_parameters);
+            OnEffectRequest?.Invoke(effect);
+        }
+
+        private void StreamerProfileProcess(string serializedPayload) {
+            JSONUserInfo userInfo = JsonConvert.DeserializeObject<JSONUserInfo>(serializedPayload);
+            Streamer = new StreamUser(userInfo.m_profile);
         }
 
         private void ProcessMessage(string jsonString) {
@@ -817,7 +653,7 @@ namespace WarpWorld.CrowdControl {
                     }
 
                     JSONSubscribe subscribe = new JSONSubscribe(CurrentStreamer, CurrentUserHash);
-                    SendJSON(JsonConvert.SerializeObject(new JSONData("subscribe", JsonConvert.SerializeObject(subscribe))));
+                    SendJSON(new JSONData("subscribe", JsonConvert.SerializeObject(subscribe)));
                     OnLoggedIn?.Invoke();
 
                     break;
@@ -832,7 +668,7 @@ namespace WarpWorld.CrowdControl {
                     CurrentUserHash = loginSuccess.m_token;
 
                     JSONSubscribe newSubscribe = new JSONSubscribe(CurrentStreamer, CurrentUserHash);
-                    SendJSON(JsonConvert.SerializeObject(new JSONData("subscribe", JsonConvert.SerializeObject(newSubscribe))));
+                    SendJSON(new JSONData("subscribe", JsonConvert.SerializeObject(newSubscribe)));
                     OnLoggedIn?.Invoke();
                     break;
                 case "subscription-result":
@@ -861,13 +697,7 @@ namespace WarpWorld.CrowdControl {
 
                     CCEffectBase effect = effectsByID[effectRequest.m_effect.m_effectID];
                     QueueEffect(effect, effectRequest.m_requester, effectRequest.m_requestID, effectRequest.m_isTest, effectRequest.m_parameters);
-                    OnEffectRequest?.Invoke();
-                    break;
-                case "game-session-start":
-                    StartGameSessionProcess(JsonConvert.DeserializeObject<JSONGameSession>(serializedPayload));
-                    break;
-                case "game-session-stop":
-                    StopGameSessionProcess();
+                    OnEffectRequest?.Invoke(effect);
                     break;
             }
         }
@@ -881,7 +711,7 @@ namespace WarpWorld.CrowdControl {
             
         }
 
-        /// <summary>Test a generic locally.</summary>
+        /// <summary>Test a generic locally. (Not Implemented Yet)</summary>
         public void GetGenericTest(CCGeneric generic) {
             
         }
@@ -892,8 +722,8 @@ namespace WarpWorld.CrowdControl {
         }
 
         /// <summary>Test an effect remotely.</summary>
-        public void TestEffectServer(CCEffectBase effect) {
-            RequestEffect(effect);
+        public void TestEffectRemotely(CCEffectBase effect) {
+            ServerMessages.SendPost("effect-request", EffectRequestProcess, new JSONRequestEffect(_gameSessionID, effect.Key));
         }
 
         /// <summary>Add to the JSON Processing Queue</summary>
@@ -929,16 +759,16 @@ namespace WarpWorld.CrowdControl {
             }
 
             if (effect is CCEffectTimed)
-                CreateEffectInstance<CCEffectInstanceTimed>(displayUser, effect as CCEffectTimed, request, requestID, test, parameters);
+                CreateEffectInstance<CCEffectInstanceTimed>(displayUser, effect as CCEffectTimed, request, requestID, parameters);
             else if (effect is CCEffectParameters)
-                CreateEffectInstance<CCEffectInstanceParameters>(displayUser, effect as CCEffectParameters, request, requestID, test, parameters);
+                CreateEffectInstance<CCEffectInstanceParameters>(displayUser, effect as CCEffectParameters, request, requestID, parameters);
             else if (effect is CCEffectBidWar)
-                CreateEffectInstance<CCEffectInstanceBidWar>(displayUser, effect as CCEffectBidWar, request, requestID, test, parameters);
+                CreateEffectInstance<CCEffectInstanceBidWar>(displayUser, effect as CCEffectBidWar, request, requestID, parameters);
             else
-                CreateEffectInstance<CCEffectInstance>(displayUser, effect, request, requestID, test, parameters);
+                CreateEffectInstance<CCEffectInstance>(displayUser, effect, request, requestID, parameters);
         }
 
-        private void CreateEffectInstance<T>(StreamUser user, CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, bool test, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null) where T : CCEffectInstance, new() {
+        private void CreateEffectInstance<T>(StreamUser user, CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null) where T : CCEffectInstance, new() {
             T effectInstance = new T();
 
             effectInstance.id = requestID;
@@ -946,9 +776,8 @@ namespace WarpWorld.CrowdControl {
             effectInstance.effect = effect;
             effectInstance.retryCount = 0;
             effectInstance.unscaledStartTime = Time.unscaledTime; // TODO add some delay?
-            effectInstance.isTest = test;
 
-            string effectID = effect.effectKey;
+            string effectID = effect.Key;
             CCEffectEntry effectEntry = ccEffectEntries[effectID];
 
             if (effectsByID[effectID] is CCEffectParameters) {
@@ -980,14 +809,14 @@ namespace WarpWorld.CrowdControl {
             StopTimedEffect(oldTimedEffect);
             yield return new WaitForSeconds(0.1f);
             newTimedEffect.effect = oldTimedEffect.effect;
-            newTimedEffect.unscaledTimeLeft = newTimedEffect.effect.duration;
+            newTimedEffect.unscaledTimeLeft = newTimedEffect.effect.Duration;
             StartEffect(newTimedEffect);
         }
 
         private void StopTimedEffect(CCEffectInstanceTimed effectInstance) {
             effectInstance.effect.OnStopEffect(effectInstance, true);
             OnEffectStop?.Invoke(effectInstance);
-            SendRPC(effectInstance, "timedEnd");
+            RPC.TimedEnd(effectInstance);
         }
 
         private void DequeueEffectInstance(CCEffectInstance effectInstance, EffectResult result) {
@@ -997,7 +826,6 @@ namespace WarpWorld.CrowdControl {
         private bool StartEffect(CCEffectInstance effectInstance) {
             EffectResult result;
             bool dequeue = true;
-            bool isTest = effectInstance.isTest;
             CCEffectBase effect = effectInstance.effect;
 
             CCEffectInstanceTimed timedEffectInstance = effectInstance as CCEffectInstanceTimed;
@@ -1023,17 +851,17 @@ namespace WarpWorld.CrowdControl {
                     break;
                 case EffectResult.Failure:
                     DequeueEffectInstance(effectInstance, result);
-                    SendRPC(effectInstance, "failTemporary");
+                    RPC.FailTemporarly(effectInstance);
                     break;
                 case EffectResult.Unavailable:
                     DequeueEffectInstance(effectInstance, result);
-                    SendRPC(effectInstance, "failPermanent");
+                    RPC.FailPermanently(effectInstance);
                     break;
                 case EffectResult.Success:
                     timeUntilNextEffect = delayBetweenEffects;
                     DequeueEffectInstance(effectInstance, EffectResult.Success);
                     OnEffectTrigger?.Invoke(effectInstance);
-                    EffectSuccess(effectInstance);
+                    RPC.Success(effectInstance);
                     break;
                 case EffectResult.Running:
                     Assert.IsNotNull(timedEffectInstance);
@@ -1042,9 +870,8 @@ namespace WarpWorld.CrowdControl {
 
                     DequeueEffectInstance(effectInstance, EffectResult.Success);
                     OnEffectStart?.Invoke(timedEffectInstance);
-                    EffectSuccess(effectInstance);
-                    
-                    SendRPC(timedEffectInstance, "timedBegin");
+                    RPC.Success(effectInstance);
+                    RPC.TimedBegin(timedEffectInstance);
                     break;
                 case EffectResult.Queue:
                     Assert.IsNotNull(timedEffectInstance);
@@ -1062,19 +889,19 @@ namespace WarpWorld.CrowdControl {
         private void RetryStartEffect(CCEffectBase effect, CCEffectInstance effectInstance, ref bool dequeue, ref EffectResult result) {
             effectInstance.retryCount++;
 
-            if (effectInstance.retryCount > effect.maxRetries) {
+            if (effectInstance.retryCount > effect.MaxRetries) {
                 result = EffectResult.Failure;
                 CancelEffect(effectInstance);
             }
             else {
-                effectInstance.unscaledStartTime = effect.retryDelay + Time.unscaledTime;
+                effectInstance.unscaledStartTime = effect.RetryDelay + Time.unscaledTime;
                 dequeue = false;
             }
         }
 
         private void FinishStartEffect(CCEffectBase effect, CCEffectInstance effectInstance, bool dequeue) {
             if (dequeue)
-                effect.delayUntilUnscaledTime = effect.pendingDelay + Time.unscaledTime;
+                effect.delayUntilUnscaledTime = effect.PendingDelay + Time.unscaledTime;
             else
                 effect.delayUntilUnscaledTime = effectInstance.unscaledStartTime;
         }
@@ -1087,8 +914,7 @@ namespace WarpWorld.CrowdControl {
 
             effectInstance.effect.OnStopEffect(effectInstance, true);
             OnEffectStop?.Invoke(effectInstance);
-            SendRPC(effectInstance, "timedEnd");
-
+            RPC.TimedEnd(effectInstance);
             runningEffects.Remove(id);
             effectInstance = null;
 
@@ -1099,8 +925,8 @@ namespace WarpWorld.CrowdControl {
         }
 
         /// <summary>Cancels a received effect</summary>
-        public void CancelEffect(CCEffectInstance effectInstance) {
-            EffectFailure(effectInstance);
+        private void CancelEffect(CCEffectInstance effectInstance) {
+            RPC.FailTemporarly(effectInstance);
             DequeueEffectInstance(effectInstance, EffectResult.Failure);
         }
 
@@ -1148,10 +974,10 @@ namespace WarpWorld.CrowdControl {
         #region Pause/Resume Timed Effects
         /// <summary>Resume a timed effect.</summary>
         public static void ResumeEffect(CCEffectTimed effect, bool fromMenu = false) {
-            if (!instance.runningEffects.ContainsKey(effect.effectKey))
+            if (!instance.runningEffects.ContainsKey(effect.Key))
                 return;
 
-            CCEffectInstanceTimed effectInstance = instance.runningEffects[effect.effectKey];
+            CCEffectInstanceTimed effectInstance = instance.runningEffects[effect.Key];
 
             if (!effectInstance.isPaused)
                 return;
@@ -1162,15 +988,15 @@ namespace WarpWorld.CrowdControl {
             effectInstance.effect.Resume(effectInstance);
             effectInstance.effect.OnResumeEffect();
             instance.OnEffectResume?.Invoke(effectInstance);
-            SendRPC(effectInstance, "timedResume");
+            RPC.TimedResume(effectInstance);
         }
 
         /// <summary>Pause a timed effect.</summary>
         public static void PauseEffect(CCEffectTimed effect, bool fromMenu = false) {
-            if (!instance.runningEffects.ContainsKey(effect.effectKey))
+            if (!instance.runningEffects.ContainsKey(effect.Key))
                 return;
 
-            CCEffectInstanceTimed effectInstance = instance.runningEffects[effect.effectKey];
+            CCEffectInstanceTimed effectInstance = instance.runningEffects[effect.Key];
 
             if (effectInstance.isPaused)
                 return;
@@ -1181,15 +1007,15 @@ namespace WarpWorld.CrowdControl {
             effectInstance.effect.Pause(effectInstance);
             effectInstance.effect.OnPauseEffect();
             instance.OnEffectPause?.Invoke(effectInstance);
-            SendRPC(effectInstance, "timedPause");
+            RPC.TimedPause(effectInstance);
         }
 
         /// <summary>Reset a timed effect.</summary>
         public static void ResetEffect(CCEffectTimed effect, bool fromMenu = false) {
-            if (!instance.runningEffects.ContainsKey(effect.effectKey))
+            if (!instance.runningEffects.ContainsKey(effect.Key))
                 return;
 
-            CCEffectInstanceTimed effectInstance = instance.runningEffects[effect.effectKey];
+            CCEffectInstanceTimed effectInstance = instance.runningEffects[effect.Key];
 
             if (fromMenu)
                 effectInstance.effect.ResetFromMenu(effectInstance);
@@ -1199,11 +1025,6 @@ namespace WarpWorld.CrowdControl {
             effectInstance.effect.Reset(effectInstance);
             effectInstance.effect.OnResetEffect();
             instance.OnEffectReset?.Invoke(effectInstance);
-        }
-
-        private static void SendRPC(CCEffectInstance effectInstance, string status) {
-            JSONRpc rpc = new JSONRpc(instance.CurrentUserHash, effectInstance, status);
-            instance.SendJSON(JsonConvert.SerializeObject(new JSONData("rpc", JsonConvert.SerializeObject(rpc))));
         }
 
         private static void UpdateTimerEffectsFromIdle() {
@@ -1221,7 +1042,6 @@ namespace WarpWorld.CrowdControl {
             }
         }
 
-        /// <summary>Checks all running timer effects to see if they should be running or not. </summary>
         private static void UpdateTimerEffectStatuses() {
             if (instance == null || instance.runningEffects == null || instance._paused) 
                 return;
@@ -1243,16 +1063,14 @@ namespace WarpWorld.CrowdControl {
         /// <summary>Returns true if at least one timed effect is currently running.</summary>
         public bool HasRunningEffects() => runningEffects != null;
         /// <summary>Returns true if timed effect is running.</summary>
-        public bool IsRunning(CCEffectTimed type) => RunFirst(type.effectKey, IsRunning);
+        public bool IsRunning(CCEffectTimed type) => RunFirst(type.Key, IsRunning);
         /// <summary>Stops a timer effect.</summary>
-        public bool StopOne(CCEffectTimed type) => RunFirst(type.effectKey, StopOne);
+        public bool StopTimedEffect(CCEffectTimed type) => RunFirst(type.Key, StopEffect);
         /// <summary>Returns true if timed effect is paused.</summary>
-        public bool IsPaused(CCEffectTimed type) => RunFirst(type.effectKey, IsPaused);
+        public bool IsPaused(CCEffectTimed type) => RunFirst(type.Key, IsPaused);
 
-        static bool IsRunning(CCEffectInstanceTimed effectInstance) => effectInstance.isActive;
-        static bool IsPaused(CCEffectInstanceTimed effectInstance) => effectInstance.isPaused;
-
-        private bool StopOne(CCEffectInstanceTimed effectInstance) => StopEffect(effectInstance);
+        private static bool IsRunning(CCEffectInstanceTimed effectInstance) => effectInstance.isActive;
+        private static bool IsPaused(CCEffectInstanceTimed effectInstance) => effectInstance.isPaused;
 
         private bool RunFirst(string identifier, Func<CCEffectInstanceTimed, bool> action) {
             if (!runningEffects.ContainsKey(identifier))

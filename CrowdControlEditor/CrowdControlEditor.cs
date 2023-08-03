@@ -115,9 +115,9 @@ namespace WarpWorld.CrowdControl {
             foreach (CCEffectBase effectBase in effectBases) {
                 effectEntries.PrivateAddEffect(effectBase);
 
-                if (!effectsByID.ContainsKey(effectBase.effectKey)) {
+                if (!effectsByID.ContainsKey(effectBase.Key)) {
                     effectBase.SetIdentifier();
-                    effectsByID.Add(effectBase.effectKey, effectBase);
+                    effectsByID.Add(effectBase.Key, effectBase);
                     effectBase.RegisterParameters(effectEntries);
                 }
             }

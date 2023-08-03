@@ -107,9 +107,6 @@ namespace WarpWorld.CrowdControl {
         public string receivedMessage;
     }
 
-    public class CCMessageDisconnectJSON : CCRequestJSON { // 0xFF
-    }
-
     public class CCMessageEffectRequestJSONSend : CCRequestJSON {
         [JsonProperty(PropertyName = "effectID")]
         public uint effectID;

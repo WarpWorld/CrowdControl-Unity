@@ -30,7 +30,8 @@ namespace WarpWorld.CrowdControl {
         }
 
         /// <summary> Applies the received generic message to the generic's keys and values </summary>
-        public void Apply(CCMessageGeneric messageGeneric) {
+        public void Apply() {
+            /*
             foreach (KeyValuePair<string, string> keyValue in messageGeneric.parameters) {
                 bool applied = false;
                 for (int i = 0; i < keys.Length; i++) {
@@ -50,7 +51,7 @@ namespace WarpWorld.CrowdControl {
                 }
             }
 
-            OnTrigger(messageGeneric.parameters.ToArray());
+            OnTrigger(messageGeneric.parameters.ToArray());*/
         }
 
         /// <summary> List of all data as key / value pairs </summary>

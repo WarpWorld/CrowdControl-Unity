@@ -1,13 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System;
-using System.Text.RegularExpressions;
 
 namespace WarpWorld.CrowdControl {
     /// <summary>A database of every Crowd Control Effect that can be used on this game. </summary>
     public class CCEffectEntries : MonoBehaviour {
         [HideInInspector]
-        public Dictionary<string, CCEffectEntry> EffectDictionary = new Dictionary<string, CCEffectEntry>();
+        public Dictionary<string, CCEffectEntry> EffectDictionary { get; private set; } = new Dictionary<string, CCEffectEntry>();
 
         private void Awake() {
             PrivateResetDictionary();
@@ -25,12 +23,12 @@ namespace WarpWorld.CrowdControl {
         }
 
         public bool PrivateAddEffect(CCEffectBase effect) {
-            if (EffectDictionary.ContainsKey(effect.effectKey)) {
-                CrowdControl.Log(effect.effectKey + " shares a keyname with another effect.");
+            if (EffectDictionary.ContainsKey(effect.Key)) {
+                CrowdControl.Log(effect.Key + " shares a keyname with another effect.");
                 return false;
             }
 
-            EffectDictionary.Add(effect.effectKey, new CCEffectEntry(effect.effectKey));
+            EffectDictionary.Add(effect.Key, new CCEffectEntry(effect.Key));
             return true;
         }
 

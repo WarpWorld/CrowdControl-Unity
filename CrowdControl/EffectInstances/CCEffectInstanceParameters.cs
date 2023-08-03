@@ -7,7 +7,7 @@ namespace WarpWorld.CrowdControl {
         /// <summary>The parameters sent into the effect. Eg: Item Type, Quantity</summary>
         Dictionary<string, JSONEffectRequest.JSONParameterEntry> Parameters;
 
-        public void AssignParameters(Dictionary<string, JSONEffectRequest.JSONParameterEntry> newParams) {
+        internal void AssignParameters(Dictionary<string, JSONEffectRequest.JSONParameterEntry> newParams) {
             Parameters = newParams;
         }
 

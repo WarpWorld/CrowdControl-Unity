@@ -31,16 +31,11 @@
         /// <summary>Unscaled game time when the effect was triggered.</summary>
         public float unscaledStartTime { get; internal set; }
 
-        /// <summary>When <see langword="true"/>, the effect executes locally without talking to the server.</summary>
-        public bool isTest = false;
-
         /// <summary>The id for the effect that's being used</summary>
-        public string effectKey { get { return effect.effectKey; } }
+        public string effectKey { get { return effect.Key; } }
 
         public void SetUser(StreamUser streamUser) {
             user = streamUser;
         }
-
-        //protected string[] Parameters;
     }
 }

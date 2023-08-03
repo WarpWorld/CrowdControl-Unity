@@ -51,7 +51,7 @@ namespace WarpWorld.CrowdControl.Overlay {
 
         internal void Add<T>(T source, CCEffectInstance effectInstance, DisplayFlags displayFlags) where T : EffectUINode
         {
-            string id = effectInstance.effect.effectKey;
+            string id = effectInstance.effect.Key;
 
             if (!activeEffects.ContainsKey(id))
             {

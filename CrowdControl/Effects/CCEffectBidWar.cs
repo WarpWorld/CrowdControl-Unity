@@ -16,26 +16,26 @@ namespace WarpWorld.CrowdControl {
         private BidWarEntry m_winnerEntry = null;
 
         /// <summary>The winning Bid War Entry's name. If there's no winner, this will return the name of this Bid War Effect</summary>
-        public override string Name {
+        public override string Name { 
             get {
                 if (m_winnerEntry == null)
-                    return displayName;
+                    return base.Name;
 
-                return string.Format("{0}: {1}", displayName, m_winnerEntry.Name);
+                return string.Format("{0}: {1}", Name, m_winnerEntry.Name);
             }
         }
 
         /// <summary>The winning Bid War Entry's icon. If there's no winner, this will return the icon of this Bid War effect</summary>
         public override Sprite Icon {
             get {
-                return m_winnerEntry != null && m_winnerEntry.Sprite != null ? m_winnerEntry.Sprite : icon;
+                return m_winnerEntry != null && m_winnerEntry.Sprite != null ? m_winnerEntry.Sprite : Icon;
             }
         }
 
         /// <summary>The winning Bid War Entry's icon. If there's no winner, this will return the icon's tint of this Bid War effect</summary>
         public override Color IconColor {
             get {
-                return m_winnerEntry != null && m_winnerEntry.Tint != null ? m_winnerEntry.Tint : iconColor;
+                return m_winnerEntry != null && m_winnerEntry.Tint != null ? m_winnerEntry.Tint : IconColor;
             }
         }
 
@@ -47,7 +47,7 @@ namespace WarpWorld.CrowdControl {
         }
 
         /// <summary>All Parameters for this effect as a string.</summary>
-        public override string Params() {
+        public string Params() {
             List<string> names = new List<string>();
 
             foreach (BidWarEntry entry in m_bidWarEntries) {
@@ -64,8 +64,8 @@ namespace WarpWorld.CrowdControl {
             Regex rgx = new Regex("[^a-z0-9-]");
             string entryKey = entry.Name.ToLower();
             entryKey = rgx.Replace(entryKey, "");
-            BidWarEntries.Add($"{effectKey}_{entryKey}", entry);
-            CrowdControl.instance?.LogFormat("Registered Paramter {0} for {1} index {2}", entry.Name, displayName, entry.ID);
+            BidWarEntries.Add($"{Key}_{entryKey}", entry);
+            CrowdControl.instance?.LogFormat("Registered Paramter {0} for {1} index {2}", entry.Name, Name, entry.ID);
         }
 
         /// <summary>Place a bid towards one of the bid war entries. Returns true if this causes a new winner.</summary>

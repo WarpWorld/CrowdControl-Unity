@@ -48,9 +48,8 @@ namespace WarpWorld.CrowdControl.Overlay {
 
             CrowdControl.instance.OnDisconnected += delegate { ChangeView(View.Disconnected); };
             //CrowdControl.instance.OnNoToken += delegate { ChangeView(View.InputToken); };
-            CrowdControl.instance.OnTempTokenFailure += delegate { ChangeView(View.InputToken); };
+            CrowdControl.instance.OnLoginFailure += delegate { ChangeView(View.InputToken); };
             CrowdControl.instance.OnConnecting += delegate { ChangeView(View.None); };
-            CrowdControl.instance.OnSubmitTempToken += delegate { ChangeView(View.None); };
             CrowdControl.instance.OnSubscribed += delegate { ChangeView(View.Connected); };
 
             SetStartView();
@@ -58,7 +57,7 @@ namespace WarpWorld.CrowdControl.Overlay {
 
         private void SetStartView() {
             if (CrowdControl.instance.isConnected) {
-                ChangeView(CrowdControl.instance.isAuthenticated ? View.InputToken : View.Connected);
+                ChangeView(View.Connected);
                 return;
             }
 

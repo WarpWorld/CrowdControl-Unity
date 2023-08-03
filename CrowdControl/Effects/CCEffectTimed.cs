@@ -10,15 +10,18 @@ namespace WarpWorld.CrowdControl {
             Timer
         }
 
-        [Range(1, 600)]
+        [Range(1, 600)] [SerializeField] [HideInInspector] private float duration = 60;
+        [SerializeField] [HideInInspector] private bool paused;
+        [SerializeField] [HideInInspector] private bool pausedFromMenu;
+
         /// <summary>Duration in seconds before the effect is automatically ended. </summary>
-        [HideInInspector] public float duration = 60;
+        public float Duration { get { return duration; } }
+
+        /// <summary>Is the timer paused from the inspector?</summary>
+        public bool PausedFromMenu { get { return pausedFromMenu; } }
 
         /// <summary>Is the timer paused?</summary>
-        public bool paused { get; internal set; }
-
-        /// <summary>Is the timer paused?</summary>
-        public bool pausedFromMenu { get; internal set; }
+        public bool Paused { get { return paused; } }
 
 #pragma warning disable 1591
         /// <summary>Ran when the effect is enabled. Can be overridden by a derived class.</summary>

@@ -16,7 +16,7 @@
         public bool isActive = true;
 
         /// <summary>Whether the effect instance is paused or not. </summary>
-        public bool isPaused => effect.paused;
+        public bool isPaused => effect.Paused;
 
         /// <summary> Checks if the effect should be running or not, then applies the paused state based on it. </summary>
         public bool shouldBeRunning => effect.ShouldBeRunning();

@@ -15,22 +15,5 @@ namespace WarpWorld.CrowdControl  {
         [SerializeField] private string m_name;
         [SerializeField] private Sprite m_sprite;
         [SerializeField] private Color m_tint = Color.white;
-
-        public BidWarEntry(string key, string paramName, Sprite sprite = null) {
-            ID = key;
-            m_name = paramName;
-            m_sprite = sprite;
-        }
-
-        public BidWarEntry(string key, string paramName, Color tint, Sprite sprite = null) {
-            ID = key;
-            m_name = paramName;
-            m_sprite = sprite;
-            m_tint = tint;
-        }
-
-        public void SetID(string id) {
-            ID = id;
-        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Text.RegularExpressions;
+using Newtonsoft.JsonCC;
 
 namespace WarpWorld.CrowdControl {
     /// <summary> Basic Crowd Control effect properties. </summary>
@@ -8,47 +9,20 @@ namespace WarpWorld.CrowdControl {
     public abstract class CCEffectBase : MonoBehaviour {
 #pragma warning disable 1591
 #pragma warning disable 1587
-        /// <summary>Disables pooling for this effect</summary>
-        [HideInInspector] public bool noPooling = false;
-
-        /// <summary>If true, the effect will be inaccessible to everyone but Warp World staff.</summary>
-        [HideInInspector] public bool disabled = false;
-
-        // <summary>Denotes whether this effect intends to help the player, hurt the player, or act as neutral.</summary>
-        [HideInInspector] public Morality morality = Morality.Neutral; 
-
-        /// <summary>Whether this effect is available to the streamer by default or not.</summary>
-        [HideInInspector] public bool inactive = false;
-
-        /// <summary>Image to display in the CrowdControl Twitch extension and in the onscreen overlay. </summary>
-        [HideInInspector] public Sprite icon;
-
-        /// <summary>Color used to tint the effect's icon. </summary>
-        [HideInInspector] public Color iconColor = Color.white;
-
-        /// <summary>Unique identifier of the effect. </summary>
-        [HideInInspector] public string effectKey;
-
-        /// <summary>Name of the effect displayed to the users. </summary>
-        [HideInInspector] public string displayName;
-
-        /// <summary>Information about the effect, displayed in the extension. </summary>
-        [HideInInspector] public string description;
-
-        /// <summary>Information about the effect, displayed in the extension. </summary>
-        [HideInInspector] public uint price = 10;
-
-        [Range(0, 60)]
-        /// <summary>Number of retries before the effect instance fails. </summary>
-        [HideInInspector] public int maxRetries = 3;
-
-        [Range(0, 10)]
-        /// <summary>Delay in seconds before retrying to trigger an effect instance. </summary>
-        [HideInInspector] public float retryDelay = 5;
-
-        [Range(0, 10)]
-        /// <summary>Delay in seconds to wait before triggering the next effect instance. </summary>
-        [HideInInspector] public float pendingDelay = .5f;
+        [SerializeField] [HideInInspector] private bool noPooling = false;
+        [SerializeField] [HideInInspector] private bool sellable = false;
+        [SerializeField] [HideInInspector] private bool visible = false;
+        [SerializeField] [HideInInspector] private Morality morality = Morality.Neutral;
+        [SerializeField] [HideInInspector] private Sprite icon;
+        [SerializeField] [HideInInspector] private Color iconColor = Color.white;
+        [SerializeField] [HideInInspector] protected string key;
+        [SerializeField] [HideInInspector] protected string displayName;
+        [SerializeField] [HideInInspector] private string description;
+        [SerializeField] [HideInInspector] private uint price = 10;
+        [Range(0, 60)] [SerializeField] [HideInInspector] private int maxRetries = 3;
+        [Range(0, 10)] [SerializeField] [HideInInspector] private float retryDelay = 5;
+        [Range(0, 10)] [SerializeField] [HideInInspector] private float pendingDelay = .5f;
+        [SerializeField] [HideInInspector] private uint sessionMax = 0;
 #pragma warning restore 1587
 #pragma warning restore 1591
 
@@ -56,56 +30,90 @@ namespace WarpWorld.CrowdControl {
         internal float delayUntilUnscaledTime = 0.0f;
 
         /// <summary>The effect's icon.</summary>
-        [HideInInspector] public virtual Sprite Icon { get { return icon; } }
+        public virtual Sprite Icon { get { return icon; } }
+
+        /// <summary>The effect's unique key.</summary>
+        public string Key { get { return key; } }
 
         /// <summary>The name of this effect.</summary>
-        [HideInInspector] public virtual string Name { get { return displayName; } }
+        public virtual string Name { get { return displayName; } }
+
+        /// <summary>Information about the effect, displayed in the extension. </summary>
+        public string Description { get { return description; } }
 
         /// <summary>Categories for this effect.</summary>
-        [HideInInspector] public string [] Categories;
-
-        /// <summary>If true, the effect will be unavailable to the streamer by default.</summary>
-        [HideInInspector] public virtual bool Inactive { get { return inactive; } }
+        public string [] Categories;
 
         /// <summary>Disables pooling for this effect.</summary>
-        [HideInInspector] public bool NoPooling { get { return noPooling; } }
+        public bool NoPooling { get { return noPooling; } }
 
         // <summary>Denotes whether this effect intends to help the player, hurt the player, or act as neutral.</summary>
-        [HideInInspector] public Morality Morality { get { return morality; } }
+        public Morality Morality { get { return morality; } }
 
-        /// <summary>If true, the effect will be inaccessible to everyone but Warp World staff.</summary>
-        [HideInInspector] public virtual bool Disabled { get { return disabled; } }
+        /// <summary>If true, the effect will be inaccessible to everyone but Warp World staff, unless turned off later.</summary>
+        public bool Visible { get { return visible; } }
+
+        /// <summary>If true, this effect will appear but not be sellable unless turned off later.</summary>
+        public bool Sellable { get { return sellable; } }
 
         /// <summary>The color tint of this effect's icon</summary>
-        [HideInInspector] public virtual Color IconColor { get { return iconColor; } }
+        public virtual Color IconColor { get { return iconColor; } }
 
-        /// <summary>Additional Info for the effect. Can be overridden by a derived class.</summary>
-        public virtual string Params() { return string.Empty; }
+        /// <summary>Number of retries before the effect instance fails. </summary>
+        public int MaxRetries { get { return maxRetries; } }
+
+        /// <summary>Delay in seconds before retrying to trigger an effect instance. </summary>
+        public float RetryDelay { get { return retryDelay; } }
+
+        /// <summary>Delay in seconds to wait before triggering the next effect instance. </summary>
+        public float PendingDelay { get { return pendingDelay; } }
+
+        /// <summary>Delay in seconds to wait before triggering the next effect instance. </summary>
+        public uint Price { get { return price; } }
+
+        /// <summary>How many times can this effect be used during one session? </summary>
+        public uint SessionMax { get { return sessionMax; } }
 
         /// <summary>Toggles whether this effect can currently be sold during this session.</summary>
         public void ToggleSellable(bool sellable) {
             if (sellable) {
-                CrowdControl.instance.EffectAvailable(this);
+                SendUpdate("menuAvailable");
+                this.sellable = true;
                 return;
             }
 
-            CrowdControl.instance.EffectUnavailable(this);
+            SendUpdate("menuUnavailable");
+            this.sellable = false;
         }
 
         /// <summary>Toggles whether this effect is visible in the menu during this session.</summary>
         public void ToggleVisible(bool visible)  {
             if (visible) {
-                CrowdControl.instance.EffectVisible(this);
+                SendUpdate("menuVisible");
+                visible = true;
                 return;
             }
 
-            CrowdControl.instance.EffectHidden(this);
+            SendUpdate("menuHidden");
+            visible = false;
         }
 
         /// <summary>Updates the price on the effect menu during runtime.</summary>
         public void UpdatePrice(uint newPrice) {
             price = newPrice;
-            CrowdControl.instance.AdjustMenuPrice(effectKey, newPrice);
+            ServerMessages.SendPost("menu/effects", null, new JSONEffectChangePrice(key, price), false);
+        }
+
+        /// <summary>Updates whether this effect is poolable or not.</summary>
+        public void UpdateNonPoolable(bool newNonPoolable) {
+            noPooling = newNonPoolable;
+            ServerMessages.SendPost("menu/effects", null, new JSONEffectChangeNonPoolable(key, noPooling), false);
+        }
+
+        /// <summary>Updates the amount of times you can use this effect during runtime.</summary>
+        public void UpdateSessionMax(uint newSessionMax) {
+            sessionMax = newSessionMax;
+            ServerMessages.SendPost("menu/effects", null, new JSONEffectChangeSessionMax(key, sessionMax), false);
         }
 
         /// <summary>Determines whether this effect can be ran right now or not. Overridable</summary>
@@ -134,9 +142,14 @@ namespace WarpWorld.CrowdControl {
         /// <summary>Sets the internal ID of this effect.</summary>
         public string SetIdentifier() {
             Regex rgx = new Regex("[^a-z0-9-]");
-            effectKey = Name.ToLower();
-            effectKey = rgx.Replace(effectKey, "");
-            return effectKey;
+            key = Name.ToLower();
+            key = rgx.Replace(key, "");
+            return key;
+        }
+
+        private void SendUpdate(string command) {
+            JSONEffectReport effectReport = new JSONEffectReport(CrowdControl.instance.CurrentUserHash, this, command);
+            CrowdControl.instance.SendJSON(new JSONData("rpc", JsonConvert.SerializeObject(effectReport)));
         }
 
         private void Awake() {

@@ -36,8 +36,8 @@ namespace WarpWorld.CrowdControl {
             SetNextOffset(50.5f, true);
 
             SerializedProperty CategoryList = serializedObject.FindProperty("Categories");
-            AddProperty(ValueType._bool, "inactive", "Inactive", 300.0f, 75.0f);
-            AddProperty(ValueType._bool, "disabled", "Disabled", 300.0f, 75.0f);
+            AddProperty(ValueType._bool, "sellable", "Sellable", 300.0f, 75.0f);
+            AddProperty(ValueType._bool, "visible", "Visible", 300.0f, 75.0f);
             AddProperty(ValueType._bool, "noPooling", "Non-Poolable", 300.0f, 100.0f);
             AddArraySizeProperty(CategoryList, 75.0f, "Categories", 100.0f, 99, 17.5f);
             //IncreasePosition(100.0f);
@@ -77,15 +77,18 @@ namespace WarpWorld.CrowdControl {
             if (Application.isPlaying) {
                 if (GUILayout.Button("Trigger Locally")) TestEffectLocally();
 
-                if (!string.IsNullOrEmpty(CrowdControl.instance.GameSessionID)) {
+                if (CrowdControl.instance.ActiveSession) {
                     if (GUILayout.Button("Trigger Remotely")) TestEffectRemotely();
                     GUILayout.Space(10.0f); 
-                    if (GUILayout.Button("Adjust Menu Price")) CrowdControl.instance?.AdjustMenuPrice(effect.effectKey, effect.price);
+                    if (GUILayout.Button("Adjust Menu Price")) effect.UpdatePrice(effect.Price);
+                    if (GUILayout.Button("Poolable")) effect.UpdateNonPoolable(false);
+                    if (GUILayout.Button("Non-Poolable")) effect.UpdateNonPoolable(true);
+                    if (GUILayout.Button("Adjust Session Max")) effect.UpdatePrice(effect.Price);
                     GUILayout.Space(10.0f);
-                    if (GUILayout.Button("Effect Available")) CrowdControl.instance?.EffectAvailable(effect);
-                    if (GUILayout.Button("Effect Unavailable")) CrowdControl.instance?.EffectUnavailable(effect);
-                    if (GUILayout.Button("Effect Visible")) CrowdControl.instance?.EffectVisible(effect);
-                    if (GUILayout.Button("Effect Hidden")) CrowdControl.instance?.EffectHidden(effect);
+                    if (GUILayout.Button("Effect Sellable")) effect.ToggleSellable(true);
+                    if (GUILayout.Button("Effect Unsellable")) effect.ToggleSellable(false);
+                    if (GUILayout.Button("Effect Visible")) effect.ToggleVisible(true);
+                    if (GUILayout.Button("Effect Hidden")) effect.ToggleVisible(false);
                 }
             }
 
@@ -226,7 +229,7 @@ namespace WarpWorld.CrowdControl {
                 if (AddButton("Start Locally", 100.0f)) { TestEffectLocally(); }
 
                 if (running || paused) {
-                    if (AddButton("Stop", 100.0f)) { CrowdControl.instance.StopOne(effectTimed); }
+                    if (AddButton("Stop", 100.0f)) { CrowdControl.instance.StopTimedEffect(effectTimed); }
                 }
 
                 if (!paused && running) {
@@ -246,9 +249,9 @@ namespace WarpWorld.CrowdControl {
         }
 
         /// <summary>Returns <see langword="true"/> when the incomplete warning box should be displayed.</summary>
-        protected virtual bool IsInformationComplete() => effect.icon != null &&
-                !string.IsNullOrEmpty(effect.effectKey) &&
-                !string.IsNullOrEmpty(effect.displayName);
+        protected virtual bool IsInformationComplete() => effect.Icon != null &&
+                !string.IsNullOrEmpty(effect.Key) &&
+                !string.IsNullOrEmpty(effect.Name);
 
         protected virtual void OnInstanceGUI() {}
         protected virtual void OnInformationGUI() {}
@@ -266,7 +269,7 @@ namespace WarpWorld.CrowdControl {
             CrowdControl.instance?.TestEffect(effect);
         }
 
-        protected void TestEffectRemotely() => CrowdControl.instance?.TestEffectServer(effect);
+        protected void TestEffectRemotely() => CrowdControl.instance?.TestEffectRemotely(effect);
     }
 }
 #endif

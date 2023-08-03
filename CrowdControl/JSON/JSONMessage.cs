@@ -265,101 +265,73 @@ namespace WarpWorld.CrowdControl {
         }
     }
 
-    /*
-     * 
-     * 
-     {
-          "gamePackID": "string",
-          "effectOverrides": [
-            {
-              
-            }
-          ]
-        }
-         
-         */
-
-    public class JSONEffectChangePrice {
+    public class JSONEffectOverride<T> {
         [JsonProperty(PropertyName = "gamePackID")]
         public string m_gamePackID = CrowdControl.GameKey;
 
         [JsonProperty(PropertyName = "effectOverrides")]
-        public JSONEffectOverrideEntry [] m_effectOverrides;
+        public JSONEffectOverrideEntry[] m_effectOverrides = new JSONEffectOverrideEntry[1];
 
         public class JSONEffectOverrideEntry {
-            public class JSONEffectOverrideEntryTwitch {
-                public class JSONEffectOverrideEntryTwitchChannelPoints {
-                    [JsonProperty(PropertyName = "name")]
-                    public string m_name = "";
-
-                    [JsonProperty(PropertyName = "price")]
-                    public uint m_price = 0;
-
-                    [JsonProperty(PropertyName = "userLimit")]
-                    public uint m_userLimit = 0;
-
-                    [JsonProperty(PropertyName = "streamLimit")]
-                    public uint m_streamLimit = 0;
-
-                    [JsonProperty(PropertyName = "cooldown")]
-                    public uint m_cooldown = 0;
-
-                    [JsonProperty(PropertyName = "color")]
-                    public string m_color = "#FFFFFF";
-
-                    public JSONEffectOverrideEntryTwitchChannelPoints(CCEffectBase ccEffectBase) {
-                        m_name = ccEffectBase.displayName;
-                    }
-                }
-
-                [JsonProperty(PropertyName = "channelPoints")]
-                JSONEffectOverrideEntryTwitchChannelPoints channelPoints;
-
-                public JSONEffectOverrideEntryTwitch(CCEffectBase ccEffectBase) {
-                    channelPoints = new JSONEffectOverrideEntryTwitchChannelPoints(ccEffectBase);
-                }
-            }
-
-            /*[JsonProperty(PropertyName = "inactive")]
-            public bool m_inactive = false;*/
-
-            [JsonProperty(PropertyName = "price")]
-            public uint m_price = 0;
-
-            /*[JsonProperty(PropertyName = "unpoolable")]
-            public bool m_unpoolable = false;
-
-            [JsonProperty(PropertyName = "sessionCooldown")]
-            public int m_sessionCooldown = 120;
-
-            [JsonProperty(PropertyName = "userCooldown")]
-            public int m_userCooldown = 120;
-
-            [JsonProperty(PropertyName = "queueWarningLimit")]
-            public int m_queueWarningLimit = 1;
-
-            [JsonProperty(PropertyName = "sessionMax")]
-            public int m_sessionMax = 1;
-
-            [JsonProperty(PropertyName = "twitch")]
-            public JSONEffectOverrideEntryTwitch m_twitch;*/
-
             [JsonProperty(PropertyName = "effectID")]
             public string m_effectID = "";
 
             [JsonProperty(PropertyName = "type")]
             public string m_type = "game";
 
-            public JSONEffectOverrideEntry(string effectKey, uint price) {
+            public virtual void Set(string effectKey, T value) { }
+        }
+    }
+
+    public class JSONEffectChangePrice : JSONEffectOverride<uint> {
+        public class JSONEffectPriceEntry : JSONEffectOverrideEntry {
+            [JsonProperty(PropertyName = "price")]
+            public uint m_price = 0;
+
+            public override void Set(string effectKey, uint price) {
+                CrowdControl.Log("SET");
                 m_effectID = effectKey;
                 m_price = price;
-                //m_twitch = new JSONEffectOverrideEntryTwitch(ccEffectBase);
             }
         }
 
-        public JSONEffectChangePrice(string effectKey, uint price) {
-            m_effectOverrides = new JSONEffectOverrideEntry[1];
-            m_effectOverrides[0] = new JSONEffectOverrideEntry(effectKey, price);
+        public JSONEffectChangePrice(string effectKey, uint value) {
+            m_effectOverrides[0] = new JSONEffectPriceEntry();
+            m_effectOverrides[0].Set(effectKey, value);
+        }
+    }
+
+    public class JSONEffectChangeNonPoolable : JSONEffectOverride<bool> { 
+        public class JSONEffectPriceEntry : JSONEffectOverride<bool>.JSONEffectOverrideEntry {
+            [JsonProperty(PropertyName = "unpoolable")]
+            public bool m_unPoolable;
+
+            public override void Set(string key, bool unPoolable) {
+                m_effectID = key;
+                m_unPoolable = unPoolable;
+            }
+        }
+
+        public JSONEffectChangeNonPoolable(string effectKey, bool value) {
+            m_effectOverrides[0] = new JSONEffectPriceEntry();
+            m_effectOverrides[0].Set(effectKey, value);
+        }
+    }
+
+    public class JSONEffectChangeSessionMax : JSONEffectOverride<uint> {
+        public class JSONEffectSessionEntry : JSONEffectOverride<uint>.JSONEffectOverrideEntry {
+            [JsonProperty(PropertyName = "sessionMax")]
+            public uint m_sessionMax = 0;
+
+            public override void Set(string effectKey, uint max) {
+                m_effectID = effectKey;
+                m_sessionMax = max;
+            }
+        }
+
+        public JSONEffectChangeSessionMax(string effectKey, uint value) {
+            m_effectOverrides[0] = new JSONEffectSessionEntry();
+            m_effectOverrides[0].Set(effectKey, value);
         }
     }
 
@@ -462,7 +434,7 @@ namespace WarpWorld.CrowdControl {
 
         public JSONEffectReport(string token, CCEffectBase effect, string status) {
             m_token = token;
-            m_call.m_args[0] = new JSONEffectReportArgs(status, effect.effectKey);
+            m_call.m_args[0] = new JSONEffectReportArgs(status, effect.Key);
         }
     }
 
