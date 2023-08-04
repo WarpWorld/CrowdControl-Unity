@@ -695,6 +695,12 @@ namespace WarpWorld.CrowdControl {
                     if (effectInstanceIDs.Contains(effectRequest.m_effect.m_effectID))
                         return;
 
+                    if (effectRequest.m_parameters == null && effectRequest.m_quantity > 0) {
+                        effectRequest.m_parameters = new Dictionary<string, JSONEffectRequest.JSONParameterEntry>();
+                        effectRequest.m_parameters.Add("quantity", new JSONEffectRequest.JSONParameterEntry());
+                        effectRequest.m_parameters["quantity"].m_value = effectRequest.m_quantity.ToString();
+                    }
+
                     CCEffectBase effect = effectsByID[effectRequest.m_effect.m_effectID];
                     QueueEffect(effect, effectRequest.m_requester, effectRequest.m_requestID, effectRequest.m_isTest, effectRequest.m_parameters);
                     OnEffectRequest?.Invoke(effect);
@@ -786,8 +792,7 @@ namespace WarpWorld.CrowdControl {
                     return;
                 }
 
-                CCEffectInstanceParameters paramsInstance = effectInstance as CCEffectInstanceParameters;
-                paramsInstance.AssignParameters(parameters);;
+                effectInstance.Parameters = parameters;
             }
             
             else if (effectsByID[effectID] is CCEffectBidWar) {

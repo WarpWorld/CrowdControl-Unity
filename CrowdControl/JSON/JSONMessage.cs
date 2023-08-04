@@ -128,6 +128,9 @@ namespace WarpWorld.CrowdControl {
 
             [JsonProperty(PropertyName = "status")]
             public string m_status;
+
+            [JsonProperty(PropertyName = "quantity")]
+            public uint m_quantity = 0;
         }
 
         public class JSONEffect {

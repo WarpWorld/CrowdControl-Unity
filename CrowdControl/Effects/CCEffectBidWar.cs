@@ -21,14 +21,14 @@ namespace WarpWorld.CrowdControl {
                 if (m_winnerEntry == null)
                     return base.Name;
 
-                return string.Format("{0}: {1}", Name, m_winnerEntry.Name);
+                return string.Format("{0}: {1}", base.Name, m_winnerEntry.Name);
             }
         }
 
         /// <summary>The winning Bid War Entry's icon. If there's no winner, this will return the icon of this Bid War effect</summary>
         public override Sprite Icon {
             get {
-                return m_winnerEntry != null && m_winnerEntry.Sprite != null ? m_winnerEntry.Sprite : Icon;
+                return m_winnerEntry != null && m_winnerEntry.Sprite != null ? m_winnerEntry.Sprite : base.Icon;
             }
         }
 
@@ -60,7 +60,6 @@ namespace WarpWorld.CrowdControl {
         /// <summary>Adds a new paramter to the bid war list</summary>
         public void RegisterBidWarEntry(BidWarEntry entry, CCEffectEntries effectEntries) {
             uint startIndex = Convert.ToUInt32(effectEntries.Count);
-
             Regex rgx = new Regex("[^a-z0-9-]");
             string entryKey = entry.Name.ToLower();
             entryKey = rgx.Replace(entryKey, "");

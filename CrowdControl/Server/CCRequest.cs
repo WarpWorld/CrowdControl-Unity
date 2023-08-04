@@ -93,8 +93,11 @@ namespace WarpWorld.CrowdControl {
 
             int index = 0;
 
-            /*foreach (string key in effectList.Keys)  {
+            
+
+            foreach (string key in effectList.Keys)  {
                 CCEffectBase effect = effectList[key];
+                CrowdControl.Log(key);
                 EffectJSON effectJSON = new EffectJSON(effect);
 
                 effectString += JSONString(key.ToString(), effectJSON);
@@ -106,7 +109,7 @@ namespace WarpWorld.CrowdControl {
 
             JsonSerializerSettings settings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
             string serializedJSON = JsonConvert.SerializeObject(jsonBlock, settings);
-            jsonString = serializedJSON.Insert(serializedJSON.IndexOf("\"game\"") + 8, effectString);*/
+            jsonString = serializedJSON.Insert(serializedJSON.IndexOf("\"game\"") + 8, effectString);
         }
     }
 }

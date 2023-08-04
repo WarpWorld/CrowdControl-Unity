@@ -32,6 +32,8 @@ namespace WarpWorld.CrowdControl {
             request.Method = "POST";
             request.Headers.Add("Authorization", "cc-auth-token " + CrowdControl.instance.CurrentUserHash);
 
+            CrowdControl.Log(CrowdControl.instance.CurrentUserHash);
+
             byte[] jsonBytes = Encoding.UTF8.GetBytes(jsonString);
 
             request.ContentType = "application/json";

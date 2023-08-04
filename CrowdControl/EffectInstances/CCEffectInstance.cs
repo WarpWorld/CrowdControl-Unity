@@ -1,4 +1,6 @@
-﻿namespace WarpWorld.CrowdControl {
+﻿using System.Collections.Generic;
+
+namespace WarpWorld.CrowdControl {
     /// <summary>
     /// State of a Crowd Control effect.
     /// <para>The instance is only valid from the time the effect is requested up to
@@ -33,6 +35,9 @@
 
         /// <summary>The id for the effect that's being used</summary>
         public string effectKey { get { return effect.Key; } }
+
+        /// <summary>The parameters sent into the effect. Eg: Item Type, Quantity</summary>
+        internal Dictionary<string, JSONEffectRequest.JSONParameterEntry> Parameters;
 
         public void SetUser(StreamUser streamUser) {
             user = streamUser;
