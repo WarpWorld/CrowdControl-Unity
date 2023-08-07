@@ -113,7 +113,7 @@ namespace WarpWorld.CrowdControl {
         private bool _paused = false;
         private bool _adjustPauseTime = false;
         private bool _disconnectFromTimeout = false;
-        private bool activeSession = false;
+        private bool _activeSession = false;
         private List<string> effectInstanceIDs = new List<string>();
 
         private Server server = Server.Production; 
@@ -214,9 +214,6 @@ namespace WarpWorld.CrowdControl {
             Debug.Log("[CC] Cleared Saved Tokens on " + targetServer);
         }
 
-        /// <summary>Did we start a session?</summary>
-        public bool isAuthenticated { get; private set; }
-
         /// <summary>Whether the connection to the server is currently initializing.</summary>
         public bool isConnecting { get; private set; }
 
@@ -244,6 +241,20 @@ namespace WarpWorld.CrowdControl {
 
         public void RunConnectedAction() {
             OnConnected?.Invoke();
+        }
+
+        internal void ContinueSession() {
+            if (!string.IsNullOrEmpty(GameSessionID)) {
+                JSONSubscribe subscribe = new JSONSubscribe(CurrentUserHash);
+                SendJSON(JsonConvert.SerializeObject(new JSONData("subscribe", JsonConvert.SerializeObject(subscribe))));
+                return;
+            }
+
+            WhoAmI();
+        }
+
+        public void RunDisconnectedAction() {
+            OnDisconnected?.Invoke();
         }
 
         /// <summary>Invoked when an effect is scheduled for execution.</summary>
@@ -332,7 +343,7 @@ namespace WarpWorld.CrowdControl {
             if (_duplicatedInstance)
                 return;
 
-            if (activeSession)
+            if (_activeSession)
                 StopGameSession();
 
             if (_socketProvider != null) 
@@ -383,6 +394,7 @@ namespace WarpWorld.CrowdControl {
                 Disconnect(true);
             }
             else if (!isConnected && !isConnecting && now >= timeToNextPing && disconnectedFromError) {
+                Log("TRY TO CONNECT AGAIN");
                 timeToNextPing = float.MaxValue;
                 ConnectSocket();
             }
@@ -498,7 +510,7 @@ namespace WarpWorld.CrowdControl {
                 return;
             }
 
-            if ((_socketProvider != null && _socketProvider._socket != null) || isConnecting) throw new InvalidOperationException();
+            if ((_socketProvider != null && _socketProvider.webSocket != null) || isConnecting) throw new InvalidOperationException();
 
             _currentRetryCount = 0;
             timeToNextPing = float.MaxValue;
@@ -539,7 +551,9 @@ namespace WarpWorld.CrowdControl {
         }
 
         private void Disconnect(bool fromError) {
-            Log("Disconnect");
+            StopGameSession();
+
+            Log("Disconnect"); 
 
             if (_socketProvider != null && _socketProvider.Connected) {
                 _socketProvider.Close();
@@ -555,9 +569,9 @@ namespace WarpWorld.CrowdControl {
             }
 
             timeToTimeout = float.MaxValue;
+            
             isConnecting = false;
             OnDisconnected?.Invoke();
-            isAuthenticated = false;
             disconnectedFromError = fromError;
         }
 
@@ -720,6 +734,9 @@ namespace WarpWorld.CrowdControl {
 
         /// <summary>Ends the game session.</summary>
         public void StopGameSession() {
+            if (string.IsNullOrEmpty(GameSessionID))
+                return;
+
             SendPost("stop", new JSONStopSession(GameSessionID));
         }
 
@@ -757,19 +774,19 @@ namespace WarpWorld.CrowdControl {
         }
 
         private void StartGameSessionProcess(JSONGameSession gameSessionStart) {
-            GameSessionID = gameSessionStart.m_gameSessionID.Split('-')[1];
+            GameSessionID = gameSessionStart.m_gameSessionID;
             OnGameSessionStart?.Invoke();
-            activeSession = true;
+            _activeSession = true;
 
             StartCoroutine(DisplayMessageWithIcon("Began the Crowd Control session!"));
         }
 
         private void StopGameSessionProcess() {
-            if (!activeSession)
+            if (!_activeSession)
                 return;
 
             OnGameSessionStop?.Invoke();
-            activeSession = false;
+            _activeSession = false;
 
             if (isActiveAndEnabled)
                 StartCoroutine(DisplayMessageWithIcon("Stopped the Crowd Control session!"));
@@ -798,6 +815,17 @@ namespace WarpWorld.CrowdControl {
             }
         }
 
+        private void ProcessWhoAmI() {
+            if (string.IsNullOrEmpty(CurrentToken)) {
+                OnLoggedOut?.Invoke();
+                return;
+            }
+
+            JSONSubscribe subscribe = new JSONSubscribe(CurrentUserHash);
+            SendJSON(JsonConvert.SerializeObject(new JSONData("subscribe", JsonConvert.SerializeObject(subscribe))));
+            OnLoggedIn?.Invoke();
+        }
+
         private void ProcessMessage(string jsonString) {
             if (string.Equals(jsonString, "pong"))
                 return;
@@ -810,15 +838,8 @@ namespace WarpWorld.CrowdControl {
                     Log("RECEIVED: " + jsonString);
                     JSONWhoAmI whoAmI = JsonConvert.DeserializeObject<JSONWhoAmI>(serializedPayload);
                     connectionID = whoAmI.m_connectionID;
-
-                    if (string.IsNullOrEmpty(CurrentToken)) {
-                        OnLoggedOut?.Invoke();
-                        return;
-                    }
-
-                    JSONSubscribe subscribe = new JSONSubscribe(CurrentStreamer, CurrentUserHash);
-                    SendJSON(JsonConvert.SerializeObject(new JSONData("subscribe", JsonConvert.SerializeObject(subscribe))));
-                    OnLoggedIn?.Invoke();
+ 
+                    ProcessWhoAmI();
 
                     break;
                 case "login-success":
@@ -831,7 +852,7 @@ namespace WarpWorld.CrowdControl {
                     CurrentStreamer = user.m_ccUID;
                     CurrentUserHash = loginSuccess.m_token;
 
-                    JSONSubscribe newSubscribe = new JSONSubscribe(CurrentStreamer, CurrentUserHash);
+                    JSONSubscribe newSubscribe = new JSONSubscribe(CurrentUserHash);
                     SendJSON(JsonConvert.SerializeObject(new JSONData("subscribe", JsonConvert.SerializeObject(newSubscribe))));
                     OnLoggedIn?.Invoke();
                     break;
@@ -858,6 +879,14 @@ namespace WarpWorld.CrowdControl {
 
                     if (effectInstanceIDs.Contains(effectRequest.m_effect.m_effectID))
                         return;
+
+                    Log("RECEIVED: " + jsonString);
+
+                    if (effectRequest.m_parameters == null && effectRequest.m_quantity > 0) {
+                        effectRequest.m_parameters = new Dictionary<string, JSONEffectRequest.JSONParameterEntry>();
+                        effectRequest.m_parameters.Add("quantity", new JSONEffectRequest.JSONParameterEntry());
+                        effectRequest.m_parameters["quantity"].m_value = effectRequest.m_quantity.ToString();
+                    }
 
                     CCEffectBase effect = effectsByID[effectRequest.m_effect.m_effectID];
                     QueueEffect(effect, effectRequest.m_requester, effectRequest.m_requestID, effectRequest.m_isTest, effectRequest.m_parameters);
@@ -887,8 +916,21 @@ namespace WarpWorld.CrowdControl {
         }
 
         /// <summary>Test an effect locally. Its events won't be sent to the server.</summary>
-        public void TestEffect(CCEffectBase effect, string parameters = "") {
-            StartCoroutine(DownloadUserInfo(effect, null, (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalMilliseconds.ToString(), true, null));
+        public void TestEffect(CCEffectBase effect) {
+            Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null;
+
+            if (effect is CCEffectParameters) {
+                CCEffectParameters paramEffect = effect as CCEffectParameters;
+                parameters = new Dictionary<string, JSONEffectRequest.JSONParameterEntry>();
+
+                foreach (string paramKey in paramEffect.ParameterEntries.Keys) {
+                    parameters.Add(paramEffect.ParameterEntries[paramKey].Name, new JSONEffectRequest.JSONParameterEntry());
+                    parameters[paramEffect.ParameterEntries[paramKey].Name].m_name = paramEffect.ParameterEntries[paramKey].testParamName;
+                    parameters[paramEffect.ParameterEntries[paramKey].Name].m_value = paramEffect.ParameterEntries[paramKey].testParamName;
+                }
+            }
+
+            StartCoroutine(DownloadUserInfo(effect, null, (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalMilliseconds.ToString(), true, parameters));
         }
 
         /// <summary>Test an effect remotely.</summary>

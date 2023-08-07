@@ -157,8 +157,9 @@ namespace WarpWorld.CrowdControl {
                 if (!m_paramFoldout[i])
                     continue;
 
-                AddProperty(ValueType._string, property.FindPropertyRelative("m_name"), "Name", 50.0f, 225.0f);
-                NewRow();
+                AddProperty(ValueType._string, property.FindPropertyRelative("m_name"), "Name", 50.0f, 150.0f);
+                AddProperty(ValueType._string, property.FindPropertyRelative("testParamName"), "Test Parameter", 110.0f, 150.0f);
+                NewRow();  
                 AddSpriteWithTint(property.FindPropertyRelative("m_sprite"), property.FindPropertyRelative("m_tint"), "Icon", 90.0f, 100.0f);
 
                 if (property.FindPropertyRelative("m_paramKind").intValue == 1) { // Quantity

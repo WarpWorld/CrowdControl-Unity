@@ -14,6 +14,8 @@ namespace WarpWorld.CrowdControl {
         private List<ParameterEntry> m_parameterEntries = new List<ParameterEntry>();
         private List<string> m_parameterStrings = new List<string>();
 
+        [HideInInspector] public string testParameter; 
+
         protected internal sealed override EffectResult OnTriggerEffect(CCEffectInstance effectInstance)  {
             return OnTriggerEffect(effectInstance as CCEffectInstanceParameters);
         }

@@ -58,7 +58,7 @@ namespace WarpWorld.CrowdControl.Overlay {
 
         private void SetStartView() {
             if (CrowdControl.instance.isConnected) {
-                ChangeView(CrowdControl.instance.isAuthenticated ? View.InputToken : View.Connected);
+                ChangeView(View.Connected);
                 return;
             }
 

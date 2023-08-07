@@ -26,6 +26,8 @@ namespace WarpWorld.CrowdControl {
         [SerializeField] private uint m_min;
         [SerializeField] private uint m_max;
 
+        [HideInInspector] public string testParamName;
+
         public ParameterEntry(string id, string paramName) : base(id, paramName) {
             ID = id;
             m_paramKind = Kind.Item;
