@@ -242,7 +242,7 @@ namespace WarpWorld.CrowdControl {
         [JsonProperty(PropertyName = "topics")]
         public string[] topics;
 
-        public JSONSubscribe(string session, string hash) {
+        public JSONSubscribe(string hash) {
             token = hash;
             topics = new string[3];
             topics[0] = "session/self";
@@ -292,7 +292,6 @@ namespace WarpWorld.CrowdControl {
             public uint m_price = 0;
 
             public override void Set(string effectKey, uint price) {
-                CrowdControl.Log("SET");
                 m_effectID = effectKey;
                 m_price = price;
             }
@@ -374,7 +373,7 @@ namespace WarpWorld.CrowdControl {
         Dictionary<string, string> parameters = new Dictionary<string, string>();*/
 
         public JSONRequestEffect(string gameSessionID, string effectID, params string [] paramterList) {
-            m_gameSessionID = "game_session-" + gameSessionID;
+            m_gameSessionID = gameSessionID;
             m_effectID = effectID;
 
             m_sourceDetails = new JSONRequestSourceDetails();
@@ -410,8 +409,10 @@ namespace WarpWorld.CrowdControl {
                 m_ids = ids; 
                 m_id = Utils.GenerateRandomString(26);
 
-                DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                m_stamp = (long)(DateTime.UtcNow - epoch).TotalSeconds;
+                var now = DateTime.UtcNow;
+                var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                var unixTimestamp = (long)(now - unixEpoch).TotalSeconds;
+                m_stamp = unixTimestamp;
             }
         }
 

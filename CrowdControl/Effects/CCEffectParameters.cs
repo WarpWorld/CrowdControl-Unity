@@ -11,13 +11,23 @@ namespace WarpWorld.CrowdControl {
         [SerializeField]
         [HideInInspector]
         private List<ParameterEntry> m_parameterEntries = new List<ParameterEntry>();
-        private List<string> m_parameterStrings = new List<string>();
 
         protected internal sealed override EffectResult OnTriggerEffect(CCEffectInstance effectInstance)  {
             return OnTriggerEffect(effectInstance as CCEffectInstanceParameters);
         }
 
         protected abstract EffectResult OnTriggerEffect(CCEffectInstanceParameters effectInstance);
+
+        internal void RegisterParameters() {
+            ParameterEntries = new Dictionary<string, ParameterEntry>();
+
+            foreach (ParameterEntry entry in m_parameterEntries) {
+                entry.SetID(Key);
+                ParameterEntries.Add(entry.ID, entry);
+
+                CrowdControl.Log(entry.ID);
+            }
+        }
 
         /// <summary>Returns true if this Parameter Effect is the parent of the parameter ID. Overridable</summary>
         public override bool HasParameterID(string id) {

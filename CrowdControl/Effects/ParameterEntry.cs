@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace WarpWorld.CrowdControl {
     [System.Serializable]
@@ -26,8 +27,44 @@ namespace WarpWorld.CrowdControl {
         [SerializeField] private uint m_min;
         [SerializeField] private uint m_max;
 
+        [HideInInspector] public string testParamName;
+
         public string GetOptionName(string key) {
             return Options.FirstOrDefault(option => string.Equals(key, option.ID)).Name;
+        }
+
+        public ParameterEntry(string id, string paramName, uint min, uint max)  {
+            ID = id;
+            m_paramKind = Kind.Quantity;
+            m_min = min;
+            m_max = max;
+
+            InitOptions();
+        }
+
+        public ParameterEntry(string id, string paramName) {
+            ID = id;
+            m_paramKind = Kind.Quantity;
+
+            InitOptions();
+        }
+
+        public void SetID(string parentKey) {
+            Regex rgx = new Regex("[^a-z0-9-]");
+
+            string effectKey = Name.ToString().ToLower();
+            ID = parentKey + "_" + rgx.Replace(effectKey, "");
+        }
+
+        public void InitOptions() {
+            if (Options != null)
+                return;
+
+            Options = new ParameterOption[m_options.Length];
+
+            for (int i = 0; i < m_options.Length; i++) {
+                Options[i] = new ParameterOption(m_options[i], ID);
+            }
         }
     }
 }

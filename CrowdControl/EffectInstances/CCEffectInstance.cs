@@ -36,9 +36,6 @@ namespace WarpWorld.CrowdControl {
         /// <summary>The id for the effect that's being used</summary>
         public string effectKey { get { return effect.Key; } }
 
-        /// <summary>The parameters sent into the effect. Eg: Item Type, Quantity</summary>
-        internal Dictionary<string, JSONEffectRequest.JSONParameterEntry> Parameters;
-
         public void SetUser(StreamUser streamUser) {
             user = streamUser;
         }

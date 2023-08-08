@@ -479,7 +479,8 @@ namespace WarpWorld.CrowdControl {
                 return;
             }
 
-            if ((_socketProvider != null && _socketProvider._socket != null) || isConnecting) throw new InvalidOperationException();
+            if ((_socketProvider != null && _socketProvider.webSocket != null) || isConnecting)
+                throw new InvalidOperationException();
 
             _currentRetryCount = 0;
             timeToNextPing = float.MaxValue;
@@ -512,8 +513,34 @@ namespace WarpWorld.CrowdControl {
             OnConnectionError?.Invoke(e);
         }
 
+        internal void ContinueSession() {
+            if (!string.IsNullOrEmpty(_gameSessionID)) {
+                Subscribe();
+                return;
+            }
+
+            WhoAmI();
+        }
+
+        private void WhoAmI()  {
+            JSONMessageSend whoamI = new JSONMessageSend("whoami");
+            SendJSON(whoamI);
+        }
+
+        private void Subscribe() {
+            JSONSubscribe subscribe = new JSONSubscribe(CurrentUserHash);
+            SendJSON(new JSONData("subscribe", JsonConvert.SerializeObject(subscribe)));
+        }
+
+        public void RunDisconnectedAction()
+        {
+            OnDisconnected?.Invoke();
+        }
+
         private void Disconnect(bool fromError) {
             Log("Disconnect");
+
+            StopGameSession();
 
             if (_socketProvider != null && _socketProvider.Connected) {
                 _socketProvider.Close();
@@ -553,8 +580,10 @@ namespace WarpWorld.CrowdControl {
             ccEffectEntries.PrivateAddEffect(effectBase);
 
             if (!effectsByID.ContainsKey(effectBase.Key)) {
+                if (effectBase is CCEffectParameters)
+                    (effectBase as CCEffectParameters).RegisterParameters();
+
                 effectsByID.Add(effectBase.Key, effectBase);
-                effectBase.RegisterParameters(ccEffectEntries);
             }
 
             if (!silent) 
@@ -594,6 +623,9 @@ namespace WarpWorld.CrowdControl {
 
         /// <summary>Ends the game session.</summary>
         public void StopGameSession() {
+            if (string.IsNullOrEmpty(_gameSessionID))
+                return;
+
             ServerMessages.SendPost("stop", StopGameSessionProcess, new JSONStopSession(_gameSessionID));
         }
 
@@ -604,7 +636,7 @@ namespace WarpWorld.CrowdControl {
         private void StartGameSessionProcess(string serializedPayload) {
             JSONGameSession gameSessionStart = JsonConvert.DeserializeObject<JSONGameSession>(serializedPayload);
 
-            _gameSessionID = gameSessionStart.m_gameSessionID.Split('-')[1];
+            _gameSessionID = gameSessionStart.m_gameSessionID;
             OnGameSessionStart?.Invoke();
             ActiveSession = true;
 
@@ -634,6 +666,16 @@ namespace WarpWorld.CrowdControl {
             Streamer = new StreamUser(userInfo.m_profile);
         }
 
+        private void ProcessWhoAmI() {
+            if (string.IsNullOrEmpty(CurrentToken)) {
+                OnLoggedOut?.Invoke();
+                return;
+            }
+
+            Subscribe();
+            OnLoggedIn?.Invoke();
+        }
+
         private void ProcessMessage(string jsonString) {
             if (string.Equals(jsonString, "pong"))
                 return;
@@ -647,15 +689,7 @@ namespace WarpWorld.CrowdControl {
                     JSONWhoAmI whoAmI = JsonConvert.DeserializeObject<JSONWhoAmI>(serializedPayload);
                     connectionID = whoAmI.m_connectionID;
 
-                    if (string.IsNullOrEmpty(CurrentToken)) {
-                        OnLoggedOut?.Invoke();
-                        return;
-                    }
-
-                    JSONSubscribe subscribe = new JSONSubscribe(CurrentStreamer, CurrentUserHash);
-                    SendJSON(new JSONData("subscribe", JsonConvert.SerializeObject(subscribe)));
-                    OnLoggedIn?.Invoke();
-
+                    ProcessWhoAmI();
                     break;
                 case "login-success":
                     Log("RECEIVED: " + jsonString);
@@ -667,8 +701,7 @@ namespace WarpWorld.CrowdControl {
                     CurrentStreamer = user.m_ccUID;
                     CurrentUserHash = loginSuccess.m_token;
 
-                    JSONSubscribe newSubscribe = new JSONSubscribe(CurrentStreamer, CurrentUserHash);
-                    SendJSON(new JSONData("subscribe", JsonConvert.SerializeObject(newSubscribe)));
+                    Subscribe();
                     OnLoggedIn?.Invoke();
                     break;
                 case "subscription-result":
@@ -723,8 +756,21 @@ namespace WarpWorld.CrowdControl {
         }
 
         /// <summary>Test an effect locally. Its events won't be sent to the server.</summary>
-        public void TestEffect(CCEffectBase effect, string parameters = "") {
-            StartCoroutine(DownloadUserInfo(effect, null, (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalMilliseconds.ToString(), true, null));
+        public void TestEffect(CCEffectBase effect) {
+            Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null;
+
+            if (effect is CCEffectParameters) {
+                CCEffectParameters paramEffect = effect as CCEffectParameters;
+                parameters = new Dictionary<string, JSONEffectRequest.JSONParameterEntry>();
+
+                foreach (string paramKey in paramEffect.ParameterEntries.Keys) {
+                    parameters.Add(paramEffect.ParameterEntries[paramKey].Name, new JSONEffectRequest.JSONParameterEntry());
+                    parameters[paramEffect.ParameterEntries[paramKey].Name].m_name = paramEffect.ParameterEntries[paramKey].testParamName;
+                    parameters[paramEffect.ParameterEntries[paramKey].Name].m_value = paramEffect.ParameterEntries[paramKey].testParamName;
+                }
+            }
+
+            StartCoroutine(DownloadUserInfo(effect, null, (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalMilliseconds.ToString(), true, parameters));
         }
 
         /// <summary>Test an effect remotely.</summary>
@@ -792,9 +838,10 @@ namespace WarpWorld.CrowdControl {
                     return;
                 }
 
-                effectInstance.Parameters = parameters;
+                CCEffectInstanceParameters paramsInstance = effectInstance as CCEffectInstanceParameters;
+                paramsInstance.AssignParameters(parameters);
             }
-            
+
             else if (effectsByID[effectID] is CCEffectBidWar) {
                 // Implement when Bid Wars are ready.
             }

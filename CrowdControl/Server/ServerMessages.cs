@@ -25,14 +25,14 @@ namespace WarpWorld.CrowdControl {
         }
 
         public static void SendPost(string postType, Action<string> callback, object json = null, bool gameSession = true) {
-            string url = gameSession ? string.Format("{0}game-session/{1}", OpenApiURL, postType) : string.Format("{0}/{1}", OpenApiURL, postType);
+            string url = gameSession ? string.Format("{0}game-session/{1}", OpenApiURL, postType) : string.Format("{0}{1}", OpenApiURL, postType);
             string jsonString = json != null ? JsonConvert.SerializeObject(json) : string.Empty;
 
             WebRequest request = WebRequest.Create(url);
             request.Method = "POST";
             request.Headers.Add("Authorization", "cc-auth-token " + CrowdControl.instance.CurrentUserHash);
 
-            CrowdControl.Log(CrowdControl.instance.CurrentUserHash);
+            CrowdControl.Log(url);
 
             byte[] jsonBytes = Encoding.UTF8.GetBytes(jsonString);
 
