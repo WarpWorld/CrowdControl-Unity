@@ -43,7 +43,6 @@ namespace WarpWorld.CrowdControl {
             AddProperty(ValueType._bool, "_dontDestroyOnLoad", "Don't Destroy on Load", 300.0f, 125.0f);
             AddProperty(ValueType._bool, "_startSessionAuto", "Start Session Automatically", 300.0f, 150.0f);
             
-
             SetNextOffset(45.0f, true);
             AddLabel("Debug Output", 150.0f, 1.2f, FontStyle.Bold, true);
 
