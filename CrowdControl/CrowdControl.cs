@@ -113,9 +113,9 @@ namespace WarpWorld.CrowdControl {
             get {
                 switch (CCServer) {
                     case Server.Dev:
-                        return "wss://dyk8kg1mr3.execute-api.us-east-1.amazonaws.com/dev/";
+                        return "ws://dev-pubsub.crowdcontrol.live";
                     case Server.Production:
-                        return "wss://2xm6q3ovma.execute-api.us-east-1.amazonaws.com/prod/";
+                        return "wss://pubsub.crowdcontrol.live";
                     case Server.Staging:
                         return "wss://r8073rtqd8.execute-api.us-east-1.amazonaws.com/staging/";
                 }
@@ -540,13 +540,17 @@ namespace WarpWorld.CrowdControl {
         private void Disconnect(bool fromError) {
             Log("Disconnect");
 
+            
             StopGameSession();
+
+            
 
             if (_socketProvider != null && _socketProvider.Connected) {
                 _socketProvider.Close();
                 _socketProvider.Dispose();
                 _socketProvider = null;
             }
+            
             if (fromError) {
                 ConnectError();
                 timeToNextPing = Time.unscaledTime + Protocol.PING_INTERVAL;
@@ -554,7 +558,7 @@ namespace WarpWorld.CrowdControl {
             else {
                 timeToNextPing = float.MaxValue;
             }
-
+            
             timeToTimeout = float.MaxValue;
             isConnecting = false;
             OnDisconnected?.Invoke();
