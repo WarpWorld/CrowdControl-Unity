@@ -30,6 +30,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
     <OutputPath>..\Unity_Net_Standard\Assets\WarpWorld\Managed\</OutputPath>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="CrowdControl" Condition="'$(TargetFramework)' == 'net35'">

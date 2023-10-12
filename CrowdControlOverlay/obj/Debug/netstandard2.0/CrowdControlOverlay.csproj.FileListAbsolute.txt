@@ -10,9 +10,10 @@ C:\Users\Adam\source\repos\CrowdControl\CrowdControlOverlay\obj\Debug\netstandar
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_Standard\Assets\WarpWorld\Managed\netstandard2.0\CrowdControlOverlay.deps.json
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_Standard\Assets\WarpWorld\Managed\netstandard2.0\CrowdControlOverlay.dll
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_Standard\Assets\WarpWorld\Managed\netstandard2.0\CrowdControlOverlay.pdb
-C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\netstandard2.0\CrowdControlOverlay.csprojAssemblyReference.cache
-C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\netstandard2.0\CrowdControlOverlay.csproj.CoreCompileInputs.cache
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\netstandard2.0\CrowdControlOverlay.csproj.AssemblyReference.cache
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\netstandard2.0\CrowdControlOverlay.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\netstandard2.0\CrowdControlOverlay.AssemblyInfoInputs.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\netstandard2.0\CrowdControlOverlay.AssemblyInfo.cs
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\netstandard2.0\CrowdControlOverlay.csproj.CoreCompileInputs.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\netstandard2.0\CrowdControlOverlay.dll
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\netstandard2.0\CrowdControlOverlay.pdb

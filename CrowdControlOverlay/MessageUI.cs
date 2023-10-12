@@ -20,7 +20,12 @@ namespace WarpWorld.CrowdControl.Overlay {
         }
 
         [SerializeField] private Image icon;
+
+#if NET35
+        [SerializeField] private Text content;
+#else
         [SerializeField] private TMP_Text content;
+#endif
         [SerializeField] private GameObject container;
         [SerializeField] private GameObject iconContainer;
         [SerializeField] private CanvasGroup canvasGroup;

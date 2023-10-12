@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.JsonCC;
-using Newtonsoft.JsonCC.Linq;
 
 namespace WarpWorld.CrowdControl {
-    public class JSONMessageGet {
+    internal class JSONMessageGet {
         [JsonProperty(PropertyName = "domain")]
         public string m_domain;
 
@@ -20,8 +19,8 @@ namespace WarpWorld.CrowdControl {
         public ulong m_timestamp;
     }
 
-    public class JSONWebMessageGet {
-        public class JSONWebMessageGetResult {
+    internal class JSONWebMessageGet {
+        internal class JSONWebMessageGetResult {
             [JsonProperty(PropertyName = "data")]
             public object m_data;
         }
@@ -30,7 +29,7 @@ namespace WarpWorld.CrowdControl {
         public JSONWebMessageGetResult m_result;
     }
 
-    public class JSONMessageSend {
+    internal class JSONMessageSend {
         [JsonProperty(PropertyName = "action")]
         public string m_action;
 
@@ -42,18 +41,18 @@ namespace WarpWorld.CrowdControl {
         }
     }
 
-    public class JSONWhoAmI : JSONPayload {
+    internal class JSONWhoAmI : JSONPayload {
         [JsonProperty(PropertyName = "connectionID")]
         public string m_connectionID;
     }
 
-    public class JSONLoginSuccess : JSONPayload {
+    internal class JSONLoginSuccess : JSONPayload {
         [JsonProperty(PropertyName = "token")]
         public string m_token;
 
         public string m_decodedToken = "";
 
-        public string DecodeToken() {
+        internal string DecodeToken() {
             string[] segments = m_token.Split('.');
 
             while (segments[1].Length % 4 > 0) {
@@ -66,7 +65,7 @@ namespace WarpWorld.CrowdControl {
         }
     }
 
-    public class JSONSubResult : JSONPayload {
+    internal class JSONSubResult : JSONPayload {
         [JsonProperty(PropertyName = "success")]
         public string [] m_success;
 
@@ -74,7 +73,7 @@ namespace WarpWorld.CrowdControl {
         public string[] m_failure;
     }
 
-    public class JSONGameSession : JSONPayload {
+    internal class JSONGameSession : JSONPayload {
         [JsonProperty(PropertyName = "gameSessionID")]
         public string m_gameSessionID;
     }
@@ -230,12 +229,12 @@ namespace WarpWorld.CrowdControl {
         }
     }
 
-    public class JSONEffectSuccess : JSONPayload {
+    internal class JSONEffectSuccess : JSONPayload {
         [JsonProperty(PropertyName = "gameSessionID")]
         public string[] m_gameSessionID;
     }
 
-    public class JSONSubscribe {
+    internal class JSONSubscribe {
         [JsonProperty(PropertyName = "token")]
         public string token = "";
 
@@ -251,11 +250,7 @@ namespace WarpWorld.CrowdControl {
         }
     }
 
-    public class JSONPing {
-        
-    }
-
-    public class JSONStartSession {
+    internal class JSONStartSession {
         [JsonProperty(PropertyName = "gamePackID")]
         public string m_gamePackID = "";
 
@@ -268,76 +263,76 @@ namespace WarpWorld.CrowdControl {
         }
     }
 
-    public class JSONEffectOverride<T> {
+    internal class JSONEffectOverride<T> {
         [JsonProperty(PropertyName = "gamePackID")]
-        public string m_gamePackID = CrowdControl.GameKey;
+        public string m_gamePackID = CrowdControl.GameID;
 
         [JsonProperty(PropertyName = "effectOverrides")]
         public JSONEffectOverrideEntry[] m_effectOverrides = new JSONEffectOverrideEntry[1];
 
-        public class JSONEffectOverrideEntry {
+        internal class JSONEffectOverrideEntry {
             [JsonProperty(PropertyName = "effectID")]
             public string m_effectID = "";
 
             [JsonProperty(PropertyName = "type")]
             public string m_type = "game";
 
-            public virtual void Set(string effectKey, T value) { }
+            public virtual void Set(string effectID, T value) { }
         }
     }
 
-    public class JSONEffectChangePrice : JSONEffectOverride<uint> {
-        public class JSONEffectPriceEntry : JSONEffectOverrideEntry {
+    internal class JSONEffectChangePrice : JSONEffectOverride<uint> {
+        internal class JSONEffectPriceEntry : JSONEffectOverrideEntry {
             [JsonProperty(PropertyName = "price")]
             public uint m_price = 0;
 
-            public override void Set(string effectKey, uint price) {
-                m_effectID = effectKey;
+            public override void Set(string effectID, uint price) {
+                m_effectID = effectID;
                 m_price = price;
             }
         }
 
-        public JSONEffectChangePrice(string effectKey, uint value) {
+        public JSONEffectChangePrice(string effectID, uint value) {
             m_effectOverrides[0] = new JSONEffectPriceEntry();
-            m_effectOverrides[0].Set(effectKey, value);
+            m_effectOverrides[0].Set(effectID, value);
         }
     }
 
-    public class JSONEffectChangeNonPoolable : JSONEffectOverride<bool> { 
-        public class JSONEffectPriceEntry : JSONEffectOverride<bool>.JSONEffectOverrideEntry {
+    internal class JSONEffectChangeNonPoolable : JSONEffectOverride<bool> {
+        internal class JSONEffectPriceEntry : JSONEffectOverride<bool>.JSONEffectOverrideEntry {
             [JsonProperty(PropertyName = "unpoolable")]
             public bool m_unPoolable;
 
-            public override void Set(string key, bool unPoolable) {
-                m_effectID = key;
+            public override void Set(string effectID, bool unPoolable) {
+                m_effectID = effectID;
                 m_unPoolable = unPoolable;
             }
         }
 
-        public JSONEffectChangeNonPoolable(string effectKey, bool value) {
+        public JSONEffectChangeNonPoolable(string effectID, bool value) {
             m_effectOverrides[0] = new JSONEffectPriceEntry();
-            m_effectOverrides[0].Set(effectKey, value);
+            m_effectOverrides[0].Set(effectID, value);
         }
     }
 
-    public class JSONEffectChangeSessionMax : JSONEffectOverride<uint> {
-        public class JSONEffectSessionEntry : JSONEffectOverride<uint>.JSONEffectOverrideEntry {
+    internal class JSONEffectChangeSessionMax : JSONEffectOverride<uint> {
+        internal class JSONEffectSessionEntry : JSONEffectOverride<uint>.JSONEffectOverrideEntry {
             [JsonProperty(PropertyName = "sessionMax")]
             public uint m_sessionMax = 0;
 
-            public override void Set(string effectKey, uint max) {
-                m_effectID = effectKey;
+            public override void Set(string effectID, uint max) {
+                m_effectID = effectID;
                 m_sessionMax = max;
             }
         }
 
-        public JSONEffectChangeSessionMax(string effectKey, uint value) {
+        public JSONEffectChangeSessionMax(string effectID, uint value) {
             m_effectOverrides[0] = new JSONEffectSessionEntry();
-            m_effectOverrides[0].Set(effectKey, value);
+            m_effectOverrides[0].Set(effectID, value);
         }
     }
 
-    public class JSONStopSession {
+    internal class JSONStopSession {
         [JsonProperty(PropertyName = "gameSessionID")]
         public string m_gameSessionID = "";
 
@@ -346,19 +341,19 @@ namespace WarpWorld.CrowdControl {
         }
     }
 
-    public class JSONRequestUser {
+    internal class JSONRequestUser {
         [JsonProperty(PropertyName = "token")]
         public string m_token = "";
     }
 
-    public class JSONRequestEffect {
+    internal class JSONRequestEffect {
         [JsonProperty(PropertyName = "gameSessionID")]
         public string m_gameSessionID;
 
         [JsonProperty(PropertyName = "sourceDetails")]
         public JSONRequestSourceDetails m_sourceDetails;
 
-        public class JSONRequestSourceDetails {
+        internal class JSONRequestSourceDetails {
             [JsonProperty(PropertyName = "type")]
             public string m_type = "crowd-control-test";
         }
@@ -384,8 +379,8 @@ namespace WarpWorld.CrowdControl {
         }
     }
 
-    public class JSONEffectReport {
-        public class JSONEffectReportArgs {
+    internal class JSONEffectReport {
+        internal class JSONEffectReportArgs {
             [JsonProperty(PropertyName = "id")]
             public string m_id = "";
 
@@ -422,7 +417,7 @@ namespace WarpWorld.CrowdControl {
         [JsonProperty(PropertyName = "call")]
         public JSONReportCall m_call = new JSONReportCall();
 
-        public class JSONReportCall {
+        internal class JSONReportCall {
             [JsonProperty(PropertyName = "method")]
             public string m_method = "effectReport";
 
@@ -438,7 +433,7 @@ namespace WarpWorld.CrowdControl {
 
         public JSONEffectReport(string token, CCEffectBase effect, string status) {
             m_token = token;
-            m_call.m_args[0] = new JSONEffectReportArgs(status, effect.Key);
+            m_call.m_args[0] = new JSONEffectReportArgs(status, effect.ID);
         }
     }
 
@@ -516,14 +511,14 @@ namespace WarpWorld.CrowdControl {
         }
     }
 
-    public class JSONRpc {
+    internal class JSONRpc {
         [JsonProperty(PropertyName = "token")]
         public string m_token = "";
 
         [JsonProperty(PropertyName = "call")]
         public JSONRpcCall m_call = new JSONRpcCall();
 
-        public class JSONRpcCall {
+        internal class JSONRpcCall {
             [JsonProperty(PropertyName = "method")]
             public string m_method = "effectResponse";
 
@@ -537,7 +532,7 @@ namespace WarpWorld.CrowdControl {
             public string m_type = "call";
         }
 
-        public class JSONRpcArgs
+        internal class JSONRpcArgs
         {
             [JsonProperty(PropertyName = "timeRemaining")]
             public float m_timeRemaining;

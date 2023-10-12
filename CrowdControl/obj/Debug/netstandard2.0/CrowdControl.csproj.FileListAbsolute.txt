@@ -17,6 +17,7 @@ C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_Standard\Assets\Warp
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.csproj.CoreCompileInputs.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.dll
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.pdb
-C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.csprojAssemblyReference.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\netstandard2.0\Interop.WinHttp.dll
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.csproj.ResolveComReference.cache
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.csproj.AssemblyReference.cache
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\netstandard2.0\CrowdControl.GeneratedMSBuildEditorConfig.editorconfig

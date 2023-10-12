@@ -29,8 +29,9 @@ namespace WarpWorld.CrowdControl {
 
         [HideInInspector] public string testParamName;
 
-        public string GetOptionName(string key) {
-            return Options.FirstOrDefault(option => string.Equals(key, option.ID)).Name;
+        /// <summary> Get the name of an option based off its id. </summary>
+        public string GetOptionName(string id) {
+            return Options.FirstOrDefault(option => string.Equals(id, option.ID)).Name;
         }
 
         public ParameterEntry(string id, string paramName, uint min, uint max)  {
@@ -49,14 +50,14 @@ namespace WarpWorld.CrowdControl {
             InitOptions();
         }
 
-        public void SetID(string parentKey) {
+        internal void SetID(string parentID) {
             Regex rgx = new Regex("[^a-z0-9-]");
 
-            string effectKey = Name.ToString().ToLower();
-            ID = parentKey + "_" + rgx.Replace(effectKey, "");
+            string effectID = Name.ToString().ToLower();
+            ID = parentID + "_" + rgx.Replace(effectID, "");
         }
 
-        public void InitOptions() {
+        private void InitOptions() {
             if (Options != null)
                 return;
 

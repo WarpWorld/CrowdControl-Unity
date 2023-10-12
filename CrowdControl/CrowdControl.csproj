@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TargetFrameworks>net35;net45;netstandard2.0</TargetFrameworks>
 	<DefineConstants Condition="'$(TargetFramework)' == 'net35'">NET35</DefineConstants>
@@ -9,7 +9,17 @@
 	<RootNamespace>WarpWorld.CrowdControl</RootNamespace>
     <AssemblyName>CrowdControl</AssemblyName>
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	<LangVersion>latest</LangVersion>
+	
   </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net35'">
+    <Compile Remove="Newtonsoft.JsonCC\**" />
+    <EmbeddedResource Remove="Newtonsoft.JsonCC\**" />
+    <None Remove="Newtonsoft.JsonCC\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Newtonsoft.JsonCC\Linq\Extensions.cs" /> 
+  </ItemGroup>
   <ItemGroup>
     <COMReference Include="WinHttp.dll">
       <Guid>662901fc-6951-4854-9eb2-d9a2570f2b2e</Guid>
@@ -19,13 +29,14 @@
       <Lcid>0</Lcid>
       <Isolated>false</Isolated>
     </COMReference>
+	
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Newtonsoft.Json" Condition="'$(TargetFramework)' == 'net35'">
+  <ItemGroup> 
+    <!-- <Reference Include="Newtonsoft.Json" Condition="'$(TargetFramework)' == 'net35'">
       <HintPath>..\include\Newtonsoft\net35\Newtonsoft.JsonCC.dll</HintPath>
       <Private>false</Private>
-    </Reference>
+    </Reference> -->
 	
 	<Reference Include="Newtonsoft.Json" Condition="'$(TargetFramework)' == 'net45'">
       <HintPath>..\include\Newtonsoft\net45\Newtonsoft.JsonCC.dll</HintPath>
@@ -83,6 +94,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="WebSocket4Net" Version="0.15.2" />
+    <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
   </ItemGroup>
 </Project>

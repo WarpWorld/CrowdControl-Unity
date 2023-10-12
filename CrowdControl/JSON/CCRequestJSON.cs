@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 
 namespace WarpWorld.CrowdControl {
-    public class CCRequestJSON {
+    internal class CCRequestJSON {
         [JsonProperty(PropertyName = "game")]
-        public string game = CrowdControl.GameKey;
+        public string game = CrowdControl.GameID;
 
         [JsonProperty(PropertyName = "channel")]
         public string channel = "";
@@ -29,7 +29,7 @@ namespace WarpWorld.CrowdControl {
         public string SerializedString() { return JsonConvert.SerializeObject(this, settings); }
     }
 
-    public class CCMessageGenericJSON : CCRequestJSON { // 0xD0
+    internal class CCMessageGenericJSON : CCRequestJSON { // 0xD0
         [JsonProperty(PropertyName = "event")]
         public string genericEvent;
 
@@ -59,7 +59,7 @@ namespace WarpWorld.CrowdControl {
         }
     }
 
-    public class CCMessageVersionJSON : CCRequestJSON { // 0xF0
+    internal class CCMessageVersionJSON : CCRequestJSON { // 0xF0
         [JsonProperty(PropertyName = "version")]
         private uint version;
 
@@ -70,7 +70,7 @@ namespace WarpWorld.CrowdControl {
         private ulong fingerPrint;
     }
 
-    public class CCMessageTokenAquisitionJSON : CCRequestJSON { // 0xF1
+    internal class CCMessageTokenAquisitionJSON : CCRequestJSON { // 0xF1
         [JsonProperty(PropertyName = "greeting")]
         public byte greeting;
 
@@ -78,7 +78,7 @@ namespace WarpWorld.CrowdControl {
         public string tempToken;
     }
 
-    public class CCMessageTokenHandshakeJSON : CCRequestJSON { // 0xF2
+    internal class CCMessageTokenHandshakeJSON : CCRequestJSON { // 0xF2
         [JsonProperty(PropertyName = "streamerID")]
         public string streamerID;
 
@@ -92,22 +92,22 @@ namespace WarpWorld.CrowdControl {
         public byte greeting;
     }
 
-    public class CCJsonBlockJSON : CCRequestJSON { // 0xFA
+    internal class CCJsonBlockJSON : CCRequestJSON { // 0xFA
         
     }
 
-    public class CCMessagePingJSON : CCRequestJSON  { // 0xFB
+    internal class CCMessagePingJSON : CCRequestJSON  { // 0xFB
     }
 
-    public class CCMessageBlockErrorJSON : CCRequestJSON { // 0xFD
+    internal class CCMessageBlockErrorJSON : CCRequestJSON { // 0xFD
     }
 
-    public class CCMessageUserMessageJSON : CCRequestJSON { // 0xFE
+    internal class CCMessageUserMessageJSON : CCRequestJSON { // 0xFE
         [JsonProperty(PropertyName = "receivedMessage")]
         public string receivedMessage;
     }
 
-    public class CCMessageEffectRequestJSONSend : CCRequestJSON {
+    internal class CCMessageEffectRequestJSONSend : CCRequestJSON {
         [JsonProperty(PropertyName = "effectID")]
         public uint effectID;
 
@@ -121,7 +121,7 @@ namespace WarpWorld.CrowdControl {
         public string message;
     }
 
-    public class CCMessageEffectRequestJSONGet : CCRequestJSON {
+    internal class CCMessageEffectRequestJSONGet : CCRequestJSON {
         public class Viewer {
             [JsonProperty(PropertyName = "displayName")]
             public readonly string displayName;
@@ -151,7 +151,7 @@ namespace WarpWorld.CrowdControl {
         public string parameters;
     }
 
-    public class CCMessageEffectUpdateJSON : CCRequestJSON { // 0x01
+    internal class CCMessageEffectUpdateJSON : CCRequestJSON { // 0x01
         [JsonProperty(PropertyName = "effectID")]
         public uint effectID;
 

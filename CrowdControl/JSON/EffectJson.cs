@@ -4,9 +4,9 @@ using System;
 namespace WarpWorld.CrowdControl
 {
     [Serializable]
-    public class EffectJSON
+    internal class EffectJSON
     {
-        public class QuantityProperties
+        internal class QuantityProperties
         {
             [JsonProperty(PropertyName = "min")]
             public uint Min = 1;
@@ -21,7 +21,7 @@ namespace WarpWorld.CrowdControl
             }
         }
 
-        public class DurationProperties
+        internal class DurationProperties
         {
             [JsonProperty(PropertyName = "value")]
             public long? Value = 1;
@@ -59,8 +59,8 @@ namespace WarpWorld.CrowdControl
         [JsonProperty(PropertyName = "price")]
         private uint? Price = 1;
 
-        [JsonProperty(PropertyName = "morality")]
-        public int Morality;
+        [JsonProperty(PropertyName = "moral")]
+        public int Moral;
 
         [JsonProperty(PropertyName = "parameters")]
         public object Parameters;
@@ -71,31 +71,30 @@ namespace WarpWorld.CrowdControl
         [JsonProperty(PropertyName = "duration")]
         public DurationProperties Duration;
 
-        [JsonProperty(PropertyName = "userCooldown")]
+        /*[JsonProperty(PropertyName = "userCooldown")]
         public TimeSpan? ViewerCooldown;
-
+        */
         public EffectJSON(CCEffectBase effect)
         {
-            Inactive = effect.Sellable;
-            Disabled = effect.Visible;
+            Inactive = !effect.Sellable;
+            Disabled = !effect.Visible;
             Name = effect.Name;
             Category = effect.Categories;
             Description = effect.Description;
             Price = effect.Price;
             NoPooling = effect.NoPooling;
-            Morality = (int)effect.Morality;
+            Moral = (int)effect.Morality;
 
-            if (Morality == 2)
-                Morality = -1;
+            if (Moral == 2)
+                Moral = -1;
 
-            ViewerCooldown = TimeSpan.FromSeconds((double)(new decimal(effect.PendingDelay)));
+            //
+            //ViewerCooldown = TimeSpan.FromSeconds((double)(new decimal(effect.PendingDelay)));
 
-            if (effect is CCEffectTimed)
-            {
+            if (effect is CCEffectTimed) {
                 Duration = new DurationProperties((effect as CCEffectTimed).Duration);
             }
-            else if (effect is CCEffectParameters)
-            {
+            else if (effect is CCEffectParameters) {
                 CCEffectParameters paramEffect = effect as CCEffectParameters;
 
                 int paramIndex = 0;
@@ -103,18 +102,15 @@ namespace WarpWorld.CrowdControl
 
                 string paramList = string.Empty;
 
-                foreach (string paramKey in paramEffect.ParameterEntries.Keys)
-                {
+                foreach (string paramID in paramEffect.ParameterEntries.Keys) {
                     paramIndex++;
 
-                    if (paramEffect.ParameterEntries[paramKey].ParamKind == ParameterEntry.Kind.Quantity)
-                    {
-                        Quantity = new QuantityProperties(paramEffect.ParameterEntries[paramKey].Min, paramEffect.ParameterEntries[paramKey].Max);
-
+                    if (paramEffect.ParameterEntries[paramID].ParamKind == ParameterEntry.Kind.Quantity) {
+                        Quantity = new QuantityProperties(paramEffect.ParameterEntries[paramID].Min, paramEffect.ParameterEntries[paramID].Max);
                         continue;
                     }
 
-                    ParameterEntry paramEntry = paramEffect.ParameterEntries[paramKey];
+                    ParameterEntry paramEntry = paramEffect.ParameterEntries[paramID];
 
                     paramList += $"{{ \"{paramEntry.ID}\": {{ ";
                     paramList += $"\"name\": \"{paramEntry.Name}\", ";
@@ -123,10 +119,8 @@ namespace WarpWorld.CrowdControl
 
                     optionIndex = 0;
 
-                    foreach (ParameterOption option in paramEntry.Options)
-                    {
+                    foreach (ParameterOption option in paramEntry.Options) {
                         paramList += $"\"{option.ID}\": {{ \"name\": \"{option.Name}\"}}";
-
                         optionIndex++;
 
                         if (optionIndex < paramEntry.Options.Length)
@@ -142,22 +136,20 @@ namespace WarpWorld.CrowdControl
 
                 Parameters = JsonConvert.DeserializeObject(paramList);
             }
-            else if (effect is CCEffectBidWar)
-            {
+            else if (effect is CCEffectBidWar) {
                 CCEffectBidWar bidWarEffect = effect as CCEffectBidWar;
 
                 string bidWarList = "";
 
-                bidWarList = $"{{ \"{effect.Key}_options\": {{ ";
+                bidWarList = $"{{ \"{effect.ID}_options\": {{ ";
                 bidWarList += $"\"name\": \"{effect.Name} Options\", ";
                 bidWarList += "\"type\": \"options\", ";
                 bidWarList += "\"options\": {";
 
                 int index = 0;
 
-                foreach (string bidKey in bidWarEffect.BidWarEntries.Keys)
-                {
-                    bidWarList += $"\"{bidKey}\": {{ \"name\": \"{bidWarEffect.BidWarEntries[bidKey].Name}\"}}";
+                foreach (string bidID in bidWarEffect.BidWarEntries.Keys)  {
+                    bidWarList += $"\"{bidID}\": {{ \"name\": \"{bidWarEffect.BidWarEntries[bidID].Name}\"}}";
 
                     index++;
 

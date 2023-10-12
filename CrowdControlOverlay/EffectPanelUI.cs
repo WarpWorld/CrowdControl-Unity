@@ -25,7 +25,7 @@ namespace WarpWorld.CrowdControl.Overlay {
         internal EffectUINode Setup<T>(T source, CCEffectInstance effectInstance, DisplayFlags displayFlags) where T : EffectUINode {
             T node;
 
-            string id = effectInstance.effectKey;
+            string id = effectInstance.EffectID;
 
             if (nodePool.ContainsKey(id) && nodePool[id].Count > 0)
             {
@@ -44,14 +44,14 @@ namespace WarpWorld.CrowdControl.Overlay {
             node.transform.SetAsFirstSibling();
             node.effectInstance = effectInstance;
 
-            activeEffects.Add(m_uiType != UIType.Log ? effectInstance.effectKey : effectInstance.id.ToString(), node);
+            activeEffects.Add(m_uiType != UIType.Log ? effectInstance.EffectID : effectInstance.id.ToString(), node);
 
             return node;
         }
 
         internal void Add<T>(T source, CCEffectInstance effectInstance, DisplayFlags displayFlags) where T : EffectUINode
         {
-            string id = effectInstance.effect.Key;
+            string id = effectInstance.effect.ID;
 
             if (!activeEffects.ContainsKey(id))
             {
@@ -73,7 +73,7 @@ namespace WarpWorld.CrowdControl.Overlay {
             if (!node.Remove())
                 return;
 
-            string id = node.effectInstance.effectKey;
+            string id = node.effectInstance.EffectID;
 
             if (!nodePool.ContainsKey(id))
                 nodePool.Add(id, new Queue<EffectUINode>());

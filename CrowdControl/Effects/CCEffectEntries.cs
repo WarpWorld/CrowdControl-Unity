@@ -17,18 +17,18 @@ namespace WarpWorld.CrowdControl {
 
         public void PrivatePopulateDictionary() {
             foreach (CCEffectBase effect in FindObjectsOfType<CCEffectBase>()) {
-                string effectKey = effect.SetIdentifier();
-                EffectDictionary.Add(effectKey, new CCEffectEntry(effectKey));
+                string effectID = effect.SetIdentifier();
+                EffectDictionary.Add(effectID, new CCEffectEntry(effectID));
             }
         }
 
         public bool PrivateAddEffect(CCEffectBase effect) {
-            if (EffectDictionary.ContainsKey(effect.Key)) {
-                CrowdControl.Log(effect.Key + " shares a keyname with another effect.");
+            if (EffectDictionary.ContainsKey(effect.ID)) {
+                CrowdControl.Log(effect.ID + " shares a keyname with another effect.");
                 return false;
             }
 
-            EffectDictionary.Add(effect.Key, new CCEffectEntry(effect.Key));
+            EffectDictionary.Add(effect.ID, new CCEffectEntry(effect.ID));
             return true;
         }
 
@@ -37,8 +37,8 @@ namespace WarpWorld.CrowdControl {
         /// <summary>How many effects does the game have?</summary>
         public int Count { get { return EffectDictionary.Count; } }
 
-        public void AddParameter(string key, string paramName, string parentID) {
-            EffectDictionary.Add(key, new CCEffectEntry(key, parentID));
+        public void AddParameter(string id, string paramName, string parentID) {
+            EffectDictionary.Add(id, new CCEffectEntry(id, parentID));
         }
     }
 }

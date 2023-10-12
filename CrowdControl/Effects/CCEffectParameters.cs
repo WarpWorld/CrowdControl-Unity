@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using System.Text.RegularExpressions;
 
 namespace WarpWorld.CrowdControl {
     /// <summary>A Crowd Control effect that handles parameters. </summary>
@@ -22,10 +21,8 @@ namespace WarpWorld.CrowdControl {
             ParameterEntries = new Dictionary<string, ParameterEntry>();
 
             foreach (ParameterEntry entry in m_parameterEntries) {
-                entry.SetID(Key);
+                entry.SetID(ID);
                 ParameterEntries.Add(entry.ID, entry);
-
-                CrowdControl.Log(entry.ID);
             }
         }
 

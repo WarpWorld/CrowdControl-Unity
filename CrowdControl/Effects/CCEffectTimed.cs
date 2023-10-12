@@ -67,7 +67,6 @@ namespace WarpWorld.CrowdControl {
             return RunningCondition() && !pausedFromMenu;
         }
 
-        /// <summary> Invoked when the behaviour is paused. </summary>
         protected internal void Pause(CCEffectInstance effectInstance) {
             paused = true;
         }

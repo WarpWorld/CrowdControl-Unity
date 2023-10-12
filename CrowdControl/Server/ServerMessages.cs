@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace WarpWorld.CrowdControl {
     public static class ServerMessages {
         
-        private static string OpenApiURL {
+        public static string OpenApiURL {
             get {
                 switch (CrowdControl.CCServer) {
                     case Server.Dev:
@@ -25,7 +25,14 @@ namespace WarpWorld.CrowdControl {
         }
 
         public static void SendPost(string postType, Action<string> callback, object json = null, bool gameSession = true) {
-            string url = gameSession ? string.Format("{0}game-session/{1}", OpenApiURL, postType) : string.Format("{0}{1}", OpenApiURL, postType);
+            string url;
+
+#if NET35
+            url = gameSession ? string.Format("{0}/game-session/{1}", "http://localhost:24488", postType) : string.Format("{0}/{1}", "http://localhost:24488", postType);
+#else
+            url = gameSession ? string.Format("{0}game-session/{1}", OpenApiURL, postType) : string.Format("{0}{1}", OpenApiURL, postType);
+#endif
+
             string jsonString = json != null ? JsonConvert.SerializeObject(json) : string.Empty;
 
             WebRequest request = WebRequest.Create(url);
@@ -42,6 +49,8 @@ namespace WarpWorld.CrowdControl {
             using (Stream requestStream = request.GetRequestStream()) {
                 requestStream.Write(jsonBytes, 0, jsonBytes.Length);
             }
+
+            CrowdControl.sendingPost = true;
 
             CrowdControl.Log("SENT: " + jsonString);
 
@@ -62,26 +71,38 @@ namespace WarpWorld.CrowdControl {
                         else {
                             CrowdControl.LogError("Request failed with status code: " + ((HttpWebResponse)response).StatusCode);
                         }
+
+                        CrowdControl.sendingPost = false;
                     }
                 }
                 catch (WebException ex) {
+                    CrowdControl.sendingPost = false;
                     HttpWebResponse errorResponse = ex.Response as HttpWebResponse;
                     if (errorResponse != null) {
                         CrowdControl.LogError("Request failed with status code: " + errorResponse.StatusCode);
                     }
                 }
                 catch (Exception ex) {
+                    CrowdControl.sendingPost = false;
                     CrowdControl.LogError("An error occurred: " + ex.Message);
                 }
             }), request);
         }
 
         public static void RequestGet(string getType, Action<string> callback) {
-            string url = string.Format("{0}/{1}", OpenApiURL, getType);
+            string url;
+
+#if NET35
+            url = string.Format("{0}/{1}", "http://localhost:24488", getType);
+#else
+            url = string.Format("{0}/{1}", OpenApiURL, getType);
+#endif
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "GET";
             request.Headers.Add("Authorization", "cc-auth-token " + CrowdControl.instance.CurrentUserHash);
+
+            CrowdControl.Log("GET: " + url);
 
             request.BeginGetResponse(new AsyncCallback((IAsyncResult asynchronousResult) => {
                 HttpWebRequest responseRequest = (HttpWebRequest)asynchronousResult.AsyncState;

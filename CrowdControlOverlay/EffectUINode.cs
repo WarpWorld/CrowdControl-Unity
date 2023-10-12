@@ -39,7 +39,6 @@ namespace WarpWorld.CrowdControl.Overlay {
             group.alpha = 0;
 
             while (m_alphaOff) {
-                CrowdControl.Log(group.alpha);
                 yield return new WaitForSeconds(0.1f);
                 group.alpha = 0;
             }

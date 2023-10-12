@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.JsonCC;
 
 namespace WarpWorld.CrowdControl {
-    public class Streamer {
+    internal class Streamer {
         [JsonProperty(PropertyName = "type")]
         public string m_type;
 

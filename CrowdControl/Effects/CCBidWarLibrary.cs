@@ -6,7 +6,7 @@ namespace WarpWorld.CrowdControl {
         private Dictionary<string, uint> bids = new Dictionary<string, uint>();
 
         /// <summary>Who's the current winner of this effect?</summary>
-        public string CurrentWinner { get; private set; } = string.Empty;
+        public string WinnerID { get; private set; } = string.Empty;
         /// <summary>How many coins were spent on the winner? </summary>
         public uint HighestBid { get; private set; } = 0;
 
@@ -25,10 +25,10 @@ namespace WarpWorld.CrowdControl {
 
             HighestBid = bids[id];
 
-            if (id == CurrentWinner)
+            if (id == WinnerID)
                 return false;
 
-            CurrentWinner = id;
+            WinnerID = id;
 
             return true;
         }

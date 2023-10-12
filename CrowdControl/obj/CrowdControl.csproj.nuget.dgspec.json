@@ -60,16 +60,6 @@
               "target": "Package",
               "version": "[0.3.1, )"
             },
-            "Microsoft.NETFramework.ReferenceAssemblies": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[1.0.2, )",
-              "autoReferenced": true
-            },
-            "System.Net.Http": {
-              "target": "Package",
-              "version": "[2.0.20710, )"
-            },
             "TaskParallelLibrary": {
               "target": "Package",
               "version": "[1.0.2856, )"
@@ -78,9 +68,9 @@
               "target": "Package",
               "version": "[0.1.5, )"
             },
-            "WebSocket4Net": {
+            "WebSocketSharp": {
               "target": "Package",
-              "version": "[0.15.2, )"
+              "version": "[1.0.3-rc11, )"
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
@@ -92,13 +82,9 @@
               "target": "Package",
               "version": "[4.7.0, )"
             },
-            "System.Net.Http": {
+            "WebSocketSharp": {
               "target": "Package",
-              "version": "[2.0.20710, )"
-            },
-            "WebSocket4Net": {
-              "target": "Package",
-              "version": "[0.15.2, )"
+              "version": "[1.0.3-rc11, )"
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
@@ -116,17 +102,13 @@
               "version": "[2.0.3, )",
               "autoReferenced": true
             },
-            "System.Net.Http": {
-              "target": "Package",
-              "version": "[2.0.20710, )"
-            },
             "System.Net.WebSockets": {
               "target": "Package",
               "version": "[4.3.0, )"
             },
-            "WebSocket4Net": {
+            "WebSocketSharp": {
               "target": "Package",
-              "version": "[0.15.2, )"
+              "version": "[1.0.3-rc11, )"
             }
           },
           "imports": [

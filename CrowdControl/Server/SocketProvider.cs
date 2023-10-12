@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using WebSocket4Net;
+using WebSocketSharp;
+using System.Security.Authentication;
 
 namespace WarpWorld.CrowdControl {
     public class SocketProvider : IDisposable {
@@ -11,7 +12,7 @@ namespace WarpWorld.CrowdControl {
         public event Action OnDisconnected;
         public WebSocket webSocket { get; private set; }
 
-        public bool Connected => webSocket != null && webSocket.State == WebSocketState.Open;
+        public bool Connected => webSocket != null && connected;
 
         private bool error = false;
         private bool connected = false;
@@ -22,7 +23,9 @@ namespace WarpWorld.CrowdControl {
         public void Dispose() {
             CrowdControl.LogWarning("Dispose Stream");
             _ready.Set();
-            try { webSocket?.Close(); }
+            try {
+                //webSocket?.CloseAsync();
+            }
             catch { }
             GC.SuppressFinalize(this);
         }
@@ -39,14 +42,19 @@ namespace WarpWorld.CrowdControl {
                 if (Connected) { CloseImpl(); }
 
                 try {
-                    CrowdControl.Log("CONNECTING SOCKET");
+
+#if NET35
+                    socketHost = "ws://localhost:24487/";
+#else
                     socketHost = host;
-                    webSocket = new WebSocket(host);
-                    webSocket.Opened += SocketOpened;
-                    webSocket.MessageReceived += SocketMessageReceived;
-                    webSocket.Closed += SocketClosed;
-                    webSocket.Error += SocketTimeout;
-                    webSocket.Open();
+#endif
+                    webSocket = new WebSocket(socketHost);
+                    webSocket.SslConfiguration.EnabledSslProtocols = (SslProtocols)(-1);
+                    webSocket.OnOpen += SocketOpened;
+                    webSocket.OnMessage += SocketMessageReceived;
+                    webSocket.OnClose += SocketClosed;
+                    webSocket.OnError += SocketTimeout;
+                    webSocket.ConnectAsync();
 
                     if (!Connected) { return false; }
 
@@ -68,15 +76,14 @@ namespace WarpWorld.CrowdControl {
         private void SocketTimeout(object sender, EventArgs e) {
             CrowdControl.LogWarning("Socket timeout. Reconnecting");
             error = true;
-            webSocket.Close();
-            webSocket.Dispose();
+            webSocket.CloseAsync();
 
             webSocket = new WebSocket(socketHost);
-            webSocket.Opened += SocketOpened;
-            webSocket.MessageReceived += SocketMessageReceived;
-            webSocket.Closed += SocketClosed;
-            webSocket.Error += SocketTimeout;
-            webSocket.Open();
+            webSocket.OnOpen += SocketOpened;
+            webSocket.OnMessage += SocketMessageReceived;
+            webSocket.OnClose += SocketClosed;
+            webSocket.OnError += SocketTimeout;
+            webSocket.ConnectAsync();
         }
 
         public void ErrorTest() {
@@ -98,9 +105,10 @@ namespace WarpWorld.CrowdControl {
             connected = true;
         }
 
-        private void SocketMessageReceived(object sender, MessageReceivedEventArgs e) {
+        private void SocketMessageReceived(object sender, MessageEventArgs e) {
             ThreadPool.QueueUserWorkItem(_ => {
-                CrowdControl.instance.AddToJsonQueue(e.Message);
+                CrowdControl.Log("RECEIVED: " + e.Data);
+                CrowdControl.instance.AddToJsonQueue(e.Data);
             });
         }
 
@@ -113,10 +121,10 @@ namespace WarpWorld.CrowdControl {
 
         public void Close() {
             CrowdControl.Log("Closing Socket");
-            webSocket.Opened -= SocketOpened;
-            webSocket.MessageReceived -= SocketMessageReceived;
-            webSocket.Closed -= SocketClosed;
-            webSocket?.Close();
+            webSocket.OnOpen -= SocketOpened;
+            webSocket.OnMessage -= SocketMessageReceived;
+            webSocket.OnClose -= SocketClosed;
+            webSocket?.CloseAsync(); 
         }
 
         private bool CloseImpl() {
@@ -135,6 +143,6 @@ namespace WarpWorld.CrowdControl {
         public void Send(string message) {
             CrowdControl.Log("SENT: " + message);
             webSocket.Send(message);
-        }
-    }
+        } 
+    } 
 }

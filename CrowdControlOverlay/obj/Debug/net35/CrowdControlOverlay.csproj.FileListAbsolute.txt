@@ -6,11 +6,12 @@ C:\Users\Adam\source\repos\CrowdControl\Unity_Net_35\Assets\WarpWorld\Managed\ne
 C:\Users\Adam\source\repos\CrowdControl\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControlOverlay.pdb
 C:\Users\Adam\source\repos\CrowdControl\CrowdControlOverlay\obj\Debug\net35\CrowdControlOverlay.dll
 C:\Users\Adam\source\repos\CrowdControl\CrowdControlOverlay\obj\Debug\net35\CrowdControlOverlay.pdb
-C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControlOverlay.dll
-C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControlOverlay.pdb
-C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net35\CrowdControlOverlay.csprojAssemblyReference.cache
-C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net35\CrowdControlOverlay.csproj.CoreCompileInputs.cache
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net35\CrowdControlOverlay.csproj.AssemblyReference.cache
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net35\CrowdControlOverlay.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net35\CrowdControlOverlay.AssemblyInfoInputs.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net35\CrowdControlOverlay.AssemblyInfo.cs
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net35\CrowdControlOverlay.csproj.CoreCompileInputs.cache
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControlOverlay.dll
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControlOverlay.pdb
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net35\CrowdControlOverlay.dll
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net35\CrowdControlOverlay.pdb

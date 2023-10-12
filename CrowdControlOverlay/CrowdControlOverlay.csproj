@@ -52,7 +52,15 @@
       <HintPath>..\include\UnityEngine.UI.dll</HintPath>
       <Private>false</Private>
     </Reference>
-	<Reference Include="TMPro">
+	<Reference Include="TMPro" Condition="'$(TargetFramework)' == 'net35'">
+      <HintPath>..\Unity_Net_35\Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+	<Reference Include="TMPro" Condition="'$(TargetFramework)' == 'net45'">
+      <HintPath>..\Unity_Net_45\Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+	<Reference Include="TMPro" Condition="'$(TargetFramework)' == 'netstandard2.0'">
       <HintPath>..\Unity_Net_Standard\Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
       <Private>false</Private>
     </Reference>

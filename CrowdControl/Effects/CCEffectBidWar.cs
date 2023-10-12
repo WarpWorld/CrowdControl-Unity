@@ -61,9 +61,9 @@ namespace WarpWorld.CrowdControl {
         public void RegisterBidWarEntry(BidWarEntry entry, CCEffectEntries effectEntries) {
             uint startIndex = Convert.ToUInt32(effectEntries.Count);
             Regex rgx = new Regex("[^a-z0-9-]");
-            string entryKey = entry.Name.ToLower();
-            entryKey = rgx.Replace(entryKey, "");
-            BidWarEntries.Add($"{Key}_{entryKey}", entry);
+            string entryID = entry.Name.ToLower();
+            entryID = rgx.Replace(entryID, "");
+            BidWarEntries.Add($"{ID}_{entryID}", entry);
             CrowdControl.instance?.LogFormat("Registered Paramter {0} for {1} index {2}", entry.Name, Name, entry.ID);
         }
 

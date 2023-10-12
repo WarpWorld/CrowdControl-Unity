@@ -8,9 +8,10 @@ C:\Users\Adam\source\repos\CrowdControl\CrowdControlOverlay\obj\Debug\net45\Crow
 C:\Users\Adam\source\repos\CrowdControl\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.pdb
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControlOverlay.dll
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControlOverlay.pdb
-C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.csprojAssemblyReference.cache
-C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.csproj.CoreCompileInputs.cache
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.csproj.AssemblyReference.cache
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.AssemblyInfoInputs.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.AssemblyInfo.cs
+C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.csproj.CoreCompileInputs.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.dll
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.pdb

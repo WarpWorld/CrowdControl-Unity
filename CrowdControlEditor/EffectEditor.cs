@@ -251,7 +251,7 @@ namespace WarpWorld.CrowdControl {
 
         /// <summary>Returns <see langword="true"/> when the incomplete warning box should be displayed.</summary>
         protected virtual bool IsInformationComplete() => effect.Icon != null &&
-                !string.IsNullOrEmpty(effect.Key) &&
+                !string.IsNullOrEmpty(effect.ID) &&
                 !string.IsNullOrEmpty(effect.Name);
 
         protected virtual void OnInstanceGUI() {}
@@ -266,7 +266,7 @@ namespace WarpWorld.CrowdControl {
         /// <summary>Triggers a test instance of the effect. Only works in play mode.</summary>
         protected void TestEffectLocally() => CrowdControl.instance?.TestEffect(effect);
 
-        protected void TestEffectParams(string key, string value) {
+        protected void TestEffectParams() {
             CrowdControl.instance?.TestEffect(effect);
         }
 

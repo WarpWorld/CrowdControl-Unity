@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace WarpWorld.CrowdControl {
+﻿namespace WarpWorld.CrowdControl {
     /// <summary>
     /// State of a Crowd Control effect.
     /// <para>The instance is only valid from the time the effect is requested up to
@@ -34,7 +32,7 @@ namespace WarpWorld.CrowdControl {
         public float unscaledStartTime { get; internal set; }
 
         /// <summary>The id for the effect that's being used</summary>
-        public string effectKey { get { return effect.Key; } }
+        public string EffectID { get { return effect.ID; } }
 
         public void SetUser(StreamUser streamUser) {
             user = streamUser;

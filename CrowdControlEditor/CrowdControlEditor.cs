@@ -18,7 +18,7 @@ namespace WarpWorld.CrowdControl {
             InitCoords(rt.y);
 
             if (!Application.isPlaying) {
-                AddProperty(ValueType._string, "_gameKey", "Game Key", 87.5f, 100.0f);
+                AddProperty(ValueType._string, "_gameID", "Game ID", 87.5f, 100.0f);
                 AddProperty(ValueType._string, "_gameName", "Game Name", 87.5f, 200.0f);
                 NewRow();
             }
@@ -66,8 +66,8 @@ namespace WarpWorld.CrowdControl {
                     cc.StopAllEffects();
 
                 if (cc.isConnected) {
-                    if (AddButton("Refresh Online Menu", 150.0f)) {
-                        queueMenuRefresh = true;
+                    if (AddButton("Online Effect Menu", 150.0f)) {
+                        cc.BringUpMenu();
                     }
                 }
             }
@@ -114,14 +114,14 @@ namespace WarpWorld.CrowdControl {
             foreach (CCEffectBase effectBase in effectBases) {
                 effectEntries.PrivateAddEffect(effectBase);
 
-                if (!effectsByID.ContainsKey(effectBase.Key)) {
+                if (!effectsByID.ContainsKey(effectBase.ID)) {
                     effectBase.SetIdentifier();
-                    effectsByID.Add(effectBase.Key, effectBase);
+                    effectsByID.Add(effectBase.ID, effectBase);
                     effectBase.RegisterParameters(effectEntries);
                 }
             }
 
-            CCJsonBlock jsonBlock = new CCJsonBlock(gameName, effectsByID, effectEntries);
+            CCJsonBlock jsonBlock = new CCJsonBlock(gameName, effectsByID);
             effectEntries.PrivateResetDictionary();
 
             foreach (CCEffectBase effectBase in effectBases) {

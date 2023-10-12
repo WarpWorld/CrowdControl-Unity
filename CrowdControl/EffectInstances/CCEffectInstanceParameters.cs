@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System;
 
 namespace WarpWorld.CrowdControl {
@@ -7,15 +6,13 @@ namespace WarpWorld.CrowdControl {
         /// <summary>The parameters sent into the effect. Eg: Item Type, Quantity</summary>
         public Dictionary<string, JSONEffectRequest.JSONParameterEntry> Parameters { get; private set; }
 
-        public void AssignParameters(Dictionary<string, JSONEffectRequest.JSONParameterEntry> newParams) {
+        internal void AssignParameters(Dictionary<string, JSONEffectRequest.JSONParameterEntry> newParams) {
             Parameters = newParams;
         }
 
-        /// <summary>Get the parameter based on it's specific index.</summary>
+        /// <summary>Get the current parameter name.</summary>
         public string GetParameter(string id) {
             foreach (string key in Parameters.Keys) {
-                CrowdControl.Log(key);
-
                 if (string.Equals(id, key))
                     return Parameters[key].m_name;
 

@@ -5,7 +5,7 @@ namespace WarpWorld.CrowdControl {
 
     }
 
-    public class JSONData {
+    internal class JSONData {
         [JsonProperty(PropertyName = "action")]
         public string m_action = "";
 

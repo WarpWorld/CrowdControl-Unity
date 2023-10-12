@@ -10,14 +10,14 @@ namespace WarpWorld.CrowdControl {
 #pragma warning disable 1591
 #pragma warning disable 1587
         [SerializeField] [HideInInspector] private bool noPooling = false;
-        [SerializeField] [HideInInspector] private bool sellable = false;
+        [SerializeField] [HideInInspector] private bool sellable = true;
         [SerializeField] [HideInInspector] private bool visible = false;
         [SerializeField] [HideInInspector] private Morality morality = Morality.Neutral;
         [SerializeField] [HideInInspector] private Sprite icon;
         [SerializeField] [HideInInspector] private Color iconColor = Color.white;
-        [SerializeField] [HideInInspector] protected string key;
-        [SerializeField] [HideInInspector] protected string displayName;
-        [SerializeField] [HideInInspector] private string description;
+        [SerializeField] [HideInInspector] protected string id;
+        [SerializeField] [HideInInspector] protected string displayName; 
+        [SerializeField] [HideInInspector] private string description; 
         [SerializeField] [HideInInspector] private uint price = 10;
         [Range(0, 60)] [SerializeField] [HideInInspector] private int maxRetries = 3;
         [Range(0, 10)] [SerializeField] [HideInInspector] private float retryDelay = 5;
@@ -32,8 +32,8 @@ namespace WarpWorld.CrowdControl {
         /// <summary>The effect's icon.</summary>
         public virtual Sprite Icon { get { return icon; } }
 
-        /// <summary>The effect's unique key.</summary>
-        public string Key { get { return key; } }
+        /// <summary>The effect's unique id.</summary>
+        public string ID { get { return id; } }
 
         /// <summary>The name of this effect.</summary>
         public virtual string Name { get { return displayName; } }
@@ -90,30 +90,30 @@ namespace WarpWorld.CrowdControl {
         public void ToggleVisible(bool visible)  {
             if (visible) {
                 SendUpdate("menuVisible");
-                visible = true;
+                this.visible = true;
                 return;
             }
 
             SendUpdate("menuHidden");
-            visible = false;
+            this.visible = false;
         }
 
         /// <summary>Updates the price on the effect menu during runtime.</summary>
         public void UpdatePrice(uint newPrice) {
             price = newPrice;
-            ServerMessages.SendPost("menu/effects", null, new JSONEffectChangePrice(key, price), false);
+            ServerMessages.SendPost("menu/effects", null, new JSONEffectChangePrice(id, price), false);
         }
 
         /// <summary>Updates whether this effect is poolable or not.</summary>
         public void UpdateNonPoolable(bool newNonPoolable) {
             noPooling = newNonPoolable;
-            ServerMessages.SendPost("menu/effects", null, new JSONEffectChangeNonPoolable(key, noPooling), false);
+            ServerMessages.SendPost("menu/effects", null, new JSONEffectChangeNonPoolable(id, noPooling), false);
         }
 
         /// <summary>Updates the amount of times you can use this effect during runtime.</summary>
         public void UpdateSessionMax(uint newSessionMax) {
             sessionMax = newSessionMax;
-            ServerMessages.SendPost("menu/effects", null, new JSONEffectChangeSessionMax(key, sessionMax), false);
+            ServerMessages.SendPost("menu/effects", null, new JSONEffectChangeSessionMax(id, sessionMax), false);
         }
 
         /// <summary>Determines whether this effect can be ran right now or not. Overridable</summary>
@@ -142,9 +142,9 @@ namespace WarpWorld.CrowdControl {
         /// <summary>Sets the internal ID of this effect.</summary>
         public string SetIdentifier() {
             Regex rgx = new Regex("[^a-z0-9-]");
-            key = Name.ToLower();
-            key = rgx.Replace(key, "");
-            return key;
+            id = Name.ToLower();
+            id = rgx.Replace(id, "");
+            return id;
         }
 
         private void SendUpdate(string command) {

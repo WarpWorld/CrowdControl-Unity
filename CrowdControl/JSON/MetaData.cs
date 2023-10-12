@@ -4,7 +4,7 @@ using System;
 namespace WarpWorld.CrowdControl {
     [Serializable]
     [Newtonsoft.JsonCC.JsonObject(Title = "meta")]
-    public class MetaData {
+    internal class MetaData {
         [JsonProperty(PropertyName = "platform")]
         public string Platform = "PC";
 

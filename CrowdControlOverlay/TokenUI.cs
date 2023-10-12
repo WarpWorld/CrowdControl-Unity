@@ -30,6 +30,7 @@ namespace WarpWorld.CrowdControl.Overlay {
         [SerializeField] private TokenUIView _disconnectedView;
         [SerializeField] private TokenUIView _needTokenView;
         [SerializeField] private TokenUIView _connectedView;
+
         [SerializeField] private TMP_Text _tokenInputField;
         [SerializeField] private TMP_Text _tokenInstructions;
 

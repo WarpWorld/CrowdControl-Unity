@@ -217,7 +217,7 @@ namespace WarpWorld.CrowdControl.Overlay
             buffPanel.Add(buff, effectInstance, _displayFlags);
         }
 
-        void OnEffectStop(CCEffectInstanceTimed effectInstance) => buffPanel.Remove(effectInstance.effectKey);
+        void OnEffectStop(CCEffectInstanceTimed effectInstance) => buffPanel.Remove(effectInstance.EffectID);
 
         #endregion
     }
