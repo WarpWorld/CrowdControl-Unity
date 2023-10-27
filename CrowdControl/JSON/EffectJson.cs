@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.JsonCC;
 using System;
+using System.Collections.Generic;
 
 namespace WarpWorld.CrowdControl
 {
@@ -18,6 +19,31 @@ namespace WarpWorld.CrowdControl
             {
                 Min = min;
                 Max = max;
+            }
+        }
+
+        internal class Allignment {
+            private Dictionary<uint, float> ServerValue = new Dictionary<uint, float>() {
+                { 0, -0.9f },
+                { 1, -0.6f },
+                { 2, -0.3f },
+                { 3, -0.1f },
+                { 4, 0.0f },
+                { 5, 0.1f },
+                { 6, 0.3f },
+                { 7, 0.6f },
+                { 8, 0.9f }
+            };
+
+            [JsonProperty(PropertyName = "orderliness")]
+            public float Orderliness;
+
+            [JsonProperty(PropertyName = "morality")]
+            public float Morality;
+
+            public Allignment(Orderliness orderliness, Morality morality) {
+                Morality = ServerValue[(uint)morality];
+                Orderliness = ServerValue[(uint)orderliness];
             }
         }
 
@@ -59,8 +85,8 @@ namespace WarpWorld.CrowdControl
         [JsonProperty(PropertyName = "price")]
         private uint? Price = 1;
 
-        [JsonProperty(PropertyName = "moral")]
-        public int Moral;
+        [JsonProperty(PropertyName = "alignment")]
+        public Allignment Alignment;
 
         [JsonProperty(PropertyName = "parameters")]
         public object Parameters;
@@ -74,8 +100,7 @@ namespace WarpWorld.CrowdControl
         /*[JsonProperty(PropertyName = "userCooldown")]
         public TimeSpan? ViewerCooldown;
         */
-        public EffectJSON(CCEffectBase effect)
-        {
+        public EffectJSON(CCEffectBase effect) {
             Inactive = !effect.Sellable;
             Disabled = !effect.Visible;
             Name = effect.Name;
@@ -83,10 +108,7 @@ namespace WarpWorld.CrowdControl
             Description = effect.Description;
             Price = effect.Price;
             NoPooling = effect.NoPooling;
-            Moral = (int)effect.Morality;
-
-            if (Moral == 2)
-                Moral = -1;
+            Alignment = new Allignment(effect.Orderliness, effect.Morality);
 
             //
             //ViewerCooldown = TimeSpan.FromSeconds((double)(new decimal(effect.PendingDelay)));

@@ -13,6 +13,7 @@ namespace WarpWorld.CrowdControl {
         [SerializeField] [HideInInspector] private bool sellable = true;
         [SerializeField] [HideInInspector] private bool visible = false;
         [SerializeField] [HideInInspector] private Morality morality = Morality.Neutral;
+        [SerializeField] [HideInInspector] private Orderliness orderliness = Orderliness.Neutral;
         [SerializeField] [HideInInspector] private Sprite icon;
         [SerializeField] [HideInInspector] private Color iconColor = Color.white;
         [SerializeField] [HideInInspector] protected string id;
@@ -49,6 +50,8 @@ namespace WarpWorld.CrowdControl {
 
         // <summary>Denotes whether this effect intends to help the player, hurt the player, or act as neutral.</summary>
         public Morality Morality { get { return morality; } }
+        // <summary>Denotes whether this effect intends to help the player, hurt the player, or act as neutral.</summary>
+        public Orderliness Orderliness { get { return orderliness; } }
 
         /// <summary>If true, the effect will be inaccessible to everyone but Warp World staff, unless turned off later.</summary>
         public bool Visible { get { return visible; } }

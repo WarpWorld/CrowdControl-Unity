@@ -26,9 +26,10 @@ namespace WarpWorld.CrowdControl {
             AddProperty(ValueType._string, "description", "", 0.0f, 290.0f, 100.0f);
             SetNextOffset(112.5f, true);
 
-            AddPropertyWithSlider(ValueType._int, "maxRetries", "Max Retries", 220.0f, 210.0f, 0, 60);
-            AddEnumField("morality", "Morality Type", 210.0f);
-            
+            AddPropertyWithSlider(ValueType._int, "maxRetries", "Max Retries", 160.0f, 150.0f, 0, 60);
+            AddEnumField("morality", "Morality Type", 125.0f);
+            AddEnumField("orderliness", "Orderliness Type", 125.0f);
+
             NewRow();
             AddPropertyWithSlider(ValueType._float, "retryDelay", "Retry Delay", 220.0f, 210.0f, 0, 10);
             AddPropertyWithSlider(ValueType._float, "pendingDelay", "Pending Delay", 220.0f, 210.0f, 0, 10);

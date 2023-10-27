@@ -300,7 +300,7 @@ namespace WarpWorld.CrowdControl {
 
     internal class JSONEffectChangeNonPoolable : JSONEffectOverride<bool> {
         internal class JSONEffectPriceEntry : JSONEffectOverride<bool>.JSONEffectOverrideEntry {
-            [JsonProperty(PropertyName = "unpoolable")]
+            [JsonProperty(PropertyName = "inactive")]
             public bool m_unPoolable;
 
             public override void Set(string effectID, bool unPoolable) {
