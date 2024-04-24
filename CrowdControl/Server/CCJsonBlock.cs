@@ -28,7 +28,6 @@ namespace WarpWorld.CrowdControl {
 
             foreach (string id in effectList.Keys)  {
                 CCEffectBase effect = effectList[id];
-                CrowdControl.Log(id);
                 EffectJSON effectJSON = new EffectJSON(effect);
 
                 effectString += JSONString(id.ToString(), effectJSON);

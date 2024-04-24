@@ -11,7 +11,7 @@ namespace WarpWorld.CrowdControl {
 #pragma warning disable 1587
         [SerializeField] [HideInInspector] private bool noPooling = false;
         [SerializeField] [HideInInspector] private bool sellable = true;
-        [SerializeField] [HideInInspector] private bool visible = false;
+        [SerializeField] [HideInInspector] private bool visible = true;
         [SerializeField] [HideInInspector] private Morality morality = Morality.Neutral;
         [SerializeField] [HideInInspector] private Orderliness orderliness = Orderliness.Neutral;
         [SerializeField] [HideInInspector] private Sprite icon;

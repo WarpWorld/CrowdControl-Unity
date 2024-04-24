@@ -1,20 +1,20 @@
-﻿using System;
+﻿using Newtonsoft.JsonCC;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Newtonsoft.JsonCC;
-using System.Diagnostics;
-using System.IO;
 
-namespace WarpWorld.CrowdControl {
+namespace WarpWorld.CrowdControl
+{
     /// <summary> The Crowd Control client instance. Handles communications with the server and triggering effects. </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("Crowd Control/Crowd Control Manager")]
     [RequireComponent(typeof(CCEffectEntries))]
     public sealed class CrowdControl : MonoBehaviour {
-        #region Configuration
+        #region Configuration 
 
         [SerializeField] private string _gameName = "Unity Demo";
         [SerializeField] private string _gameID = "UnityDemo";
@@ -261,7 +261,7 @@ namespace WarpWorld.CrowdControl {
         #endregion
 
         /// <summary>Invoked when you log out.</summary>
-        public event Action OnLoggedOut;
+        public event Action OnLoggedOut; 
         /// <summary>Invoked when you log in.</summary>
         public event Action OnLoggedIn;
         /// <summary>Invoked when you subscribe to the server.</summary>
@@ -621,7 +621,8 @@ namespace WarpWorld.CrowdControl {
             Log("Disconnect");
 
             StopGameSession();
-
+            OnDisconnected?.Invoke(); 
+            isConnecting = false;
 #if NET35
             if (wsProxy != null) 
                 wsProxy.CloseMainWindow();
@@ -682,7 +683,7 @@ namespace WarpWorld.CrowdControl {
 
             if (!effectsByID.ContainsKey(effectBase.ID)) {
                 if (effectBase is CCEffectParameters)
-                    (effectBase as CCEffectParameters).RegisterParameters();
+                    (effectBase as CCEffectParameters).RegisterParameters(ccEffectEntries);
 
                 effectsByID.Add(effectBase.ID, effectBase);
             }
@@ -803,7 +804,7 @@ namespace WarpWorld.CrowdControl {
                     connectionID = whoAmI.m_connectionID;
 
                     ProcessWhoAmI();
-                    break;
+                    break; 
                 case "login-success":
                     JSONLoginSuccess loginSuccess = JsonConvert.DeserializeObject<JSONLoginSuccess>(serializedPayload);
                     string userContents = loginSuccess.DecodeToken();

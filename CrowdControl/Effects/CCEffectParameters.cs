@@ -17,11 +17,12 @@ namespace WarpWorld.CrowdControl {
 
         protected abstract EffectResult OnTriggerEffect(CCEffectInstanceParameters effectInstance);
 
-        internal void RegisterParameters() {
+        public override void RegisterParameters(CCEffectEntries effectEntries) {
             ParameterEntries = new Dictionary<string, ParameterEntry>();
 
             foreach (ParameterEntry entry in m_parameterEntries) {
                 entry.SetID(ID);
+                entry.InitOptions();
                 ParameterEntries.Add(entry.ID, entry);
             }
         }

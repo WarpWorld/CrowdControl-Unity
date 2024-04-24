@@ -15,3 +15,4 @@ C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.csproj.CoreCompileInputs.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.dll
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.pdb
+C:\Users\adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.sourcelink.json

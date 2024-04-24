@@ -23,7 +23,7 @@ namespace WarpWorld.CrowdControl {
         public ParameterOption[] Options { get; private set; }
 
         [SerializeField] private Kind m_paramKind;
-        [SerializeField] private string[] m_options;
+        [SerializeField] internal string[] m_options;
         [SerializeField] private uint m_min;
         [SerializeField] private uint m_max;
 
@@ -57,7 +57,7 @@ namespace WarpWorld.CrowdControl {
             ID = parentID + "_" + rgx.Replace(effectID, "");
         }
 
-        private void InitOptions() {
+        internal void InitOptions() {
             if (Options != null)
                 return;
 

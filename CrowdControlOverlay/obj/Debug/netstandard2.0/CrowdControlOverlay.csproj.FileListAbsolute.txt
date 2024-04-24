@@ -17,3 +17,4 @@ C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\netstandard2.0\CrowdControlOverlay.csproj.CoreCompileInputs.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\netstandard2.0\CrowdControlOverlay.dll
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\netstandard2.0\CrowdControlOverlay.pdb
+C:\Users\adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\netstandard2.0\CrowdControlOverlay.sourcelink.json

@@ -22,3 +22,4 @@ C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net35\I
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.csproj.ResolveComReference.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.csproj.AssemblyReference.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.sourcelink.json

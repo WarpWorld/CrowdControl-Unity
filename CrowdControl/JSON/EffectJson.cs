@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.JsonCC;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace WarpWorld.CrowdControl
 {
@@ -117,6 +118,7 @@ namespace WarpWorld.CrowdControl
                 Duration = new DurationProperties((effect as CCEffectTimed).Duration);
             }
             else if (effect is CCEffectParameters) {
+                Regex rgx = new Regex("[^a-z0-9-]");
                 CCEffectParameters paramEffect = effect as CCEffectParameters;
 
                 int paramIndex = 0;
@@ -141,11 +143,11 @@ namespace WarpWorld.CrowdControl
 
                     optionIndex = 0;
 
-                    foreach (ParameterOption option in paramEntry.Options) {
-                        paramList += $"\"{option.ID}\": {{ \"name\": \"{option.Name}\"}}";
+                    foreach (string option in paramEntry.m_options) {
+                        paramList += $"\"{paramEntry.ID + "_" + rgx.Replace(option.ToString().ToLower(), "")}\": {{ \"name\": \"{option}\"}}";
                         optionIndex++;
 
-                        if (optionIndex < paramEntry.Options.Length)
+                        if (optionIndex < paramEntry.m_options.Length)
                             paramList += ", ";
                     }
 

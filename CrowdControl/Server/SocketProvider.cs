@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using WebSocketSharp;
+using WebSocketSharpCC;
 using System.Security.Authentication;
 
 namespace WarpWorld.CrowdControl {

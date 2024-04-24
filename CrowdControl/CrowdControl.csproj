@@ -10,7 +10,7 @@
     <AssemblyName>CrowdControl</AssemblyName>
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	<LangVersion>latest</LangVersion>
-	
+	<NoWarn>$(NoWarn);CS3009</NoWarn>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' != 'net35'">
     <Compile Remove="Newtonsoft.JsonCC\**" />
@@ -31,7 +31,7 @@
     </COMReference>
 	
   </ItemGroup>
-
+  
   <ItemGroup> 
     <!-- <Reference Include="Newtonsoft.Json" Condition="'$(TargetFramework)' == 'net35'">
       <HintPath>..\include\Newtonsoft\net35\Newtonsoft.JsonCC.dll</HintPath>
@@ -51,6 +51,10 @@
     <Reference Include="UnityEngine">
       <HintPath>..\include\UnityEngine.dll</HintPath>
       <Private>false</Private>
+    </Reference>
+	
+    <Reference Include="websocket-sharpCC">
+      <HintPath>..\include\websocket-sharpCC.dll</HintPath>
     </Reference>
   </ItemGroup>
   
@@ -86,14 +90,9 @@
   
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
 	<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-	<PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "3L7ErXCc114kj61n/2XWB1koUfdPiqXbvzQWw/7rd2FpkdzspQ/XgUYF7+z6dmXRXKxkrQZjt1sg8HWQkw4o7A==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\adam\\Desktop\\CC-Unity\\CrowdControl-Unity\\CrowdControlOverlay\\CrowdControlOverlay.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\adam\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\adam\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

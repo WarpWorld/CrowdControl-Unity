@@ -32,6 +32,7 @@ namespace WarpWorld.CrowdControl {
 #else
             url = gameSession ? string.Format("{0}game-session/{1}", OpenApiURL, postType) : string.Format("{0}{1}", OpenApiURL, postType);
 #endif
+            CrowdControl.Log(url);
 
             string jsonString = json != null ? JsonConvert.SerializeObject(json) : string.Empty;
 

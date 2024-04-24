@@ -31,3 +31,4 @@ C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\n
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\netstandard2.0\CrowdControlEditor.pdb
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\netstandard2.0\CrowdControlEditor.csproj.AssemblyReference.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\netstandard2.0\CrowdControlEditor.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\netstandard2.0\CrowdControlEditor.sourcelink.json
