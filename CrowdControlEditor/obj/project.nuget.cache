@@ -1,12 +1,19 @@
 {
   "version": 2,
-  "dgSpecHash": "A9j+FgT0lgIpKo+VnOWGHaBOJDN/4QNw+Rfy28W7RdXmzbHuz+NaxIiUIzxNKAWcBpNoJssYpcNp8PPqfOMvgQ==",
+  "dgSpecHash": "A22Bn4PKi/7iuWjQ8tircjg8Sgwa96pI8D8QyCm4pmdTqE3VMqR/SjJAhfiTgCgeeosVc1B8gcwyJ8tpJt6ikA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\adam\\Desktop\\CC-Unity\\CrowdControl-Unity\\CrowdControlEditor\\CrowdControlEditor.csproj",
+  "projectFilePath": "F:\\CrowdControl-Unity\\CrowdControlEditor\\CrowdControlEditor.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\adam\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
-    "C:\\Users\\adam\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512",
-    "C:\\Users\\adam\\.nuget\\packages\\websocketsharp\\1.0.3-rc11\\websocketsharp.1.0.3-rc11.nupkg.sha512"
+    "C:\\Users\\jakub\\.nuget\\packages\\asyncbridge\\0.3.1\\asyncbridge.0.3.1.nupkg.sha512",
+    "C:\\Users\\jakub\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\jakub\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\jakub\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.3\\microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
+    "C:\\Users\\jakub\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net35\\1.0.3\\microsoft.netframework.referenceassemblies.net35.1.0.3.nupkg.sha512",
+    "C:\\Users\\jakub\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net45\\1.0.3\\microsoft.netframework.referenceassemblies.net45.1.0.3.nupkg.sha512",
+    "C:\\Users\\jakub\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512",
+    "C:\\Users\\jakub\\.nuget\\packages\\taskparallellibrary\\1.0.2856\\taskparallellibrary.1.0.2856.nupkg.sha512",
+    "C:\\Users\\jakub\\.nuget\\packages\\valuetuplebridge\\0.1.5\\valuetuplebridge.0.1.5.nupkg.sha512",
+    "C:\\Users\\jakub\\.nuget\\packages\\websocketsharp\\1.0.3-rc11\\websocketsharp.1.0.3-rc11.nupkg.sha512"
   ],
   "logs": [
     {

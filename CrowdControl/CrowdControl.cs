@@ -294,7 +294,7 @@ namespace WarpWorld.CrowdControl
             ccEffectEntries = gameObject.GetComponent<CCEffectEntries>();
 
             crowdUser = new StreamUser("The Crowd", _crowdUserIcon);
-            anonymousUser = new StreamUser("Anonymous", _tempUserIcon);
+            anonymousUser = new StreamUser("A Ghost", _tempUserIcon);
             basicUser = new StreamUser("User", _tempUserIcon);
 
             streamUsers.Add(crowdUser.name, crowdUser);
@@ -772,7 +772,7 @@ namespace WarpWorld.CrowdControl
         private void EffectRequestProcess(string serializedPayload) {
             JSONEffectRequest effectRequest = JsonConvert.DeserializeObject<JSONEffectRequest>(serializedPayload);
             CCEffectBase effect = effectsByID[effectRequest.m_effectRequest.m_effect.m_effectID];
-            QueueEffect(effect, effectRequest.m_effectRequest.m_requester, effectRequest.m_effectRequest.m_requestID, effectRequest.m_effectRequest.m_isTest, effectRequest.m_effectRequest.m_parameters);
+            QueueEffect(effect, effectRequest.m_effectRequest.m_requester, effectRequest.m_effectRequest.m_requestID, effectRequest.m_effectRequest.m_isTest, effectRequest.m_effectRequest.m_anonymous,  effectRequest.m_effectRequest.m_parameters);
             OnEffectRequest?.Invoke(effect);
         }
 
@@ -846,7 +846,7 @@ namespace WarpWorld.CrowdControl
                     }
 
                     CCEffectBase effect = effectsByID[effectRequest.m_effect.m_effectID];
-                    QueueEffect(effect, effectRequest.m_requester, effectRequest.m_requestID, effectRequest.m_isTest, effectRequest.m_parameters);
+                    QueueEffect(effect, effectRequest.m_requester, effectRequest.m_requestID, effectRequest.m_isTest, effectRequest.m_anonymous, effectRequest.m_parameters);
                     OnEffectRequest?.Invoke(effect);
                     break;
             }
@@ -881,7 +881,7 @@ namespace WarpWorld.CrowdControl
                 }
             }
 
-            StartCoroutine(DownloadUserInfo(effect, null, (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalMilliseconds.ToString(), true, parameters));
+            StartCoroutine(DownloadUserInfo(effect, null, (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalMilliseconds.ToString(), true, false, parameters));
         }
 
         /// <summary>Test an effect remotely.</summary>
@@ -895,9 +895,9 @@ namespace WarpWorld.CrowdControl
         }
 
         // Allocates an effect instance and add it to the pending list.
-        private void QueueEffect(CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, bool test, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null) {
+        private void QueueEffect(CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, bool test, bool anonymous, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null) {
             Assert.IsTrue(isActiveAndEnabled);
-            StartCoroutine(DownloadUserInfo(effect, request, requestID, test, parameters));
+            StartCoroutine(DownloadUserInfo(effect, request, requestID, test, anonymous, parameters));
         }
 
         private IEnumerator InstantiateViewer(StreamUser displayUser, string userName) {
@@ -905,10 +905,10 @@ namespace WarpWorld.CrowdControl
             yield return StartCoroutine(displayUser.DownloadSprite());
         } 
 
-        private IEnumerator DownloadUserInfo(CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, bool test, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null) {
+        private IEnumerator DownloadUserInfo(CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, bool test, bool anonymous, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null) {
             StreamUser displayUser = null;
 
-            if (!test) {
+            if (!test && !anonymous) {
                 string userName = request.m_name;
 
                 if (!streamUsers.ContainsKey(userName)) {

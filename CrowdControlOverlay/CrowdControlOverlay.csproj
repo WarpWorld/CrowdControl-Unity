@@ -1,10 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net45;netstandard2.0</TargetFrameworks>
-	<DefineConstants Condition="'$(TargetFramework)' == 'net35'">NET35</DefineConstants>
+    <TargetFrameworks>net45</TargetFrameworks>
 	<DefineConstants Condition="'$(TargetFramework)' == 'net45'">NET45</DefineConstants>
-	<DefineConstants Condition="'$(TargetFramework)' == 'netstandard2.0'">NETSTANDARD20</DefineConstants>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net35|AnyCPU'">
@@ -44,6 +42,9 @@
       <HintPath>..\Unity_Net_Standard\Assets\WarpWorld\Managed\netstandard2.0\CrowdControl.dll</HintPath>
       <Private>false</Private>
     </Reference>
+	<Reference Include="Unity.TextMeshPro">
+	  <HintPath>C:\Users\jakub\Downloads\CrowdControl-Unity-main\Unity_Net_45\Assets\WarpWorld\Managed\net45\Unity.TextMeshPro.dll</HintPath>
+	</Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\include\UnityEngine.dll</HintPath>
       <Private>false</Private>

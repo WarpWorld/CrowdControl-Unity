@@ -107,6 +107,9 @@ namespace WarpWorld.CrowdControl {
             [JsonProperty(PropertyName = "requester")]
             public JSONUser m_requester;
 
+            [JsonProperty(PropertyName = "anonymous")]
+            public bool m_anonymous;
+
             [JsonProperty(PropertyName = "game")]
             public JSONGame m_game;
 

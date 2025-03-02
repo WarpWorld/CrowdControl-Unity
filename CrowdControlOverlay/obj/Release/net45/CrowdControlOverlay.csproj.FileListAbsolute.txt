@@ -1,0 +1,11 @@
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\net45\CrowdControlOverlay.csproj.AssemblyReference.cache
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\net45\CrowdControlOverlay.GeneratedMSBuildEditorConfig.editorconfig
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\net45\CrowdControlOverlay.AssemblyInfoInputs.cache
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\net45\CrowdControlOverlay.AssemblyInfo.cs
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\net45\CrowdControlOverlay.csproj.CoreCompileInputs.cache
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\net45\CrowdControlOverlay.sourcelink.json
+F:\CrowdControl-Unity\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControlOverlay.dll
+F:\CrowdControl-Unity\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControlOverlay.pdb
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\net45\CrowdControlOverlay.csproj.CopyComplete
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\net45\CrowdControlOverlay.dll
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\net45\CrowdControlOverlay.pdb

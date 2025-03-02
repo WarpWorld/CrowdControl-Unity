@@ -34,6 +34,10 @@
   <ItemGroup>
     <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\CrowdControl\CrowdControl.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="CrowdControl" Condition="'$(TargetFramework)' == 'net35'">
@@ -44,6 +48,9 @@
     </Reference>
     <Reference Include="CrowdControl" Condition="'$(TargetFramework)' == 'netstandard2.0'">
       <HintPath>..\Unity_Net_Standard\Assets\WarpWorld\Managed\netstandard2.0\CrowdControl.dll</HintPath>
+    </Reference>
+    <Reference Include="CrowdControl.Common">
+      <HintPath>..\include\CrowdControl.Common.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor">
       <HintPath>..\include\UnityEditor.dll</HintPath>

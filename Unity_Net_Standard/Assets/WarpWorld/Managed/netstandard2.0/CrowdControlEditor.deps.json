@@ -1,0 +1,120 @@
+{
+  "runtimeTarget": {
+    "name": ".NETStandard,Version=v2.0/",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETStandard,Version=v2.0": {},
+    ".NETStandard,Version=v2.0/": {
+      "CrowdControlEditor/1.0.0": {
+        "dependencies": {
+          "CrowdControl": "1.0.0",
+          "NETStandard.Library": "2.0.3",
+          "WebSocketSharp": "1.0.3-rc11",
+          "CrowdControl.Common": "5.0.8685.21873",
+          "CrowdControl.Reference": "0.0.0.0"
+        },
+        "runtime": {
+          "CrowdControlEditor.dll": {}
+        }
+      },
+      "Microsoft.CSharp/4.7.0": {
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.CSharp.dll": {
+            "assemblyVersion": "4.0.5.0",
+            "fileVersion": "4.700.19.56404"
+          }
+        }
+      },
+      "Microsoft.NETCore.Platforms/1.1.0": {},
+      "NETStandard.Library/2.0.3": {
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "1.1.0"
+        }
+      },
+      "WebSocketSharp/1.0.3-rc11": {
+        "runtime": {
+          "lib/websocket-sharp.dll": {
+            "assemblyVersion": "1.0.2.59611",
+            "fileVersion": "1.0.2.59611"
+          }
+        }
+      },
+      "CrowdControl.Common/5.0.8685.21873": {
+        "runtime": {
+          "CrowdControl.Common.dll": {
+            "assemblyVersion": "5.0.8685.21873",
+            "fileVersion": "5.0.8685.21873"
+          }
+        }
+      },
+      "CrowdControl.Reference/0.0.0.0": {
+        "runtime": {
+          "CrowdControl.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "websocket-sharpCC/1.0.2.59611": {
+        "runtime": {
+          "websocket-sharpCC.dll": {
+            "assemblyVersion": "1.0.2.59611",
+            "fileVersion": "1.0.2.59611"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "CrowdControlEditor/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.CSharp/4.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA==",
+      "path": "microsoft.csharp/4.7.0",
+      "hashPath": "microsoft.csharp.4.7.0.nupkg.sha512"
+    },
+    "Microsoft.NETCore.Platforms/1.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A==",
+      "path": "microsoft.netcore.platforms/1.1.0",
+      "hashPath": "microsoft.netcore.platforms.1.1.0.nupkg.sha512"
+    },
+    "NETStandard.Library/2.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-st47PosZSHrjECdjeIzZQbzivYBJFv6P2nv4cj2ypdI204DO+vZ7l5raGMiX4eXMJ53RfOIg+/s4DHVZ54Nu2A==",
+      "path": "netstandard.library/2.0.3",
+      "hashPath": "netstandard.library.2.0.3.nupkg.sha512"
+    },
+    "WebSocketSharp/1.0.3-rc11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7VCF7f7zVMOvLGD8LeGS4DVXc8lOcB6kXnUMeTxigu+PMiU+6wW5Olq2gYrDU8vDRKOwFY+5RyBaLyzb8skEzA==",
+      "path": "websocketsharp/1.0.3-rc11",
+      "hashPath": "websocketsharp.1.0.3-rc11.nupkg.sha512"
+    },
+    "CrowdControl.Common/5.0.8685.21873": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CrowdControl.Reference/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "websocket-sharpCC/1.0.2.59611": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

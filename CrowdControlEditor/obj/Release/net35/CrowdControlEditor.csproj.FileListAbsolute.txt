@@ -7,3 +7,14 @@ C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Release\net35\Cro
 C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Release\net35\CrowdControlEditor.csproj.CopyComplete
 C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Release\net35\CrowdControlEditor.dll
 C:\Users\Adam\source\repos\CrowdControl\CrowdControlEditor\obj\Release\net35\CrowdControlEditor.pdb
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Release\net35\CrowdControlEditor.csproj.AssemblyReference.cache
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Release\net35\CrowdControlEditor.GeneratedMSBuildEditorConfig.editorconfig
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Release\net35\CrowdControlEditor.AssemblyInfoInputs.cache
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Release\net35\CrowdControlEditor.AssemblyInfo.cs
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Release\net35\CrowdControlEditor.csproj.CoreCompileInputs.cache
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Release\net35\CrowdControlEditor.sourcelink.json
+F:\CrowdControl-Unity\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControlEditor.dll
+F:\CrowdControl-Unity\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControlEditor.pdb
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Release\net35\CrowdControlEditor.csproj.CopyComplete
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Release\net35\CrowdControlEditor.dll
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Release\net35\CrowdControlEditor.pdb
