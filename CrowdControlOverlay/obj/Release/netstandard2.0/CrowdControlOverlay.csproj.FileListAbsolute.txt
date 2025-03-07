@@ -1,6 +1,0 @@
-F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\netstandard2.0\CrowdControlOverlay.csproj.AssemblyReference.cache
-F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\netstandard2.0\CrowdControlOverlay.GeneratedMSBuildEditorConfig.editorconfig
-F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\netstandard2.0\CrowdControlOverlay.AssemblyInfoInputs.cache
-F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\netstandard2.0\CrowdControlOverlay.AssemblyInfo.cs
-F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\netstandard2.0\CrowdControlOverlay.csproj.CoreCompileInputs.cache
-F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\netstandard2.0\CrowdControlOverlay.sourcelink.json
