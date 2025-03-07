@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CrowdControlEditor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8073bc18b403d37c215a6db88e6364dc17a6dd4c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+35bd748308188ab03e7a5a9e8a8623148b60ce9d")]
 [assembly: System.Reflection.AssemblyProductAttribute("CrowdControlEditor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CrowdControlEditor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

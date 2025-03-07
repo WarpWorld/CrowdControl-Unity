@@ -16,3 +16,14 @@ C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.dll
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.pdb
 C:\Users\adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.sourcelink.json
+F:\CrowdControl-Unity\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControlOverlay.dll
+F:\CrowdControl-Unity\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControlOverlay.pdb
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.csproj.AssemblyReference.cache
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.GeneratedMSBuildEditorConfig.editorconfig
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.AssemblyInfoInputs.cache
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.AssemblyInfo.cs
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.csproj.CoreCompileInputs.cache
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.sourcelink.json
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdCon.3FC73FBD.Up2Date
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.dll
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Debug\net45\CrowdControlOverlay.pdb

@@ -26,3 +26,14 @@ C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\n
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.csproj.AssemblyReference.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.sourcelink.json
+F:\CrowdControl-Unity\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControlEditor.dll
+F:\CrowdControl-Unity\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControlEditor.pdb
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.csproj.AssemblyReference.cache
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.GeneratedMSBuildEditorConfig.editorconfig
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.AssemblyInfoInputs.cache
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.AssemblyInfo.cs
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.csproj.CoreCompileInputs.cache
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.sourcelink.json
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net45\CrowdCon.8FFAA9EB.Up2Date
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.dll
+F:\CrowdControl-Unity\CrowdControlEditor\obj\Debug\net45\CrowdControlEditor.pdb

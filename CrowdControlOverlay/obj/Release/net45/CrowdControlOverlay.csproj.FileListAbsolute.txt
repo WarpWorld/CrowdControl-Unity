@@ -6,6 +6,6 @@ F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\net45\CrowdControlOverlay.
 F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\net45\CrowdControlOverlay.sourcelink.json
 F:\CrowdControl-Unity\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControlOverlay.dll
 F:\CrowdControl-Unity\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControlOverlay.pdb
-F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\net45\CrowdControlOverlay.csproj.CopyComplete
 F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\net45\CrowdControlOverlay.dll
 F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\net45\CrowdControlOverlay.pdb
+F:\CrowdControl-Unity\CrowdControlOverlay\obj\Release\net45\CrowdCon.3FC73FBD.Up2Date

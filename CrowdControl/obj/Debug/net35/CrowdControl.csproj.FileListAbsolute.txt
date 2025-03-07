@@ -23,3 +23,14 @@ C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net35\C
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.csproj.AssemblyReference.cache
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.sourcelink.json
+F:\CrowdControl-Unity\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControl.dll
+F:\CrowdControl-Unity\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControl.pdb
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.csproj.AssemblyReference.cache
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net35\Interop.WinHttp.dll
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.csproj.ResolveComReference.cache
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.GeneratedMSBuildEditorConfig.editorconfig
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.csproj.CoreCompileInputs.cache
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.sourcelink.json
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdCon.9616B4C4.Up2Date
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.dll
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net35\CrowdControl.pdb

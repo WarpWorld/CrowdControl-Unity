@@ -19,3 +19,14 @@ C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net45\C
 C:\Users\Adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdControl.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdControl.sourcelink.json
 C:\Users\adam\Desktop\CC-Unity\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdControl.csproj.CopyComplete
+F:\CrowdControl-Unity\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControl.dll
+F:\CrowdControl-Unity\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControl.pdb
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdControl.csproj.AssemblyReference.cache
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net45\Interop.WinHttp.dll
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdControl.csproj.ResolveComReference.cache
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdControl.GeneratedMSBuildEditorConfig.editorconfig
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdControl.csproj.CoreCompileInputs.cache
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdControl.sourcelink.json
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdCon.9616B4C4.Up2Date
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdControl.dll
+F:\CrowdControl-Unity\CrowdControl\obj\Debug\net45\CrowdControl.pdb
