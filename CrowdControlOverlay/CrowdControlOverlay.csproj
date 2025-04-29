@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net45</TargetFrameworks>
+    <LangVersion>preview</LangVersion>
 	<DefineConstants Condition="'$(TargetFramework)' == 'net45'">NET45</DefineConstants>
   </PropertyGroup>
   

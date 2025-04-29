@@ -11,7 +11,7 @@ namespace WarpWorld.CrowdControl.Overlay
         protected RectTransform timeBarParent;
         protected RectTransform contentContainer;
         protected Image timeBarImage;
-        protected const float TIME_BAR_WIDTH = 80f; // Adjust this value as needed
+        protected const float TIME_BAR_WIDTH = 40f; // Adjust this value as needed
         private bool initialized = false;
 
         protected internal abstract void UpdateEffectTimer();
@@ -77,7 +77,7 @@ namespace WarpWorld.CrowdControl.Overlay
                 Debug.LogError("TimeBar has no parent!");
                 return;
             }
-
+            
             contentContainer = transform.Find("Content") as RectTransform;
             timeBarImage = timeBar.GetComponent<Image>();
 
