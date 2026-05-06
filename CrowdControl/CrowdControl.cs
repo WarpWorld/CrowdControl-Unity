@@ -35,10 +35,12 @@ namespace WarpWorld.CrowdControl
 #pragma warning disable 0169
         [SerializeField] private Sprite _tempUserIcon;
         [SerializeField] private Sprite _crowdUserIcon;
+        [SerializeField] private Sprite _ghostUserIcon;
         [SerializeField] private Sprite _errorUserIcon;
 
         [SerializeField] private Color _tempUserColor;
         [SerializeField] private Color _crowdUserColor;
+        [SerializeField] private Color _ghostUserColor;
         [SerializeField] private Color _errorUserColor;
 #pragma warning restore 0169
         [Range(0, 10)] [SerializeField] private float delayBetweenEffects = .5f;
@@ -74,11 +76,26 @@ namespace WarpWorld.CrowdControl
         /// <summary>Reference to the crowd user object. Used to dispatch effects with an unknown contributor.</summary>
         public static StreamUser anonymousUser { get; private set; }
 
+        /// <summary>Shown when <c>anonymous: true</c> on an effect request (display name &quot;A Ghost&quot;).</summary>
+        public static StreamUser ghostUser { get; private set; }
+
         /// <summary>Reference to the streamer user object.</summary>
         public static StreamUser basicUser { get; private set; }
 
         /// <summary>Unique ID Identifier for this game.</summary>
         public static string GameID { get { return instance._gameID; } }
+
+        /// <summary>User-Agent sent with Crowd Control OpenAPI (<c>HttpWebRequest</c>) calls.</summary>
+        public static string BuildClientUserAgent() {
+            return string.Format(
+                System.Globalization.CultureInfo.InvariantCulture,
+                "CrowdControl-Unity/{0} Unity/{1} ({2}; {3})",
+                Application.version,
+                Application.unityVersion,
+                Application.productName,
+                SystemInfo.deviceType
+            );
+        }
 
         /// <summary>Start the game session as soon as your login is verified.</summary>
         public static bool StartSessionAutomatically { get; private set; }
@@ -296,10 +313,12 @@ namespace WarpWorld.CrowdControl
             crowdUser = new StreamUser("The Crowd", _crowdUserIcon);
             anonymousUser = new StreamUser("Anonymous", _tempUserIcon);
             basicUser = new StreamUser("User", _tempUserIcon);
+            ghostUser = new StreamUser("A Ghost", _ghostUserIcon != null ? _ghostUserIcon : _tempUserIcon);
 
             streamUsers.Add(crowdUser.name, crowdUser);
             streamUsers.Add(anonymousUser.name, anonymousUser);
             streamUsers.Add(basicUser.name, basicUser);
+            streamUsers.Add(ghostUser.name, ghostUser);
 
             Assert.IsNull(instance);
             instance = this;
@@ -345,6 +364,7 @@ namespace WarpWorld.CrowdControl
 
             testUser = null;
             crowdUser = null;
+            ghostUser = null;
 
             pendingQueue = null;
             runningEffects = null;
@@ -694,8 +714,8 @@ namespace WarpWorld.CrowdControl
 
         private IEnumerator DisplayMessageWithIcon(string message, float displayTime = 5.0f) {
             yield return new WaitUntil(() => Application.isPlaying);
-            yield return new WaitUntil(() => Streamer != null && Streamer.profileIcon != null);
-            OnDisplayMessage?.Invoke(message, displayTime, Streamer.profileIcon);
+            // Session toasts do not use the streamer avatar; overlay hides icons by default unless enabled in DisplayFlags.
+            OnDisplayMessage?.Invoke(message, displayTime, null);
         }
 
         /// <summary>Bring up the menu in a web browser.</summary>
@@ -710,6 +730,12 @@ namespace WarpWorld.CrowdControl
 
         private void LoginPlatform(string platform) {
             string url = string.Format("{0}?platform={1}&connectionID={2}", AuthURL, platform, connectionID);
+            Application.OpenURL(url);
+        }
+
+        /// <summary>Open Crowd Control sign-in so the user can pick Twitch, YouTube, or Discord on the auth page.</summary>
+        public void LoginWithCrowdControl() {
+            string url = string.Format("{0}?connectionID={1}", AuthURL, connectionID);
             Application.OpenURL(url);
         }
 
@@ -771,8 +797,10 @@ namespace WarpWorld.CrowdControl
 
         private void EffectRequestProcess(string serializedPayload) {
             JSONEffectRequest effectRequest = JsonConvert.DeserializeObject<JSONEffectRequest>(serializedPayload);
-            CCEffectBase effect = effectsByID[effectRequest.m_effectRequest.m_effect.m_effectID];
-            QueueEffect(effect, effectRequest.m_effectRequest.m_requester, effectRequest.m_effectRequest.m_requestID, effectRequest.m_effectRequest.m_isTest, effectRequest.m_effectRequest.m_parameters);
+            var body = effectRequest.m_effectRequest;
+            NormalizeEffectRequestBody(body);
+            CCEffectBase effect = effectsByID[body.m_effect.m_effectID];
+            QueueEffect(effect, body.m_requester, body.m_requestID, body.m_isTest, body.m_parameters, body.m_anonymous);
             OnEffectRequest?.Invoke(effect);
         }
 
@@ -836,17 +864,13 @@ namespace WarpWorld.CrowdControl
                 case "effect-request":
                     JSONEffectRequest.JSONEffectBody effectRequest = JsonConvert.DeserializeObject<JSONEffectRequest.JSONEffectBody>(serializedPayload);
 
-                    if (effectInstanceIDs.Contains(effectRequest.m_effect.m_effectID))
+                    if (effectInstanceIDs.Contains(effectRequest.m_requestID))
                         return;
 
-                    if (effectRequest.m_parameters == null && effectRequest.m_quantity > 0) {
-                        effectRequest.m_parameters = new Dictionary<string, JSONEffectRequest.JSONParameterEntry>();
-                        effectRequest.m_parameters.Add("quantity", new JSONEffectRequest.JSONParameterEntry());
-                        effectRequest.m_parameters["quantity"].m_value = effectRequest.m_quantity.ToString();
-                    }
+                    NormalizeEffectRequestBody(effectRequest);
 
                     CCEffectBase effect = effectsByID[effectRequest.m_effect.m_effectID];
-                    QueueEffect(effect, effectRequest.m_requester, effectRequest.m_requestID, effectRequest.m_isTest, effectRequest.m_parameters);
+                    QueueEffect(effect, effectRequest.m_requester, effectRequest.m_requestID, effectRequest.m_isTest, effectRequest.m_parameters, effectRequest.m_anonymous);
                     OnEffectRequest?.Invoke(effect);
                     break;
             }
@@ -894,10 +918,26 @@ namespace WarpWorld.CrowdControl
             jsonQueue.Enqueue(json);
         }
 
+        /// <summary>Ensures quantity from the server is available as a parameter entry (pooled / newer payloads often send <c>quantity</c> with an empty parameters object).</summary>
+        private static void NormalizeEffectRequestBody(JSONEffectRequest.JSONEffectBody effectRequest) {
+            if (effectRequest.m_quantity <= 0)
+                return;
+
+            if (effectRequest.m_parameters == null)
+                effectRequest.m_parameters = new Dictionary<string, JSONEffectRequest.JSONParameterEntry>();
+
+            if (effectRequest.m_parameters.ContainsKey("quantity"))
+                return;
+
+            effectRequest.m_parameters["quantity"] = new JSONEffectRequest.JSONParameterEntry {
+                m_value = effectRequest.m_quantity.ToString(),
+            };
+        }
+
         // Allocates an effect instance and add it to the pending list.
-        private void QueueEffect(CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, bool test, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null) {
+        private void QueueEffect(CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, bool test, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null, bool anonymousRequest = false) {
             Assert.IsTrue(isActiveAndEnabled);
-            StartCoroutine(DownloadUserInfo(effect, request, requestID, test, parameters));
+            StartCoroutine(DownloadUserInfo(effect, request, requestID, test, parameters, anonymousRequest));
         }
 
         private IEnumerator InstantiateViewer(StreamUser displayUser, string userName) {
@@ -905,17 +945,25 @@ namespace WarpWorld.CrowdControl
             yield return StartCoroutine(displayUser.DownloadSprite());
         } 
 
-        private IEnumerator DownloadUserInfo(CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, bool test, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null) {
+        private IEnumerator DownloadUserInfo(CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, bool test, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null, bool anonymousRequest = false) {
             StreamUser displayUser = null;
 
             if (!test) {
-                string userName = request.m_name;
-
-                if (!streamUsers.ContainsKey(userName)) {
-                    displayUser = new StreamUser(request);
-                    yield return StartCoroutine(InstantiateViewer(displayUser, userName));
+                if (anonymousRequest) {
+                    displayUser = ghostUser;
+                    yield return null;
+                } else if (request == null || string.IsNullOrEmpty(request.m_name)) {
+                    displayUser = crowdUser;
+                    yield return null;
                 } else {
-                    displayUser = streamUsers[userName];
+                    string userName = request.m_name;
+
+                    if (!streamUsers.ContainsKey(userName)) {
+                        displayUser = new StreamUser(request);
+                        yield return StartCoroutine(InstantiateViewer(displayUser, userName));
+                    } else {
+                        displayUser = streamUsers[userName];
+                    }
                 }
             } else {
                 displayUser = anonymousUser;
@@ -1038,6 +1086,7 @@ namespace WarpWorld.CrowdControl
                     break;
                 case EffectResult.Queue:
                     Assert.IsNotNull(timedEffectInstance);
+                    dequeue = false;
                     break;
                 case EffectResult.Retry:
                     RetryStartEffect(effect, effectInstance, ref dequeue, ref result);

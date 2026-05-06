@@ -122,6 +122,9 @@ namespace WarpWorld.CrowdControl {
             [JsonProperty(PropertyName = "isTest")]
             public bool m_isTest;
 
+            [JsonProperty(PropertyName = "anonymous")]
+            public bool m_anonymous;
+
             [JsonProperty(PropertyName = "parameters")]
             public Dictionary<string, JSONParameterEntry> m_parameters;
 

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using TMPro;
 
 namespace WarpWorld.CrowdControl.Overlay {
     [AddComponentMenu("Crowd Control/Message UI")]
@@ -21,11 +20,7 @@ namespace WarpWorld.CrowdControl.Overlay {
 
         [SerializeField] private Image icon;
 
-#if NET35
         [SerializeField] private Text content;
-#else
-        [SerializeField] private TMP_Text content;
-#endif
         [SerializeField] private GameObject container;
         [SerializeField] private GameObject iconContainer;
         [SerializeField] private CanvasGroup canvasGroup;
@@ -73,10 +68,11 @@ namespace WarpWorld.CrowdControl.Overlay {
 
             bool hasIcon = messageEntry.sprite != null;
 
+            if (iconContainer != null)
+                iconContainer.SetActive(hasIcon);
+
             if (hasIcon)
                 icon.sprite = messageEntry.sprite;
-
-            //iconContainer.gameObject.SetActive(hasIcon);
         }
 
         private void ClearMessage() {

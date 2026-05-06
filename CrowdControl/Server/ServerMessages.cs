@@ -8,6 +8,12 @@ using System.Collections.Generic;
 
 namespace WarpWorld.CrowdControl {
     public static class ServerMessages {
+
+        internal static void ApplyClientHttpHeaders(HttpWebRequest request) {
+            request.UserAgent = CrowdControl.BuildClientUserAgent();
+            if (CrowdControl.instance != null && !string.IsNullOrEmpty(CrowdControl.GameID))
+                request.Headers.Add("X-GameID", CrowdControl.GameID);
+        }
         
         public static string OpenApiURL {
             get {
@@ -36,23 +42,24 @@ namespace WarpWorld.CrowdControl {
 
             string jsonString = json != null ? JsonConvert.SerializeObject(json) : string.Empty;
 
-            WebRequest request = WebRequest.Create(url);
-            request.Method = "POST";
-            request.Headers.Add("Authorization", "cc-auth-token " + CrowdControl.instance.CurrentUserHash);
+            HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(url);
+            ApplyClientHttpHeaders(httpRequest);
+            httpRequest.Method = "POST";
+            httpRequest.Headers.Add("Authorization", "cc-auth-token " + CrowdControl.instance.CurrentUserHash);
 
             byte[] jsonBytes = Encoding.UTF8.GetBytes(jsonString);
 
-            request.ContentType = "application/json";
-            request.ContentLength = jsonBytes.Length;
+            httpRequest.ContentType = "application/json";
+            httpRequest.ContentLength = jsonBytes.Length;
 
-            using (Stream requestStream = request.GetRequestStream()) {
+            using (Stream requestStream = httpRequest.GetRequestStream()) {
                 requestStream.Write(jsonBytes, 0, jsonBytes.Length);
             }
 
             CrowdControl.sendingPost = true;
             CrowdControl.Log("SENT: " + jsonString);
 
-            GetResponseAsync(request, callback, postType);
+            GetResponseAsync(httpRequest, callback, postType);
         }
 
         private static void GetResponseAsync(WebRequest request, Action<string> callback, string postType) {
@@ -97,6 +104,7 @@ namespace WarpWorld.CrowdControl {
 #endif
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            ApplyClientHttpHeaders(request);
             request.Method = "GET";
             request.Headers.Add("Authorization", "cc-auth-token " + CrowdControl.instance.CurrentUserHash);
 

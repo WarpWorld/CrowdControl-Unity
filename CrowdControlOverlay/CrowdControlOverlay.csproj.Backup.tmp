@@ -1,50 +1,51 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net45;netstandard2.1</TargetFrameworks>
-    <DefineConstants Condition="'$(TargetFramework)' == 'net35'">NET35</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)' == 'net45'">NET45</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)' == 'netstandard2.1'">NETSTANDARD21</DefineConstants>
+    <TargetFrameworks>net35;net45;netstandard2.0</TargetFrameworks>
+	<DefineConstants Condition="'$(TargetFramework)' == 'net35'">NET35</DefineConstants>
+	<DefineConstants Condition="'$(TargetFramework)' == 'net45'">NET45</DefineConstants>
+	<DefineConstants Condition="'$(TargetFramework)' == 'netstandard2.0'">NETSTANDARD20</DefineConstants>
   </PropertyGroup>
-
+  
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net35|AnyCPU'">
     <OutputPath>..\Unity_Net_35\Assets\WarpWorld\Managed\</OutputPath>
   </PropertyGroup>
-
+  
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
     <OutputPath>..\Unity_Net_45\Assets\WarpWorld\Managed\</OutputPath>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.1|AnyCPU'">
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <OutputPath>..\Unity_Net_Standard\Assets\WarpWorld\Managed\</OutputPath>
   </PropertyGroup>
-
+  
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net35|AnyCPU'">
     <OutputPath>..\Unity_Net_35\Assets\WarpWorld\Managed\</OutputPath>
   </PropertyGroup>
-
+  
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
     <OutputPath>..\Unity_Net_45\Assets\WarpWorld\Managed\</OutputPath>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.1|AnyCPU'">
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
     <OutputPath>..\Unity_Net_Standard\Assets\WarpWorld\Managed\</OutputPath>
   </PropertyGroup>
-
+  
   <ItemGroup>
-    <Reference Include="CrowdControl" Condition="'$(TargetFramework)' == 'net35'">
-      <HintPath>..\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControl.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="CrowdControl" Condition="'$(TargetFramework)' == 'net45'">
+	<Reference Include="CrowdControl" Condition="'$(TargetFramework)' == 'net45'">
       <HintPath>..\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControl.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="CrowdControl" Condition="'$(TargetFramework)' == 'netstandard2.1'">
+	<Reference Include="CrowdControl" Condition="'$(TargetFramework)' == 'netstandard2.0'">
       <HintPath>..\Unity_Net_Standard\Assets\WarpWorld\Managed\netstandard2.0\CrowdControl.dll</HintPath>
       <Private>false</Private>
     </Reference>
-
+	<Reference Include="CrowdControl">
+	  <HintPath>..\Unity_Net_35\Assets\WarpWorld\Managed\net35\CrowdControl.dll</HintPath>
+	</Reference>
+	<Reference Include="Unity.TextMeshPro">
+	  <HintPath>..\Unity_Net_45\Assets\WarpWorld\Managed\net45\Unity.TextMeshPro.dll</HintPath>
+	</Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\include\UnityEngine.dll</HintPath>
       <Private>false</Private>
@@ -53,5 +54,6 @@
       <HintPath>..\include\UnityEngine.UI.dll</HintPath>
       <Private>false</Private>
     </Reference>
+
   </ItemGroup>
 </Project>

@@ -8,6 +8,10 @@ namespace WarpWorld.CrowdControl.Overlay {
     public class LoginUI : MonoBehaviour {
         [SerializeField] private GameObject m_view;
 
+        [Tooltip("Preferred: one button that opens Crowd Control auth so the user picks Twitch, YouTube, or Discord in the browser.")]
+        [SerializeField] private Button m_loginCrowdControl;
+
+        [Tooltip("Optional legacy per-platform buttons (only wired when m_loginCrowdControl is not assigned).")]
         [SerializeField] public Button m_twitch;
         [SerializeField] public Button m_youtube;
         [SerializeField] public Button m_discord;
@@ -20,9 +24,16 @@ namespace WarpWorld.CrowdControl.Overlay {
             CrowdControl.instance.OnSubscribed += delegate { LoginVisible(false); };
             CrowdControl.instance.OnSubscribeFail += delegate { LoginVisible(true); };
 
-            m_twitch.onClick.AddListener(CrowdControl.instance.LoginTwitch);
-            m_youtube.onClick.AddListener(CrowdControl.instance.LoginYoutube);
-            m_discord.onClick.AddListener(CrowdControl.instance.LoginDiscord);
+            if (m_loginCrowdControl != null)
+                m_loginCrowdControl.onClick.AddListener(CrowdControl.instance.LoginWithCrowdControl);
+            else {
+                if (m_twitch != null)
+                    m_twitch.onClick.AddListener(CrowdControl.instance.LoginTwitch);
+                if (m_youtube != null)
+                    m_youtube.onClick.AddListener(CrowdControl.instance.LoginYoutube);
+                if (m_discord != null)
+                    m_discord.onClick.AddListener(CrowdControl.instance.LoginDiscord);
+            }
 
             //CrowdControl.instance.OnTempTokenFailure += Test;
             //CrowdControl.instance.OnConnecting += Test;

@@ -1,1 +1,24 @@
-/CrowdControl/obj
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.rsuser
+*.sln.docstates
+
+# MSBuild / dotnet — every obj/bin folder, including CrowdControl/obj, CrowdControlEditor/obj, …
+**/bin/
+**/obj/
+[Bb]in/
+[Oo]bj/
+
+# Unity staging folders — csproj OutputPath writes here; rebuild to repopulate
+Unity_Net_35/
+Unity_Net_45/
+Unity_Net_Standard/
+
+# JetBrains Rider
+.idea/
+
+# macOS
+.DS_Store

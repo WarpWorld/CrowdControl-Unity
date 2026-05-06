@@ -2,6 +2,7 @@
 using UnityEngine.Assertions;
 using System;
 using System.Collections.Generic;
+using WarpWorld.CrowdControl.Attributes;
 
 namespace WarpWorld.CrowdControl.Overlay
 {
@@ -56,16 +57,22 @@ namespace WarpWorld.CrowdControl.Overlay
         [SerializeField] EffectPanelUI queuePanel;
 #pragma warning restore CS0649
 
+        [Header("Layout")]
+        [Tooltip("Uniform scale for this overlay root. Anchors/positions are unchanged; content shrinks around the RectTransform pivot (default ~30% smaller than design size). Set to 1 for full-size.")]
+        [SerializeField]
+        [Range(0.5f, 1f)]
+        float _overlayRootScale = 0.7f;
+
         [Header("Configuration")]
         [Tooltip("Which parts to display on UI elements.")]
 
         [SerializeField]
-        [Attributes.EnumFlag]
+        [EnumFlag]
         public DisplayFlags _displayFlags =
             DisplayFlags.EffectName |
             DisplayFlags.EffectIcon |
             DisplayFlags.UserName |
-            DisplayFlags.UserIcon;
+            DisplayFlags.Messages;
 
 #pragma warning disable 1591
         public DisplayFlags displayFlags
@@ -140,6 +147,7 @@ namespace WarpWorld.CrowdControl.Overlay
             Assert.IsNull(instance);
             instance = this;
             logEntries = new Queue<LogEntry>();
+            transform.localScale = Vector3.one * _overlayRootScale;
         }
 
         void Start()
