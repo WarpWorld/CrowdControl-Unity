@@ -714,8 +714,8 @@ namespace WarpWorld.CrowdControl
 
         private IEnumerator DisplayMessageWithIcon(string message, float displayTime = 5.0f) {
             yield return new WaitUntil(() => Application.isPlaying);
-            // Session toasts do not use the streamer avatar; overlay hides icons by default unless enabled in DisplayFlags.
-            OnDisplayMessage?.Invoke(message, displayTime, null);
+            Sprite icon = Streamer != null ? Streamer.profileIcon : null;
+            OnDisplayMessage?.Invoke(message, displayTime, icon);
         }
 
         /// <summary>Bring up the menu in a web browser.</summary>
