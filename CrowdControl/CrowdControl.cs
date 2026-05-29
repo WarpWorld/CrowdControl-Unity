@@ -87,13 +87,15 @@ namespace WarpWorld.CrowdControl
 
         /// <summary>User-Agent sent with Crowd Control OpenAPI (<c>HttpWebRequest</c>) calls.</summary>
         public static string BuildClientUserAgent() {
+            string gamePackID = instance != null && !string.IsNullOrEmpty(GameID) ? GameID : "unknown";
             return string.Format(
                 System.Globalization.CultureInfo.InvariantCulture,
-                "CrowdControl-Unity/{0} Unity/{1} ({2}; {3})",
+                "CrowdControl-Unity/{0} Unity/{1} ({2}; {3}; {4})",
                 Application.version,
                 Application.unityVersion,
                 Application.productName,
-                SystemInfo.deviceType
+                SystemInfo.deviceType,
+                gamePackID
             );
         }
 
@@ -326,7 +328,7 @@ namespace WarpWorld.CrowdControl
             pendingQueue = new Queue<CCEffectInstance>();
             jsonQueue = new Queue<string>();
             haltedTimers = new Dictionary<string, Queue<CCEffectInstanceTimed>>();
-            OnConnected += () => SendJSON(new JSONMessageSend("whoami"));
+            OnConnected += WhoAmI;
         }
 
         void OnEnable() {
@@ -623,9 +625,8 @@ namespace WarpWorld.CrowdControl
             WhoAmI();
         }
 
-        private void WhoAmI()  {
-            JSONMessageSend whoamI = new JSONMessageSend("whoami");
-            SendJSON(whoamI);
+        private void WhoAmI() {
+            SendJSON(new JSONData("whoami", JsonConvert.SerializeObject(new JSONWhoAmIRequest(_gameID))));
         }
 
         private void Subscribe() {

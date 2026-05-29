@@ -41,6 +41,15 @@ namespace WarpWorld.CrowdControl {
         }
     }
 
+    internal class JSONWhoAmIRequest {
+        [JsonProperty(PropertyName = "gamePackID")]
+        public string m_gamePackID;
+
+        public JSONWhoAmIRequest(string gamePackID) {
+            m_gamePackID = gamePackID;
+        }
+    }
+
     internal class JSONWhoAmI : JSONPayload {
         [JsonProperty(PropertyName = "connectionID")]
         public string m_connectionID;
