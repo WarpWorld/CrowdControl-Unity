@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net45;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net35;net45;netstandard2.0</TargetFrameworks>
     <DefineConstants Condition="'$(TargetFramework)' == 'net35'">NET35</DefineConstants>
     <DefineConstants Condition="'$(TargetFramework)' == 'net45'">NET45</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)' == 'netstandard2.1'">NETSTANDARD21</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)' == 'netstandard2.0'">NETSTANDARD20</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net35|AnyCPU'">
@@ -15,7 +15,7 @@
     <OutputPath>..\Unity_Net_45\Assets\WarpWorld\Managed\</OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.1|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <OutputPath>..\Unity_Net_Standard\Assets\WarpWorld\Managed\</OutputPath>
   </PropertyGroup>
 
@@ -27,7 +27,7 @@
     <OutputPath>..\Unity_Net_45\Assets\WarpWorld\Managed\</OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.1|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
     <OutputPath>..\Unity_Net_Standard\Assets\WarpWorld\Managed\</OutputPath>
   </PropertyGroup>
 
@@ -40,7 +40,7 @@
       <HintPath>..\Unity_Net_45\Assets\WarpWorld\Managed\net45\CrowdControl.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="CrowdControl" Condition="'$(TargetFramework)' == 'netstandard2.1'">
+    <Reference Include="CrowdControl" Condition="'$(TargetFramework)' == 'netstandard2.0'">
       <HintPath>..\Unity_Net_Standard\Assets\WarpWorld\Managed\netstandard2.0\CrowdControl.dll</HintPath>
       <Private>false</Private>
     </Reference>
