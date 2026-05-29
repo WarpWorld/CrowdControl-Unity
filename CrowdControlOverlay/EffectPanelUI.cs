@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;  
 
@@ -61,6 +61,10 @@ namespace WarpWorld.CrowdControl.Overlay {
 
             EffectUINode effectNode = activeEffects[id];
             effectNode.Add(effectInstance);
+        }
+
+        internal bool TryGetActive(string effectID, out EffectUINode node) {
+            return activeEffects.TryGetValue(effectID, out node);
         }
 
         internal void Remove(string effectID)

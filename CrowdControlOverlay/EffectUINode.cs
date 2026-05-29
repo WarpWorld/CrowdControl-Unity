@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 #pragma warning disable 1591
 namespace WarpWorld.CrowdControl.Overlay {
     [RequireComponent(typeof(RectTransform), typeof(CanvasGroup))]
     public abstract class EffectUINode : MonoBehaviour {
-        protected internal abstract void SetVisibility(DisplayFlags displayFlags);
+        protected internal virtual void SetVisibility(DisplayFlags displayFlags) { }
 
         internal protected CanvasGroup group;
         internal protected CCEffectInstance effectInstance; 

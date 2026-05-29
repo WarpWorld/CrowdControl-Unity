@@ -36,7 +36,6 @@ namespace WarpWorld.CrowdControl {
 
             AddSpriteWithTint("_tempUserIcon", "_tempUserColor", "Temp User Icon", 125.0f, 100.0f);
             AddSpriteWithTint("_crowdUserIcon", "_crowdUserColor", "Crowd User Icon", 125.0f, 100.0f);
-            AddSpriteWithTint("_ghostUserIcon", "_ghostUserColor", "Anonymous (Ghost) Icon", 125.0f, 100.0f);
             AddSpriteWithTint("_errorUserIcon", "_errorUserColor", "Error User Icon", 125.0f, 100.0f); 
 
             NewRow();

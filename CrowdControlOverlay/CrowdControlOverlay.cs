@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Assertions;
 using System;
 using System.Collections.Generic;
@@ -162,6 +162,8 @@ namespace WarpWorld.CrowdControl.Overlay
             buff.gameObject.SetActive(false);
             cc.OnEffectStart += OnEffectStart;
             cc.OnEffectStop += OnEffectStop;
+            cc.OnEffectPause += OnEffectPause;
+            cc.OnEffectResume += OnEffectResume;
 
             queue.gameObject.SetActive(false);
             queuePanel.m_uiType = EffectPanelUI.UIType.Queue;
@@ -226,6 +228,14 @@ namespace WarpWorld.CrowdControl.Overlay
         }
 
         void OnEffectStop(CCEffectInstanceTimed effectInstance) => buffPanel.Remove(effectInstance.EffectID);
+
+        void OnEffectPause(CCEffectInstanceTimed effectInstance) => RefreshBuffVisual(effectInstance);
+        void OnEffectResume(CCEffectInstanceTimed effectInstance) => RefreshBuffVisual(effectInstance);
+
+        void RefreshBuffVisual(CCEffectInstanceTimed effectInstance) {
+            if (buffPanel.TryGetActive(effectInstance.EffectID, out EffectUINode node) && node is EffectBuffUI buffNode)
+                buffNode.UpdateEffectTimer();
+        }
 
         #endregion
     }
