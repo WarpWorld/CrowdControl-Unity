@@ -715,6 +715,10 @@ namespace WarpWorld.CrowdControl
 
         private IEnumerator DisplayMessageWithIcon(string message, float displayTime = 5.0f) {
             yield return new WaitUntil(() => Application.isPlaying);
+            if (Streamer != null && !string.IsNullOrEmpty(Streamer.profileIconUrl)) {
+                yield return new WaitUntil(() => Streamer.profileIcon != null);
+            }
+
             Sprite icon = Streamer != null ? Streamer.profileIcon : null;
             OnDisplayMessage?.Invoke(message, displayTime, icon);
         }
