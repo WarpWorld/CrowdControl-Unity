@@ -14,6 +14,11 @@ namespace WarpWorld.CrowdControl {
             Send(instance, "failPermanent");
         }
 
+        public static void FailPermanently(string requestID) {
+            JSONRpc rpc = new JSONRpc(CrowdControl.instance.CurrentUserHash, requestID, "failPermanent");
+            CrowdControl.instance.SendJSON(new JSONData("rpc", JsonConvert.SerializeObject(rpc)));
+        }
+
         public static void TimedBegin(CCEffectInstanceTimed instance) {
             Send(instance, "timedBegin");
         }

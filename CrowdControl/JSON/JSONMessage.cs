@@ -576,11 +576,25 @@ namespace WarpWorld.CrowdControl {
                 DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                 m_stamp = (long)(DateTime.UtcNow - epoch).TotalSeconds;
             }
+
+            public JSONRpcArgs(string requestID, string status) {
+                m_status = status;
+                m_request = requestID;
+                m_id = Utils.GenerateRandomString(26);
+
+                DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                m_stamp = (long)(DateTime.UtcNow - epoch).TotalSeconds;
+            }
         }
 
         public JSONRpc(string token, CCEffectInstance effectInstance, string status) {
             m_token = token;
             m_call.m_args[0] = new JSONRpcArgs(effectInstance, status);
+        }
+
+        public JSONRpc(string token, string requestID, string status) {
+            m_token = token;
+            m_call.m_args[0] = new JSONRpcArgs(requestID, status);
         }
     }
 }

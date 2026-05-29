@@ -798,11 +798,7 @@ namespace WarpWorld.CrowdControl
 
         private void EffectRequestProcess(string serializedPayload) {
             JSONEffectRequest effectRequest = JsonConvert.DeserializeObject<JSONEffectRequest>(serializedPayload);
-            var body = effectRequest.m_effectRequest;
-            NormalizeEffectRequestBody(body);
-            CCEffectBase effect = effectsByID[body.m_effect.m_effectID];
-            QueueEffect(effect, body.m_requester, body.m_requestID, body.m_isTest, body.m_parameters, body.m_anonymous);
-            OnEffectRequest?.Invoke(effect);
+            HandleEffectRequest(effectRequest.m_effectRequest);
         }
 
         private void StreamerProfileProcess(string serializedPayload) {
@@ -864,15 +860,7 @@ namespace WarpWorld.CrowdControl
                     break;
                 case "effect-request":
                     JSONEffectRequest.JSONEffectBody effectRequest = JsonConvert.DeserializeObject<JSONEffectRequest.JSONEffectBody>(serializedPayload);
-
-                    if (effectInstanceIDs.Contains(effectRequest.m_requestID))
-                        return;
-
-                    NormalizeEffectRequestBody(effectRequest);
-
-                    CCEffectBase effect = effectsByID[effectRequest.m_effect.m_effectID];
-                    QueueEffect(effect, effectRequest.m_requester, effectRequest.m_requestID, effectRequest.m_isTest, effectRequest.m_parameters, effectRequest.m_anonymous);
-                    OnEffectRequest?.Invoke(effect);
+                    HandleEffectRequest(effectRequest);
                     break;
             }
         }
@@ -917,6 +905,47 @@ namespace WarpWorld.CrowdControl
         /// <summary>Add to the JSON Processing Queue</summary>
         public void AddToJsonQueue(string json) {
             jsonQueue.Enqueue(json);
+        }
+
+        private void HandleEffectRequest(JSONEffectRequest.JSONEffectBody effectRequest) {
+            if (effectRequest == null || effectInstanceIDs.Contains(effectRequest.m_requestID))
+                return;
+
+            if (!IsGameEffectRequest(effectRequest))
+                return;
+
+            if (!string.Equals(effectRequest.m_gamePack?.m_gamePackID, _gameID, StringComparison.Ordinal))
+                return;
+
+            NormalizeEffectRequestBody(effectRequest);
+
+            if (!effectsByID.TryGetValue(effectRequest.m_effect.m_effectID, out CCEffectBase effect)) {
+                RejectUnknownEffectRequest(effectRequest.m_requestID);
+                return;
+            }
+
+            QueueEffect(effect, effectRequest.m_requester, effectRequest.m_requestID, effectRequest.m_isTest, effectRequest.m_parameters, effectRequest.m_anonymous);
+            OnEffectRequest?.Invoke(effect);
+        }
+
+        private static bool IsGameEffectRequest(JSONEffectRequest.JSONEffectBody effectRequest) {
+            return effectRequest.m_effect != null
+                && string.Equals(effectRequest.m_effect.m_type, "game", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private void RejectUnknownEffectRequest(string requestID) {
+            TrackEffectRequestID(requestID);
+            RPC.FailPermanently(requestID);
+        }
+
+        private void TrackEffectRequestID(string requestID) {
+            if (effectInstanceIDs.Contains(requestID))
+                return;
+
+            if (effectInstanceIDs.Count > 10)
+                effectInstanceIDs.RemoveAt(0);
+
+            effectInstanceIDs.Add(requestID);
         }
 
         /// <summary>Ensures quantity from the server is available as a parameter entry (pooled / newer payloads often send <c>quantity</c> with an empty parameters object).</summary>
@@ -1006,13 +1035,7 @@ namespace WarpWorld.CrowdControl
                 // Implement when Bid Wars are ready.
             }
 
-            if (effectInstanceIDs.Contains(requestID))
-                return;
-
-            if (effectInstanceIDs.Count > 10)
-                effectInstanceIDs.RemoveAt(0);
-
-            effectInstanceIDs.Add(requestID);
+            TrackEffectRequestID(requestID);
             pendingQueue.Enqueue(effectInstance);
             OnEffectQueue?.Invoke(effectInstance);
         }
