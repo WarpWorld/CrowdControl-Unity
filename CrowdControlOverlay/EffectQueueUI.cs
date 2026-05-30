@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 #pragma warning disable 1591
 namespace WarpWorld.CrowdControl.Overlay {
     [AddComponentMenu("Crowd Control/Effect Queue UI")]
     public class EffectQueueUI : EffectUINode {
         [SerializeField] protected Image effectIcon;
-        [SerializeField] protected Text count;
+        [SerializeField] protected TMP_Text count;
         [SerializeField] protected GameObject container;
 
         private byte total;

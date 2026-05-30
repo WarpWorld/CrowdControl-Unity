@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System;
+using TMPro;
 
 #pragma warning disable 1591 
 namespace WarpWorld.CrowdControl.Overlay {
@@ -9,7 +10,7 @@ namespace WarpWorld.CrowdControl.Overlay {
         [Space]
         [SerializeField] protected Image progress;
         [SerializeField] protected GameObject timeContainer;
-        [SerializeField] protected Text timeLabel;
+        [SerializeField] protected TMP_Text timeLabel;
         [SerializeField] protected RectTransform textPanel;
         [SerializeField] protected RectTransform timePanel;
         [SerializeField] protected RectTransform timeBar;

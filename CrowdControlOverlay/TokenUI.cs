@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using TMPro;
 
 namespace WarpWorld.CrowdControl.Overlay {
     [Serializable]
@@ -30,8 +31,8 @@ namespace WarpWorld.CrowdControl.Overlay {
         [SerializeField] private TokenUIView _needTokenView;
         [SerializeField] private TokenUIView _connectedView;
 
-        [SerializeField] private Text _tokenInputField;
-        [SerializeField] private Text _tokenInstructions;
+        [SerializeField] private TMP_Text _tokenInputField;
+        [SerializeField] private TMP_Text _tokenInstructions;
 
         public Action<string> onSubmit;
 

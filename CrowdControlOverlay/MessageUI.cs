@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using TMPro;
 
 namespace WarpWorld.CrowdControl.Overlay {
     [AddComponentMenu("Crowd Control/Message UI")]
@@ -20,7 +21,7 @@ namespace WarpWorld.CrowdControl.Overlay {
 
         [SerializeField] private Image icon;
 
-        [SerializeField] private Text content;
+        [SerializeField] private TMP_Text content;
         [SerializeField] private GameObject container;
         [SerializeField] private GameObject iconContainer;
         [SerializeField] private CanvasGroup canvasGroup;
