@@ -31,6 +31,9 @@
         /// <summary>Unscaled game time when the effect was triggered.</summary>
         public float unscaledStartTime { get; internal set; }
 
+        ///<summary>The selected quantity of the effect, if applicable.</summary>
+        public uint quantity { get; internal set; }
+
         /// <summary>The id for the effect that's being used</summary>
         public string EffectID { get { return effect.ID; } }
 

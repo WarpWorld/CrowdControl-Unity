@@ -49,8 +49,28 @@
       <HintPath>..\include\UnityEditor.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEditor.CoreModule">
+      <HintPath>..\include\UnityEditor.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\include\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\include\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+	<Reference Include="UnityEngine.UnityWebRequestWWWModule">
+		<HintPath>..\include\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+		<Private>false</Private>
+	</Reference>
+	<Reference Include="UnityEngine.TextRenderingModule">
+		<HintPath>..\include\UnityEngine.TextRenderingModule.dll</HintPath>
+		<Private>false</Private>
+	</Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\include\UnityEngine.IMGUIModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

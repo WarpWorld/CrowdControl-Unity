@@ -27,6 +27,15 @@ namespace WarpWorld.CrowdControl.Overlay {
         [SerializeField] protected RectTransform mainContent;
         [SerializeField] protected RectTransform container;
 
+        void Awake()
+        {
+            if (!effectNameElement)
+                effectNameElement = effectName.rectTransform;
+
+            if(!userNameElement)
+                userNameElement = userName.rectTransform;
+        }
+
         protected internal override void SetVisibility(DisplayFlags displayFlags) {
             effectNameElement.gameObject.SetActive((displayFlags & DisplayFlags.EffectName) != 0);
             effectIconElement.gameObject.SetActive((displayFlags & DisplayFlags.EffectIcon) != 0);

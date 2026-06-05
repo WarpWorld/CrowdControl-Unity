@@ -898,7 +898,7 @@ namespace WarpWorld.CrowdControl
                 }
             }
 
-            StartCoroutine(DownloadUserInfo(effect, null, (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalMilliseconds.ToString(), true, parameters));
+            StartCoroutine(DownloadUserInfo(effect, null, (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalMilliseconds.ToString(), true, 1, parameters));
         }
 
         /// <summary>Test an effect remotely.</summary>
@@ -928,7 +928,7 @@ namespace WarpWorld.CrowdControl
                 return;
             }
 
-            QueueEffect(effect, effectRequest.m_requester, effectRequest.m_requestID, effectRequest.m_isTest, effectRequest.m_parameters, effectRequest.m_anonymous);
+            QueueEffect(effect, effectRequest.m_requester, effectRequest.m_requestID, effectRequest.m_isTest, effectRequest.m_quantity, effectRequest.m_parameters, effectRequest.m_anonymous);
             OnEffectRequest?.Invoke(effect);
         }
 
@@ -969,9 +969,9 @@ namespace WarpWorld.CrowdControl
         }
 
         // Allocates an effect instance and add it to the pending list.
-        private void QueueEffect(CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, bool test, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null, bool anonymousRequest = false) {
+        private void QueueEffect(CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, bool test, uint quantity, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null, bool anonymousRequest = false) {
             Assert.IsTrue(isActiveAndEnabled);
-            StartCoroutine(DownloadUserInfo(effect, request, requestID, test, parameters, anonymousRequest));
+            StartCoroutine(DownloadUserInfo(effect, request, requestID, test, quantity, parameters, anonymousRequest));
         }
 
         private IEnumerator InstantiateViewer(StreamUser displayUser, string userName) {
@@ -979,7 +979,7 @@ namespace WarpWorld.CrowdControl
             yield return StartCoroutine(displayUser.DownloadSprite());
         } 
 
-        private IEnumerator DownloadUserInfo(CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, bool test, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null, bool anonymousRequest = false) {
+        private IEnumerator DownloadUserInfo(CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, bool test, uint quantity, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null, bool anonymousRequest = false) {
             StreamUser displayUser = null;
 
             if (!test) {
@@ -1004,16 +1004,16 @@ namespace WarpWorld.CrowdControl
             }
 
             if (effect is CCEffectTimed)
-                CreateEffectInstance<CCEffectInstanceTimed>(displayUser, effect as CCEffectTimed, request, requestID, parameters);
+                CreateEffectInstance<CCEffectInstanceTimed>(displayUser, effect as CCEffectTimed, request, requestID, quantity, parameters);
             else if (effect is CCEffectParameters)
-                CreateEffectInstance<CCEffectInstanceParameters>(displayUser, effect as CCEffectParameters, request, requestID, parameters);
+                CreateEffectInstance<CCEffectInstanceParameters>(displayUser, effect as CCEffectParameters, request, requestID, quantity, parameters);
             else if (effect is CCEffectBidWar)
-                CreateEffectInstance<CCEffectInstanceBidWar>(displayUser, effect as CCEffectBidWar, request, requestID, parameters);
+                CreateEffectInstance<CCEffectInstanceBidWar>(displayUser, effect as CCEffectBidWar, request, requestID, quantity, parameters);
             else
-                CreateEffectInstance<CCEffectInstance>(displayUser, effect, request, requestID, parameters);
+                CreateEffectInstance<CCEffectInstance>(displayUser, effect, request, requestID, quantity, parameters);
         }
 
-        private void CreateEffectInstance<T>(StreamUser user, CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null) where T : CCEffectInstance, new() {
+        private void CreateEffectInstance<T>(StreamUser user, CCEffectBase effect, JSONEffectRequest.JSONUser request, string requestID, uint quantity, Dictionary<string, JSONEffectRequest.JSONParameterEntry> parameters = null) where T : CCEffectInstance, new() {
             T effectInstance = new T();
 
             effectInstance.id = requestID;
@@ -1021,6 +1021,7 @@ namespace WarpWorld.CrowdControl
             effectInstance.effect = effect;
             effectInstance.retryCount = 0;
             effectInstance.unscaledStartTime = Time.unscaledTime; // TODO add some delay?
+            effectInstance.quantity = quantity;
 
             string effectID = effect.ID;
             CCEffectEntry effectEntry = ccEffectEntries[effectID];

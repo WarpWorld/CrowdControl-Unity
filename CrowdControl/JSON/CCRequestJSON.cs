@@ -114,7 +114,7 @@ namespace WarpWorld.CrowdControl {
         [JsonProperty(PropertyName = "status")]
         public byte status;
 
-        [JsonProperty(PropertyName = "time")]
+        [JsonProperty(PropertyName = "timeRemaining")]
         public ushort time;
 
         [JsonProperty(PropertyName = "message")]
@@ -138,7 +138,7 @@ namespace WarpWorld.CrowdControl {
         [JsonProperty(PropertyName = "effectID")]
         public uint effectID;
 
-        [JsonProperty(PropertyName = "durationTime")]
+        [JsonProperty(PropertyName = "duration")]
         public uint durationTime;
 
         [JsonProperty(PropertyName = "viewerCount")]
@@ -146,6 +146,9 @@ namespace WarpWorld.CrowdControl {
 
         [JsonProperty(PropertyName = "viewers")]
         public Viewer [] viewers;
+
+        [JsonProperty(PropertyName = "quantity")]
+        public uint quantity;
 
         [JsonProperty(PropertyName = "parameters")]
         public string parameters;

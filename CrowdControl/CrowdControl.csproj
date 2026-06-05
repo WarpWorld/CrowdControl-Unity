@@ -53,7 +53,22 @@
       <Private>false</Private>
     </Reference>
 	
-    <Reference Include="websocket-sharpCC">
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\include\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+	  
+	<Reference Include="UnityEngine.UnityWebRequestWWWModule">
+		<HintPath>..\include\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+		<Private>false</Private>
+	</Reference>
+
+	<Reference Include="UnityEngine.UnityWebRequestWWWModule">
+		<HintPath>..\include\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+		<Private>false</Private>
+	</Reference>
+
+	<Reference Include="websocket-sharpCC">
       <HintPath>..\include\websocket-sharpCC.dll</HintPath>
     </Reference>
   </ItemGroup>

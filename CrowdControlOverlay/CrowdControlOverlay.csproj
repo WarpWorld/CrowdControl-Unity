@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net45;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks><!--re-add .net 3.5 when we find the reference dll for TMP-->
     <DefineConstants Condition="'$(TargetFramework)' == 'net35'">NET35</DefineConstants>
     <DefineConstants Condition="'$(TargetFramework)' == 'net45'">NET45</DefineConstants>
     <DefineConstants Condition="'$(TargetFramework)' == 'netstandard2.0'">NETSTANDARD20</DefineConstants>
@@ -49,8 +49,24 @@
       <HintPath>..\include\UnityEngine.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\include\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\include\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>..\include\UnityEngine.UIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\include\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreModule">
+      <HintPath>..\include\UnityEngine.TextCoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="TMPro" Condition="'$(TargetFramework)' == 'net35'">
